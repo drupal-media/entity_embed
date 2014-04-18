@@ -30,7 +30,6 @@ class EntityEmbedFilter extends FilterBase {
    * {@inheritdoc}
    */
   public function process($text, $langcode, $cache, $cache_id) {
-    debug($text);
     if (stristr($text, 'data-entity-type') !== FALSE && stristr($text, 'data-view-mode') !== FALSE) {
       $dom = Html::load($text);
       $xpath = new \DOMXPath($dom);

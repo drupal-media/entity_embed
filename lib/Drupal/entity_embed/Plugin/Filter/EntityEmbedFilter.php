@@ -43,7 +43,7 @@ class EntityEmbedFilter extends FilterBase {
           $uuid = $node->getAttribute('data-entity-uuid');
           $entity = entity_load_by_uuid($entity_type, $uuid);
         }
-        else if ($node->hasAttribute('data-entity-id')) {
+        elseif ($node->hasAttribute('data-entity-id')) {
           $id = $node->getAttribute('data-entity-id');
           $entity = entity_load($entity_type, $id);
           // Add the entity UUID.
@@ -72,7 +72,8 @@ class EntityEmbedFilter extends FilterBase {
           }
           $output = drupal_render($build);
 
-          // Load the altered HTML into a new DOMDocument and retrieve the element.
+          // Load the altered HTML into a new DOMDocument and retrieve the
+          // element.
           $updated_node = Html::load($output)->getElementsByTagName('body')
             ->item(0)
             ->childNodes

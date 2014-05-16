@@ -38,7 +38,7 @@ class EntityEmbedFilter extends FilterBase {
         $entity = NULL;
         $view_mode = $node->getAttribute('data-view-mode');
 
-        // Load the entity either by UUID or ID.
+        // Load the entity either by UUID (preferred) or ID.
         if ($node->hasAttribute('data-entity-uuid')) {
           $uuid = $node->getAttribute('data-entity-uuid');
           $entity = entity_load_by_uuid($entity_type, $uuid);
@@ -85,7 +85,7 @@ class EntityEmbedFilter extends FilterBase {
           while ($node->hasChildNodes() == TRUE) {
             $node->removeChild($node->firstChild);
           }
-          // Finally, replace the original image node with the new image node!
+          // Finally, append the entity to the DOM node.
           $node->appendChild($updated_node);
 
           return Html::serialize($dom);

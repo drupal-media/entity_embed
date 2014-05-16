@@ -14,7 +14,7 @@ use Drupal\Component\Utility\Xss;
 use Drupal\filter\Plugin\FilterBase;
 
 /**
- * Provides a filter to display image captions and align images.
+ * Provides a filter to display embedded entities based on data attributes.
  *
  * @Filter(
  *   id = "entity_embed",

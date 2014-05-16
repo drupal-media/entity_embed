@@ -46,7 +46,7 @@ class EntityEmbedFilter extends FilterBase {
         elseif ($node->hasAttribute('data-entity-id')) {
           $id = $node->getAttribute('data-entity-id');
           $entity = entity_load($entity_type, $id);
-          // Add the entity UUID.
+          // Add the entity UUID attribute to the parent node.
           if ($entity && $uuid = $entity->uuid()) {
             $node->setAttribute('data-entity-uuid', $uuid);
           }

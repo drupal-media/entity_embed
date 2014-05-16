@@ -91,18 +91,16 @@ class EntityEmbedFilter extends FilterBase {
         }
       }
 
-      $text = Html::serialize($dom);
-
-      if (!empty($this->postRender) || !empty($this->cacheTags)) {
-        $return = array(
-          '#markup' => $text,
-          '#post_render_cache' => $this->postRender,
-          '#cache' => array(
-            'tags' => NestedArray::mergeDeepArray($this->cacheTags),
-          ),
-        );
-        return $return;
+      $build = array(
+        '#markup' => Html::serialize($dom),
+      );
+      if (!empty($this->postRender)) {
+        $build['#post_render_cache'] = $this->postRender;
       }
+      if (!empty($this->cacheTags)) {
+        $build['#cache']['tags'] = NestedArray::mergeDeepArray($this->cacheTags);
+      }
+      return $build;
     }
 
     return $text;

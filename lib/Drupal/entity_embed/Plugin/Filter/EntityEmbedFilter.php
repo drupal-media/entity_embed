@@ -128,14 +128,13 @@ class EntityEmbedFilter extends FilterBase {
   public static function postRender(array $element, array $context) {
     $callback = '\Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::postRender';
     $placeholder = drupal_render_cache_generate_placeholder($callback, $context, $context['token']);
-    $alt_placeholder = preg_replace('/ \/\>$/', '></render-cache-placeholder>', $placeholder);
-    $alt_placeholder = str_replace('drupal:render-cache-placeholder', 'render-cache-placeholder', $alt_placeholder);
-    // The render cache placeholder after being run through the text formats may
-    // be different.
-    // Before text formats:
+    // If this text filter is used alongside FilterHtmlCorrector, then we need
+    // to be sure to check for both formats of the render cache placeholder:
+    // Original placeholder:
     // <drupal:render-cache-placeholder .. />
-    // After text formats:
+    // After FilterHtmlCorrector::process():
     // <render-cache-placeholder ... ></render-cache-placeholder>
+    $alt_placeholder = Html::normalize($placeholder);
 
     $entity = entity_load($context['entity_type'], $context['entity_id']);
     if ($entity && $entity->access()) {

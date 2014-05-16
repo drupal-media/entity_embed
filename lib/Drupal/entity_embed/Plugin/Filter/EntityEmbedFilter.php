@@ -78,15 +78,15 @@ class EntityEmbedFilter extends FilterBase {
         if (!empty($entity)) {
           $placeholder = $this->buildPlaceholder($entity, $view_mode, $langcode);
 
-          // Load the altered HTML into a new DOMDocument and retrieve the element.
+          // Load the placeholder HTML into a new DOMDocument and retrieve the element.
           $updated_node = Html::load($placeholder)->getElementsByTagName('body')
             ->item(0)
             ->childNodes
             ->item(0);
           // Import the updated node from the new DOMDocument into the original
-          // one, importing also the child nodes of the updated node.
+          // one, importing also the child nodes of the updated DOMNode.
           $updated_node = $dom->importNode($updated_node, TRUE);
-          // Finally, replace the original entity node with the new entity node!
+          // Replace the original entity DOMNode with the new entity DOMNode.
           $node->appendChild($updated_node);
         }
       }

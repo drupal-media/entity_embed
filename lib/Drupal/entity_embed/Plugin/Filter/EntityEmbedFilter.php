@@ -8,6 +8,7 @@
 namespace Drupal\entity_embed\Plugin\Filter;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
@@ -20,19 +21,41 @@ use Drupal\filter\Plugin\FilterBase;
  *   id = "entity_embed",
  *   title = @Translation("Display embedded entities."),
  *   description = @Translation("Embeds entities using data attributes: data-entity-type, data-entity-uuid or data-entity-id, and data-view-mode."),
- *   type = Drupal\filter\Plugin\FilterInterface::TYPE_TRANSFORM_REVERSIBLE,
- *   cache = FALSE
+ *   type = Drupal\filter\Plugin\FilterInterface::TYPE_TRANSFORM_REVERSIBLE
  * )
  */
 class EntityEmbedFilter extends FilterBase {
 
+  protected $postRender = array();
+  protected $cacheTags = array();
+
+  public function clearPostRender() {
+    $this->postRender = array();
+    $this->cacheTags = array();
+  }
+
+  public function buildPlaceholder($entity, $view_mode, $langcode) {
+    $callback = '\Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::postRender';
+    $context = array(
+      'entity_type' => $entity->getEntityTypeId(),
+      'entity_id' => $entity->id(),
+      'view_mode' => $view_mode,
+      'langcode' => $langcode,
+      'token' => drupal_render_cache_generate_token(),
+    );
+    $this->postRender[$callback][$context['token']] = $context;
+    $this->cacheTags[] = $entity->getCacheTag();
+    return drupal_render_cache_generate_placeholder($callback, $context, $context['token']);
+  }
+
   /**
    * {@inheritdoc}
    */
-  public function process($text, $langcode, $cache, $cache_id) {
+  public function process($text, $langcode) {
     if (stristr($text, 'data-entity-type') !== FALSE && stristr($text, 'data-view-mode') !== FALSE) {
       $dom = Html::load($text);
       $xpath = new \DOMXPath($dom);
+      $this->clearPostRender();
       foreach ($xpath->query('//*[@data-entity-type and @data-view-mode]') as $node) {
         $entity_type = $node->getAttribute('data-entity-type');
         $entity = NULL;
@@ -48,39 +71,33 @@ class EntityEmbedFilter extends FilterBase {
           $entity = entity_load($entity_type, $id);
         }
 
-        // Check entity access.
-        if ($entity && $entity->access()) {
-
-          // Protect ourselves from recursive rendering.
-          static $depth = 0;
-          $depth++;
-          if ($depth > 20) {
-            throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $item->entity->getEntityTypeId(), '@entity_id' => $item->target_id)));
-          }
-
-          // Build the rendered entity.
-          $build = entity_view($entity, $view_mode, $langcode);
-
-          // Hide entity links by default.
-          // @todo Make this configurable via data attribute?
-          if (isset($build['links'])) {
-            $build['links']['#access'] = FALSE;
-          }
-          $output = drupal_render($build);
+        if (!empty($entity)) {
+          $placeholder = $this->buildPlaceholder($entity, $view_mode, $langcode);
 
           // Load the altered HTML into a new DOMDocument and retrieve the element.
-          $updated_node = Html::load($output)->getElementsByTagName('body')
+          $updated_node = Html::load($placeholder)->getElementsByTagName('body')
             ->item(0)
             ->childNodes
             ->item(0);
           // Import the updated node from the new DOMDocument into the original
           // one, importing also the child nodes of the updated node.
           $updated_node = $dom->importNode($updated_node, TRUE);
-          // Finally, replace the original image node with the new image node!
+          // Finally, replace the original entity node with the new entity node!
           $node->appendChild($updated_node);
-
-          return Html::serialize($dom);
         }
+      }
+
+      $text = Html::serialize($dom);
+
+      if (!empty($this->postRender) || !empty($this->cacheTags)) {
+        $return = array(
+          '#markup' => $text,
+          '#post_render_cache' => $this->postRender,
+          '#cache' => array(
+            'tags' => NestedArray::mergeDeepArray($this->cacheTags),
+          ),
+        );
+        return $return;
       }
     }
 
@@ -102,5 +119,48 @@ class EntityEmbedFilter extends FilterBase {
     else {
       return $this->t('You can embed entities.');
     }
+  }
+
+  public static function postRender(array $element, array $context) {
+    $callback = '\Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::postRender';
+    $placeholder = drupal_render_cache_generate_placeholder($callback, $context, $context['token']);
+    $alt_placeholder = preg_replace('/ \/\>$/', '></render-cache-placeholder>', $placeholder);
+    $alt_placeholder = str_replace('drupal:render-cache-placeholder', 'render-cache-placeholder', $alt_placeholder);
+    // The render cache placeholder after being run through the text formats may
+    // be different.
+    // Before text formats:
+    // <drupal:render-cache-placeholder .. />
+    // After text formats:
+    // <render-cache-placeholder ... ></render-cache-placeholder>
+
+    $entity = entity_load($context['entity_type'], $context['entity_id']);
+    if ($entity && $entity->access()) {
+      // Protect ourselves from recursive rendering.
+      static $depth = 0;
+      $depth++;
+      if ($depth > 10) {
+        throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $item->entity->getEntityTypeId(), '@entity_id' => $item->target_id)));
+      }
+
+      // Build the rendered entity.
+      $build = entity_view($entity, $context['view_mode'], $context['langcode']);
+
+      // Hide entity links by default.
+      // @todo Make this configurable via data attribute?
+      if (isset($build['links'])) {
+        $build['links']['#access'] = FALSE;
+      }
+
+      $entity_output = drupal_render($build);
+
+      $depth--;
+      $element['#markup'] = str_replace($placeholder, $entity_output, $element['#markup']);
+      $element['#markup'] = str_replace($alt_placeholder, $entity_output, $element['#markup']);
+    }
+    else {
+      $element['#markup'] = str_replace($placeholder, '', $element['#markup']);
+      $element['#markup'] = str_replace($alt_placeholder, '', $element['#markup']);
+    }
+    return $element;
   }
 }

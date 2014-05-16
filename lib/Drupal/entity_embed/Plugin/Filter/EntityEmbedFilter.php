@@ -52,7 +52,7 @@ class EntityEmbedFilter extends FilterBase {
           }
         }
 
-        // Check entity access.
+        // Check if entity exists and we have entity access.
         if ($entity && $entity->access()) {
 
           // Protect ourselves from recursive rendering.

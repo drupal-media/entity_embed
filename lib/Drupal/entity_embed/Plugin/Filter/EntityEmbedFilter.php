@@ -14,7 +14,7 @@ use Drupal\Component\Utility\Xss;
 use Drupal\filter\Plugin\FilterBase;
 
 /**
- * Provides a filter to display image captions and align images.
+ * Provides a filter to display embedded entities based on data attributes.
  *
  * @Filter(
  *   id = "entity_embed",
@@ -38,21 +38,21 @@ class EntityEmbedFilter extends FilterBase {
         $entity = NULL;
         $view_mode = $node->getAttribute('data-view-mode');
 
-        // Load the entity either by UUID or ID.
+        // Load the entity either by UUID (preferred) or ID.
         if ($node->hasAttribute('data-entity-uuid')) {
           $uuid = $node->getAttribute('data-entity-uuid');
           $entity = entity_load_by_uuid($entity_type, $uuid);
         }
-        if ($node->hasAttribute('data-entity-id')) {
+        elseif ($node->hasAttribute('data-entity-id')) {
           $id = $node->getAttribute('data-entity-id');
           $entity = entity_load($entity_type, $id);
-          // Add the entity UUID.
+          // Add the entity UUID attribute to the parent node.
           if ($entity && $uuid = $entity->uuid()) {
             $node->setAttribute('data-entity-uuid', $uuid);
           }
         }
 
-        // Check entity access.
+        // Check if entity exists and we have entity access.
         if ($entity && $entity->access()) {
 
           // Protect ourselves from recursive rendering.
@@ -72,7 +72,8 @@ class EntityEmbedFilter extends FilterBase {
           }
           $output = drupal_render($build);
 
-          // Load the altered HTML into a new DOMDocument and retrieve the element.
+          // Load the altered HTML into a new DOMDocument and retrieve the
+          // element.
           $updated_node = Html::load($output)->getElementsByTagName('body')
             ->item(0)
             ->childNodes
@@ -80,7 +81,8 @@ class EntityEmbedFilter extends FilterBase {
           // Import the updated node from the new DOMDocument into the original
           // one, importing also the child nodes of the updated node.
           $updated_node = $dom->importNode($updated_node, TRUE);
-          // Finally, replace the original image node with the new image node!
+
+          // Finally, append the entity to the DOM node.
           $node->appendChild($updated_node);
 
           return Html::serialize($dom);

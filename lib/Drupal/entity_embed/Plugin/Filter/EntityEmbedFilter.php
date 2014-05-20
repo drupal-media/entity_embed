@@ -38,43 +38,48 @@ class EntityEmbedFilter extends FilterBase {
         $entity = NULL;
         $view_mode = $node->getAttribute('data-view-mode');
 
-        // Load the entity either by UUID (preferred) or ID.
-        if ($node->hasAttribute('data-entity-uuid')) {
-          $uuid = $node->getAttribute('data-entity-uuid');
-          $entity = entity_load_by_uuid($entity_type, $uuid);
-        }
-        elseif ($node->hasAttribute('data-entity-id')) {
-          $id = $node->getAttribute('data-entity-id');
-          $entity = entity_load($entity_type, $id);
-          // Add the entity UUID attribute to the parent node.
-          if ($entity && $uuid = $entity->uuid()) {
-            $node->setAttribute('data-entity-uuid', $uuid);
+        try {
+          // Load the entity either by UUID (preferred) or ID.
+          if ($node->hasAttribute('data-entity-uuid')) {
+            $uuid = $node->getAttribute('data-entity-uuid');
+            $entity = entity_load_by_uuid($entity_type, $uuid);
+          }
+          elseif ($node->hasAttribute('data-entity-id')) {
+            $id = $node->getAttribute('data-entity-id');
+            $entity = entity_load($entity_type, $id);
+            // Add the entity UUID attribute to the parent node.
+            if ($entity && $uuid = $entity->uuid()) {
+              $node->setAttribute('data-entity-uuid', $uuid);
+            }
+          }
+
+          // Check if entity exists and we have entity access.
+          if ($entity && $entity->access()) {
+
+            // Protect ourselves from recursive rendering.
+            static $depth = 0;
+            $depth++;
+            if ($depth > 20) {
+              throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $item->entity->getEntityTypeId(), '@entity_id' => $item->target_id)));
+            }
+
+            // Build the rendered entity.
+            $build = entity_view($entity, $view_mode, $langcode);
+
+            // Hide entity links by default.
+            // @todo Make this configurable via data attribute?
+            if (isset($build['links'])) {
+              $build['links']['#access'] = FALSE;
+            }
+            $output = drupal_render($build);
+
+            $this->setDomNodeContent($node, $output);
+
+            return Html::serialize($dom);
           }
         }
-
-        // Check if entity exists and we have entity access.
-        if ($entity && $entity->access()) {
-
-          // Protect ourselves from recursive rendering.
-          static $depth = 0;
-          $depth++;
-          if ($depth > 20) {
-            throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $item->entity->getEntityTypeId(), '@entity_id' => $item->target_id)));
-          }
-
-          // Build the rendered entity.
-          $build = entity_view($entity, $view_mode, $langcode);
-
-          // Hide entity links by default.
-          // @todo Make this configurable via data attribute?
-          if (isset($build['links'])) {
-            $build['links']['#access'] = FALSE;
-          }
-          $output = drupal_render($build);
-
-          $this->setDomNodeContent($node, $output);
-
-          return Html::serialize($dom);
+        catch(\Exception $e) {
+          watchdog_exception('entity_embed', $e);
         }
       }
     }

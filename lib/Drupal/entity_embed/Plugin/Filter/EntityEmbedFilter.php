@@ -35,9 +35,8 @@ class EntityEmbedFilter extends FilterBase {
       $xpath = new \DOMXPath($dom);
 
       $build = array(
-        '#markup' => Html::serialize($dom),
+        '#markup' => $text,
         '#post_render_cache' => array(),
-        '#cache' => array('tags' => array()),
       );
 
       foreach ($xpath->query('//*[@data-entity-type and @data-view-mode]') as $node) {
@@ -45,48 +44,32 @@ class EntityEmbedFilter extends FilterBase {
         $entity = NULL;
         $view_mode = $node->getAttribute('data-view-mode');
 
-        // Load the entity either by UUID (preferred) or ID.
-        if ($node->hasAttribute('data-entity-uuid')) {
-          $uuid = $node->getAttribute('data-entity-uuid');
-          $entity = entity_load_by_uuid($entity_type, $uuid);
-        }
-        elseif ($node->hasAttribute('data-entity-id')) {
-          $id = $node->getAttribute('data-entity-id');
-          $entity = entity_load($entity_type, $id);
-          // Add the entity UUID attribute to the parent node.
-          if ($entity && $uuid = $entity->uuid()) {
-            $node->setAttribute('data-entity-uuid', $uuid);
+        try {
+          // Load the entity either by UUID (preferred) or ID.
+          if ($node->hasAttribute('data-entity-uuid')) {
+            $uuid = $node->getAttribute('data-entity-uuid');
+            $entity = entity_load_by_uuid($entity_type, $uuid);
           }
-        }
-
-        if (!empty($entity)) {
-          $placeholder = $this->buildPlaceholder($entity, $view_mode, $langcode);
-
-          // Load the placholder HTML into a new DOMDocument and retrieve the
-          // element.
-          $updated_node = Html::load($placeholder)->getElementsByTagName('body')
-            ->item(0)
-            ->childNodes
-            ->item(0);
-          // Import the updated DOMNode from the new DOMDocument into the original
-          // one, importing also the child nodes of the updated DOMNode.
-          $updated_node = $dom->importNode($updated_node, TRUE);
-
-          // Remove all children of the DOMNode from the existing DOMDocument.
-          while ($node->hasChildNodes()) {
-            $node->removeChild($node->firstChild);
+          elseif ($node->hasAttribute('data-entity-id')) {
+            $id = $node->getAttribute('data-entity-id');
+            $entity = entity_load($entity_type, $id);
+            // Add the entity UUID attribute to the parent node.
+            if ($entity && $uuid = $entity->uuid()) {
+              $node->setAttribute('data-entity-uuid', $uuid);
+            }
           }
 
-          // Finally, append the render cache placeholder to the DOMNode.
-          $node->appendChild($updated_node);
+          if (!empty($entity)) {
+            $placeholder = $this->buildPlaceholder($entity, $view_mode, $langcode, $build);
+            $this->setDomNodeContent($node, $placeholder);
+          }
+        }
+        catch(\Exception $e) {
+          watchdog_exception('entity_embed', $e);
         }
       }
-      if (!empty($this->postRender)) {
-        $build['#post_render_cache'] = $this->postRender;
-      }
-      if (!empty($this->cacheTags)) {
-        $build['#cache']['tags'] = NestedArray::mergeDeepArray($this->cacheTags);
-      }
+
+      $build['#markup'] = Html::serialize($dom);
       return $build;
     }
 
@@ -120,7 +103,15 @@ class EntityEmbedFilter extends FilterBase {
       'token' => drupal_render_cache_generate_token(),
     );
     $build['#post_render_cache'][$callback][$context['token']] = $context;
-    $build['#cache']['tags'] = NestedArray::mergeDeepArray($build['#cache']['tags'], $entity->getCacheTag());
+
+    // Add cache tags.
+    if ($tags = $entity->getCacheTag()) {
+      if (!isset($build['#cache']['tags'])) {
+        $build['#cache']['tags'] = array();
+      }
+      $build['#cache']['tags'] = NestedArray::mergeDeepArray($build['#cache']['tags'], $tags);
+    }
+
     return drupal_render_cache_generate_placeholder($callback, $context, $context['token']);
   }
 
@@ -135,34 +126,68 @@ class EntityEmbedFilter extends FilterBase {
     // <render-cache-placeholder ... ></render-cache-placeholder>
     $alt_placeholder = Html::normalize($placeholder);
 
-    $entity = entity_load($context['entity_type'], $context['entity_id']);
-    if ($entity && $entity->access()) {
-      // Protect ourselves from recursive rendering.
-      static $depth = 0;
-      $depth++;
-      if ($depth > 10) {
-        throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $item->entity->getEntityTypeId(), '@entity_id' => $item->target_id)));
+    try {
+      $entity = entity_load($context['entity_type'], $context['entity_id']);
+      if ($entity && $entity->access()) {
+        // Protect ourselves from recursive rendering.
+        static $depth = 0;
+        $depth++;
+        if ($depth > 10) {
+          throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $item->entity->getEntityTypeId(), '@entity_id' => $item->target_id)));
+        }
+
+        // Build the rendered entity.
+        $build = entity_view($entity, $context['view_mode'], $context['langcode']);
+
+        // Hide entity links by default.
+        // @todo Make this configurable via data attribute?
+        if (isset($build['links'])) {
+          $build['links']['#access'] = FALSE;
+        }
+
+        $entity_output = drupal_render($build);
+
+        $depth--;
+        $element['#markup'] = str_replace($placeholder, $entity_output, $element['#markup']);
+        $element['#markup'] = str_replace($alt_placeholder, $entity_output, $element['#markup']);
       }
-
-      // Build the rendered entity.
-      $build = entity_view($entity, $context['view_mode'], $context['langcode']);
-
-      // Hide entity links by default.
-      // @todo Make this configurable via data attribute?
-      if (isset($build['links'])) {
-        $build['links']['#access'] = FALSE;
+      else {
+        $element['#markup'] = str_replace($placeholder, '', $element['#markup']);
+        $element['#markup'] = str_replace($alt_placeholder, '', $element['#markup']);
       }
-
-      $entity_output = drupal_render($build);
-
-      $depth--;
-      $element['#markup'] = str_replace($placeholder, $entity_output, $element['#markup']);
-      $element['#markup'] = str_replace($alt_placeholder, $entity_output, $element['#markup']);
     }
-    else {
-      $element['#markup'] = str_replace($placeholder, '', $element['#markup']);
-      $element['#markup'] = str_replace($alt_placeholder, '', $element['#markup']);
+    catch (\Exception $e) {
+      watchdog_exception('entity_embed', $e);
     }
+
     return $element;
+  }
+
+  /**
+   * Replace the contents of a DOMNode.
+   *
+   * @param $node
+   *   A DOMNode or DOMElement object.
+   * @param string $content
+   *   The text or HTML that will replace the contents of $node.
+   */
+  protected function setDomNodeContent($node, $content) {
+    // Load the contents into a new DOMDocument and retrieve the element.
+    $replacement_node = Html::load($content)->getElementsByTagName('body')
+      ->item(0)
+      ->childNodes
+      ->item(0);
+
+    // Import the updated DOMNode from the new DOMDocument into the original
+    // one, importing also the child nodes of the replacment DOMNode.
+    $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
+
+    // Remove all children of the DOMNode.
+    while ($node->hasChildNodes()) {
+      $node->removeChild($node->firstChild);
+    }
+
+    // Finally, append the contents to the DOMNode.
+    $node->appendChild($replacement_node);
   }
 }

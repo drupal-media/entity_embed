@@ -94,7 +94,7 @@ class EntityEmbedFilter extends FilterBase {
           }
         }
         catch(\Exception $e) {
-          watchdog_exception($entity_type, $e);
+          watchdog_exception('entity_embed', $e);
         }
       }
     }

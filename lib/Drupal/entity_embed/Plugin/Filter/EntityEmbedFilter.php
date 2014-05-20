@@ -73,22 +73,7 @@ class EntityEmbedFilter extends FilterBase {
             }
             $output = drupal_render($build);
 
-            // Load the altered HTML into a new DOMDocument and retrieve the
-            // element.
-            $updated_node = Html::load($output)->getElementsByTagName('body')
-              ->item(0)
-              ->childNodes
-              ->item(0);
-            // Import the updated node from the new DOMDocument into the
-            // original one, importing also the child nodes of the updated node.
-            $updated_node = $dom->importNode($updated_node, TRUE);
-
-            // Remove all children of the node from the existing DOMDocument.
-            while ($node->hasChildNodes()) {
-              $node->removeChild($node->firstChild);
-            }
-            // Finally, append the entity to the DOM node.
-            $node->appendChild($updated_node);
+            $this->setDomNodeContent($node, $output);
 
             return Html::serialize($dom);
           }
@@ -117,5 +102,33 @@ class EntityEmbedFilter extends FilterBase {
     else {
       return $this->t('You can embed entities.');
     }
+  }
+
+  /**
+   * Replace the contents of a DOMNode.
+   *
+   * @param $node
+   *   A DOMNode or DOMElement object.
+   * @param string $content
+   *   The text or HTML that will replace the contents of $node.
+   */
+  protected function setDomNodeContent($node, $content) {
+    // Load the contents into a new DOMDocument and retrieve the element.
+    $replacement_node = Html::load($content)->getElementsByTagName('body')
+      ->item(0)
+      ->childNodes
+      ->item(0);
+
+    // Import the updated DOMNode from the new DOMDocument into the original
+    // one, importing also the child nodes of the replacment DOMNode.
+    $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
+
+    // Remove all children of the DOMNode.
+    while ($node->hasChildNodes()) {
+      $node->removeChild($node->firstChild);
+    }
+
+    // Finally, append the contents to the DOMNode.
+    $node->appendChild($replacement_node);
   }
 }

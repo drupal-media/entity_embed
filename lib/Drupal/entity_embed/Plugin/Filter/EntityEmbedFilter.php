@@ -82,6 +82,10 @@ class EntityEmbedFilter extends FilterBase {
           // one, importing also the child nodes of the updated node.
           $updated_node = $dom->importNode($updated_node, TRUE);
 
+          // Remove all children of the node from the existing DOMDocument.
+          while ($node->hasChildNodes()) {
+            $node->removeChild($node->firstChild);
+          }
           // Finally, append the entity to the DOM node.
           $node->appendChild($updated_node);
 

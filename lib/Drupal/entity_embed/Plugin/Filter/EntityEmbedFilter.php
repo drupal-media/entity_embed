@@ -148,17 +148,18 @@ class EntityEmbedFilter extends FilterBase {
         $entity_output = drupal_render($build);
 
         $depth--;
+
         $element['#markup'] = str_replace($placeholder, $entity_output, $element['#markup']);
         $element['#markup'] = str_replace($alt_placeholder, $entity_output, $element['#markup']);
-      }
-      else {
-        $element['#markup'] = str_replace($placeholder, '', $element['#markup']);
-        $element['#markup'] = str_replace($alt_placeholder, '', $element['#markup']);
+        return $element;
       }
     }
     catch (\Exception $e) {
       watchdog_exception('entity_embed', $e);
     }
+
+    $element['#markup'] = str_replace($placeholder, '', $element['#markup']);
+    $element['#markup'] = str_replace($alt_placeholder, '', $element['#markup']);
 
     return $element;
   }

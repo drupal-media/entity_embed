@@ -94,7 +94,7 @@ class EntityEmbedFilter extends FilterBase {
   }
 
   public function buildPlaceholder($entity, $view_mode, $langcode, array &$build) {
-    $callback = '\Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::postRender';
+    $callback = get_called_class() . '::postRender';
     $context = array(
       'entity_type' => $entity->getEntityTypeId(),
       'entity_id' => $entity->id(),
@@ -116,7 +116,7 @@ class EntityEmbedFilter extends FilterBase {
   }
 
   public static function postRender(array $element, array $context) {
-    $callback = '\Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::postRender';
+    $callback = get_called_class() . '::postRender';
     $placeholder = drupal_render_cache_generate_placeholder($callback, $context, $context['token']);
     // If this text filter is used alongside FilterHtmlCorrector, then we need
     // to be sure to check for both formats of the render cache placeholder:

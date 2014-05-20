@@ -87,8 +87,13 @@ class EntityEmbedFilter extends FilterBase {
           // Import the updated DOMNode from the new DOMDocument into the original
           // one, importing also the child nodes of the updated DOMNode.
           $updated_node = $dom->importNode($updated_node, TRUE);
-          // Replace the original entity DOMNode with the new placeholder
-          // DOMNode.
+
+          // Remove all children of the DOMNode from the existing DOMDocument.
+          while ($node->hasChildNodes()) {
+            $node->removeChild($node->firstChild);
+          }
+
+          // Finally, append the render cache placeholder to the DOMNode.
           $node->appendChild($updated_node);
         }
       }

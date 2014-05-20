@@ -102,12 +102,12 @@ class EntityEmbedFilter extends FilterBase {
   /**
    * Replace the contents of a DOMNode.
    *
-   * @param DOMNode $node
-   *   A DOM node object.
+   * @param $node
+   *   A DOMNode or DOMElement object.
    * @param string $content
    *   The text or HTML that will replace the contents of $node.
    */
-  private function setDomNodeContent(DOMNode $node, $content) {
+  private function setDomNodeContent($node, $content) {
     // Load the contents into a new DOMDocument and retrieve the element.
     $replacement_node = Html::load($content)->getElementsByTagName('body')
       ->item(0)

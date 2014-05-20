@@ -26,28 +26,6 @@ use Drupal\filter\Plugin\FilterBase;
  */
 class EntityEmbedFilter extends FilterBase {
 
-  protected $postRender = array();
-  protected $cacheTags = array();
-
-  public function clearPostRender() {
-    $this->postRender = array();
-    $this->cacheTags = array();
-  }
-
-  public function buildPlaceholder($entity, $view_mode, $langcode) {
-    $callback = '\Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::postRender';
-    $context = array(
-      'entity_type' => $entity->getEntityTypeId(),
-      'entity_id' => $entity->id(),
-      'view_mode' => $view_mode,
-      'langcode' => $langcode,
-      'token' => drupal_render_cache_generate_token(),
-    );
-    $this->postRender[$callback][$context['token']] = $context;
-    $this->cacheTags[] = $entity->getCacheTag();
-    return drupal_render_cache_generate_placeholder($callback, $context, $context['token']);
-  }
-
   /**
    * {@inheritdoc}
    */
@@ -55,7 +33,13 @@ class EntityEmbedFilter extends FilterBase {
     if (stristr($text, 'data-entity-type') !== FALSE && stristr($text, 'data-view-mode') !== FALSE) {
       $dom = Html::load($text);
       $xpath = new \DOMXPath($dom);
-      $this->clearPostRender();
+
+      $build = array(
+        '#markup' => Html::serialize($dom),
+        '#post_render_cache' => array(),
+        '#cache' => array('tags' => array()),
+      );
+
       foreach ($xpath->query('//*[@data-entity-type and @data-view-mode]') as $node) {
         $entity_type = $node->getAttribute('data-entity-type');
         $entity = NULL;
@@ -97,10 +81,6 @@ class EntityEmbedFilter extends FilterBase {
           $node->appendChild($updated_node);
         }
       }
-
-      $build = array(
-        '#markup' => Html::serialize($dom),
-      );
       if (!empty($this->postRender)) {
         $build['#post_render_cache'] = $this->postRender;
       }
@@ -128,6 +108,20 @@ class EntityEmbedFilter extends FilterBase {
     else {
       return $this->t('You can embed entities.');
     }
+  }
+
+  public function buildPlaceholder($entity, $view_mode, $langcode, array &$build) {
+    $callback = '\Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::postRender';
+    $context = array(
+      'entity_type' => $entity->getEntityTypeId(),
+      'entity_id' => $entity->id(),
+      'view_mode' => $view_mode,
+      'langcode' => $langcode,
+      'token' => drupal_render_cache_generate_token(),
+    );
+    $build['#post_render_cache'][$callback][$context['token']] = $context;
+    $build['#cache']['tags'] = NestedArray::mergeDeepArray($build['#cache']['tags'], $entity->getCacheTag());
+    return drupal_render_cache_generate_placeholder($callback, $context, $context['token']);
   }
 
   public static function postRender(array $element, array $context) {

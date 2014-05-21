@@ -12,6 +12,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Language\Language;
 use Drupal\filter\Plugin\FilterBase;
 
 /**
@@ -60,7 +61,13 @@ class EntityEmbedFilter extends FilterBase {
           }
 
           if (!empty($entity)) {
-            $placeholder = $this->buildPlaceholder($entity, $view_mode, $langcode, $build);
+            $context = array('langcode' => $langcode);
+            foreach ($node->attributes as $attribute) {
+              $key = strtr($attribute->nodeName, array('data-' => ''));
+              $context[$key] = $attribute->nodeValue;
+            }
+
+            $placeholder = $this->buildPlaceholder($entity, $build, $context);
             $this->setDomNodeContent($node, $placeholder);
           }
         }
@@ -93,15 +100,19 @@ class EntityEmbedFilter extends FilterBase {
     }
   }
 
-  public function buildPlaceholder($entity, $view_mode, $langcode, array &$build) {
-    $callback = get_called_class() . '::postRender';
-    $context = array(
-      'entity_type' => $entity->getEntityTypeId(),
-      'entity_id' => $entity->id(),
-      'view_mode' => $view_mode,
-      'langcode' => $langcode,
-      'token' => drupal_render_cache_generate_token(),
+  public function buildPlaceholder($entity, array &$build, array $context = array()) {
+    $context += array(
+      'entity-type' => $entity->getEntityTypeId(),
+      'entity-id' => $entity->id(),
+      'view-mode' => 'default',
+      'langcode' => Language::LANGCODE_DEFAULT,
     );
+    $context['token'] = drupal_render_cache_generate_token();
+
+    // Allow modules to alter the context.
+    \Drupal::moduleHandler()->alter('entity_embed_context', $context, $entity);
+
+    $callback = get_called_class() . '::postRender';
     $build['#post_render_cache'][$callback][$context['token']] = $context;
 
     // Add cache tags.
@@ -127,7 +138,7 @@ class EntityEmbedFilter extends FilterBase {
     $alt_placeholder = Html::normalize($placeholder);
 
     try {
-      $entity = entity_load($context['entity_type'], $context['entity_id']);
+      $entity = entity_load($context['entity-type'], $context['entity-id']);
       if ($entity && $entity->access()) {
         // Protect ourselves from recursive rendering.
         static $depth = 0;
@@ -137,13 +148,17 @@ class EntityEmbedFilter extends FilterBase {
         }
 
         // Build the rendered entity.
-        $build = entity_view($entity, $context['view_mode'], $context['langcode']);
+        $entity->entity_embed_context = $context;
+        $build = entity_view($entity, $context['view-mode'], $context['langcode']);
 
         // Hide entity links by default.
         // @todo Make this configurable via data attribute?
         if (isset($build['links'])) {
           $build['links']['#access'] = FALSE;
         }
+
+        // Allow modules to alter the rendered embedded entity.
+        \Drupal::moduleHandler()->alter('entity_embed', $build, $entity, $context);
 
         $entity_output = drupal_render($build);
 

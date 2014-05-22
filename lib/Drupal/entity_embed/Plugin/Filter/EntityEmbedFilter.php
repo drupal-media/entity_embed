@@ -64,7 +64,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityManager = $entity_manager;
-    $this->moduleHanlder = $module_handler;
+    $this->moduleHandler = $module_handler;
   }
 
   /**

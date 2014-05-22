@@ -161,7 +161,8 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     $alt_placeholder = Html::normalize($placeholder);
 
     try {
-      $entity = entity_load($context['entity_type'], $context['entity_id']);
+      $controller = $this->entity_manager->getStorage($context['entity_type']);
+      $entity = $controller->load($context['entity_id']);
       if ($entity && $entity->access()) {
         // Protect ourselves from recursive rendering.
         static $depth = 0;
@@ -171,7 +172,9 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
         }
 
         // Build the rendered entity.
-        $build = entity_view($entity, $context['view_mode'], $context['langcode']);
+        $entity_type_id = $entity->getEntityTypeId();
+        $render_controller = $this->entity_manager->getViewBuilder($entity_type_id);
+        $build = $render_controller->view($entity, $context['view_mode'], $context['langcode']);
 
         // Hide entity links by default.
         // @todo Make this configurable via data attribute?

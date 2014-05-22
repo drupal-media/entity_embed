@@ -12,6 +12,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\filter\Plugin\FilterBase;
@@ -128,7 +129,24 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     }
   }
 
-  public function buildPlaceholder($entity, $view_mode, $langcode, array &$build) {
+  /**
+   * Build a render cache placeholder that will eventually render an entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to be rendered.
+   * @param string $view_mode
+   *   The view mode that should be used to display the entity.
+   * @param string $langcode
+   *   For which language the entity should be rendered, defaults to the
+   *   current content language.
+   * @param array $build
+   *   The render array from the process() method, can be altered by reference.
+   *
+   * @return string
+   *   The generated render cache placeholder from
+   *   drupal_render_cache_generate_placeholder().
+   */
+  public function buildPlaceholder(EntityInterface $entity, $view_mode, $langcode, array &$build) {
     $callback = get_called_class() . '::postRender';
     $context = array(
       'entity_type' => $entity->getEntityTypeId(),

@@ -103,15 +103,15 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
           if ($node->hasAttribute('data-entity-uuid')) {
             $uuid = $node->getAttribute('data-entity-uuid');
 
-            $entity_type_definition = $this->entity_manager->getDefinition($entity_type);
+            $entity_type_definition = $this->entityManager->getDefinition($entity_type);
             $uuid_key = $entity_type_definition->getKey('uuid');
-            $controller = $this->entity_manager->getStorage($entity_type);
+            $controller = $this->entityManager->getStorage($entity_type);
             $entity = reset($controller->loadByProperties(array($uuid_key => $uuid)));
           }
           elseif ($node->hasAttribute('data-entity-id')) {
             $id = $node->getAttribute('data-entity-id');
 
-            $controller = $this->entity_manager->getStorage($entity_type);
+            $controller = $this->entityManager->getStorage($entity_type);
             $entity = $controller->load($id);
 
             // Add the entity UUID attribute to the parent node.

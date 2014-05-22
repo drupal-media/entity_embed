@@ -231,7 +231,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    * @return string
    *   The rendered entity HTML, or an empty string on failure.
    *
-   * @see \Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::buildPlaceholder().
+   * @see \Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::buildPlaceholder()
    */
   public static function renderEntityFromContext(array $context) {
     try {

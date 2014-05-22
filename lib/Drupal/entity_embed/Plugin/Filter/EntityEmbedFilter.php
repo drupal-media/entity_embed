@@ -15,6 +15,7 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\filter\Plugin\FilterBase;
+use Drupal\entity_reference\RecursiveRenderingException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

@@ -12,8 +12,14 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\Language;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\filter\Plugin\FilterBase;
+use Drupal\entity_reference\RecursiveRenderingException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a filter to display embedded entities based on data attributes.
@@ -25,7 +31,54 @@ use Drupal\filter\Plugin\FilterBase;
  *   type = Drupal\filter\Plugin\FilterInterface::TYPE_TRANSFORM_REVERSIBLE
  * )
  */
-class EntityEmbedFilter extends FilterBase {
+class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The entity manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityManagerInterface
+   */
+  protected $entityManager;
+
+  /**
+   * The Module Handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface.
+   */
+  protected $moduleHandler;
+
+  /**
+   * Constructs a EntityEmbedFilter object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin ID for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   *   The entity manager service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The Module Handler.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->entityManager = $entity_manager;
+    $this->moduleHanlder = $module_handler;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity.manager'),
+      $container->get('module_handler')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -49,11 +102,18 @@ class EntityEmbedFilter extends FilterBase {
           // Load the entity either by UUID (preferred) or ID.
           if ($node->hasAttribute('data-entity-uuid')) {
             $uuid = $node->getAttribute('data-entity-uuid');
-            $entity = entity_load_by_uuid($entity_type, $uuid);
+
+            $entity_type_definition = $this->entity_manager->getDefinition($entity_type);
+            $uuid_key = $entity_type_definition->getKey('uuid');
+            $controller = $this->entity_manager->getStorage($entity_type);
+            $entity = reset($controller->loadByProperties(array($uuid_key => $uuid)));
           }
           elseif ($node->hasAttribute('data-entity-id')) {
             $id = $node->getAttribute('data-entity-id');
-            $entity = entity_load($entity_type, $id);
+
+            $controller = $this->entity_manager->getStorage($entity_type);
+            $entity = $controller->load($id);
+
             // Add the entity UUID attribute to the parent node.
             if ($entity && $uuid = $entity->uuid()) {
               $node->setAttribute('data-entity-uuid', $uuid);
@@ -100,17 +160,33 @@ class EntityEmbedFilter extends FilterBase {
     }
   }
 
-  public function buildPlaceholder($entity, array &$build, array $context = array()) {
+  /**
+   * Build a render cache placeholder that will eventually render an entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to be rendered.
+   * @param array $build
+   *   The render array from the process() method, can be altered by reference.
+   * @param array $context
+   *   (optional) An array of contextual information to be included in the
+   *   generated placeholder.
+   *
+   * @return string
+   *   The generated render cache placeholder from
+   *   drupal_render_cache_generate_placeholder().
+   */
+  public function buildPlaceholder(EntityInterface $entity, array &$build, array $context = array()) {
     $context += array(
       'entity-type' => $entity->getEntityTypeId(),
       'entity-id' => $entity->id(),
       'view-mode' => 'default',
       'langcode' => Language::LANGCODE_DEFAULT,
     );
+
     $context['token'] = drupal_render_cache_generate_token();
 
     // Allow modules to alter the context.
-    \Drupal::moduleHandler()->alter('entity_embed_context', $context, $entity);
+    $this->moduleHandler->alter('entity_embed_context', $context, $entity);
 
     $callback = get_called_class() . '::postRender';
     $build['#post_render_cache'][$callback][$context['token']] = $context;
@@ -129,53 +205,25 @@ class EntityEmbedFilter extends FilterBase {
   public static function postRender(array $element, array $context) {
     $callback = get_called_class() . '::postRender';
     $placeholder = drupal_render_cache_generate_placeholder($callback, $context, $context['token']);
-    // If this text filter is used alongside FilterHtmlCorrector, then we need
-    // to be sure to check for both formats of the render cache placeholder:
-    // Original placeholder:
-    // <drupal:render-cache-placeholder .. />
-    // After FilterHtmlCorrector::process():
-    // <render-cache-placeholder ... ></render-cache-placeholder>
-    $alt_placeholder = Html::normalize($placeholder);
 
-    try {
-      $entity = entity_load($context['entity-type'], $context['entity-id']);
-      if ($entity && $entity->access()) {
-        // Protect ourselves from recursive rendering.
-        static $depth = 0;
-        $depth++;
-        if ($depth > 10) {
-          throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $item->entity->getEntityTypeId(), '@entity_id' => $item->target_id)));
-        }
-
-        // Build the rendered entity.
-        $entity->entity_embed_context = $context;
-        $build = entity_view($entity, $context['view-mode'], $context['langcode']);
-
-        // Hide entity links by default.
-        // @todo Make this configurable via data attribute?
-        if (isset($build['links'])) {
-          $build['links']['#access'] = FALSE;
-        }
-
-        // Allow modules to alter the rendered embedded entity.
-        \Drupal::moduleHandler()->alter('entity_embed', $build, $entity, $context);
-
-        $entity_output = drupal_render($build);
-
-        $depth--;
-
-        $element['#markup'] = str_replace($placeholder, $entity_output, $element['#markup']);
-        $element['#markup'] = str_replace($alt_placeholder, $entity_output, $element['#markup']);
-        return $element;
-      }
-    }
-    catch (\Exception $e) {
-      watchdog_exception('entity_embed', $e);
+    if (strpos($element['#markup'], $placeholder) === FALSE) {
+      // If the text filter is used alongside FilterHtmlCorrector, then we need
+      // to check for an alternate version of the render cache placeholder:
+      // Original placeholder:
+      // <drupal:render-cache-placeholder .. />
+      // After FilterHtmlCorrector::process():
+      // <render-cache-placeholder ... ></render-cache-placeholder>
+      // @todo Remove this when fixed in Drupal core.
+      $placeholder = Html::normalize($placeholder);
     }
 
-    $element['#markup'] = str_replace($placeholder, '', $element['#markup']);
-    $element['#markup'] = str_replace($alt_placeholder, '', $element['#markup']);
+    // Do not bother rendering the entity if the placeholder cannot be found.
+    if (strpos($element['#markup'], $placeholder) === FALSE) {
+      return $element;
+    }
 
+    $entity_output = static::renderEntityFromContext($context);
+    $element['#markup'] = str_replace($placeholder, $entity_output, $element['#markup']);
     return $element;
   }
 
@@ -205,5 +253,56 @@ class EntityEmbedFilter extends FilterBase {
 
     // Finally, append the contents to the DOMNode.
     $node->appendChild($replacement_node);
+  }
+
+  /**
+   * Renders an entity using the post_render_cache context.
+   *
+   * @param array $context
+   *   A post_render_cache context array. The required key/value pairs are
+   *
+   * @return string
+   *   The rendered entity HTML, or an empty string on failure.
+   *
+   * @see \Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::buildPlaceholder().
+   */
+  public static function renderEntityFromContext(array $context) {
+    try {
+      $entity = entity_load($context['entity-type'], $context['entity-id']);
+
+      if ($entity && $entity->access()) {
+        // Protect ourselves from recursive rendering.
+        static $depth = 0;
+        $depth++;
+        if ($depth > 20) {
+          throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $item->entity->getEntityTypeId(), '@entity_id' => $item->target_id)));
+        }
+
+        // Build the rendered entity.
+        $entity->entity_embed_context = $context;
+        $build = entity_view($entity, $context['view-mode'], $context['langcode']);
+
+        // Hide entity links by default.
+        // @todo Make this configurable via data attribute?
+        if (isset($build['links'])) {
+          $build['links']['#access'] = FALSE;
+        }
+
+        // Allow modules to alter the rendered embedded entity.
+        \Drupal::moduleHandler()->alter('entity_embed', $build, $entity, $context);
+
+        $entity_output = drupal_render($build);
+
+        $depth--;
+
+        return $entity_output;
+      }
+    }
+    catch (\Exception $e) {
+      watchdog_exception('entity_embed', $e);
+    }
+
+    // In case of failures return an empty string.
+    return '';
   }
 }

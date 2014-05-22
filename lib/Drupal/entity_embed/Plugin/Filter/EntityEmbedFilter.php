@@ -12,7 +12,10 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\filter\Plugin\FilterBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a filter to display embedded entities based on data attributes.
@@ -24,7 +27,31 @@ use Drupal\filter\Plugin\FilterBase;
  *   type = Drupal\filter\Plugin\FilterInterface::TYPE_TRANSFORM_REVERSIBLE
  * )
  */
-class EntityEmbedFilter extends FilterBase {
+class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * Constructs a EntityEmbedFilter object.
+   *
+   * Used to store the entity manager controller obtained from DI container.
+   * This controller is used to load/render entities.
+   *
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   *   The entity manager.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->entity_manager = $entity_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static($configuration, $plugin_id, $plugin_definition,
+      $container->get('entity.manager')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -48,11 +75,18 @@ class EntityEmbedFilter extends FilterBase {
           // Load the entity either by UUID (preferred) or ID.
           if ($node->hasAttribute('data-entity-uuid')) {
             $uuid = $node->getAttribute('data-entity-uuid');
-            $entity = entity_load_by_uuid($entity_type, $uuid);
+
+            $entity_type_definition = $this->entity_manager->getDefinition($entity_type);
+            $uuid_key = $entity_type_definition->getKey('uuid');
+            $controller = $this->entity_manager->getStorage($entity_type);
+            $entity = reset($controller->loadByProperties(array($uuid_key => $uuid)));
           }
           elseif ($node->hasAttribute('data-entity-id')) {
             $id = $node->getAttribute('data-entity-id');
-            $entity = entity_load($entity_type, $id);
+
+            $controller = $this->entity_manager->getStorage($entity_type);
+            $entity = $controller->load($id);
+
             // Add the entity UUID attribute to the parent node.
             if ($entity && $uuid = $entity->uuid()) {
               $node->setAttribute('data-entity-uuid', $uuid);
@@ -127,7 +161,8 @@ class EntityEmbedFilter extends FilterBase {
     $alt_placeholder = Html::normalize($placeholder);
 
     try {
-      $entity = entity_load($context['entity_type'], $context['entity_id']);
+      $controller = $this->entity_manager->getStorage($context['entity_type']);
+      $entity = $controller->load($context['entity_id']);
       if ($entity && $entity->access()) {
         // Protect ourselves from recursive rendering.
         static $depth = 0;
@@ -137,7 +172,9 @@ class EntityEmbedFilter extends FilterBase {
         }
 
         // Build the rendered entity.
-        $build = entity_view($entity, $context['view_mode'], $context['langcode']);
+        $entity_type_id = $entity->getEntityTypeId();
+        $render_controller = $this->entity_manager->getViewBuilder($entity_type_id);
+        $build = $render_controller->view($entity, $context['view_mode'], $context['langcode']);
 
         // Hide entity links by default.
         // @todo Make this configurable via data attribute?

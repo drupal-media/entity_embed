@@ -84,7 +84,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    * {@inheritdoc}
    */
   public function process($text, $langcode) {
-    if (stristr($text, 'data-entity-type') !== FALSE && stristr($text, 'data-view-mode') !== FALSE) {
+    if (strpos($text, 'data-entity-type') !== FALSE && strpos($text, 'data-view-mode') !== FALSE) {
       $dom = Html::load($text);
       $xpath = new \DOMXPath($dom);
 
@@ -228,7 +228,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     try {
       $render_callback = $context['render-callback'];
       $entity = entity_load($context['entity-type'], $context['entity-id']);
-      if ($entity && $entity->access()) {
+      if ($entity && $entity->access('view')) {
         $entity_output = call_user_func_array($render_callback, array($entity, $context));
       }
     }
@@ -243,12 +243,12 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   /**
    * Replace the contents of a DOMNode.
    *
-   * @param $node
+   * @param \DOMNode $node
    *   A DOMNode or DOMElement object.
    * @param string $content
    *   The text or HTML that will replace the contents of $node.
    */
-  protected function setDomNodeContent($node, $content) {
+  protected function setDomNodeContent(\DOMNode $node, $content) {
     // Load the contents into a new DOMDocument and retrieve the element.
     $replacement_node = Html::load($content)->getElementsByTagName('body')
       ->item(0)
@@ -279,7 +279,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    * @return string
    *   The rendered entity HTML, or an empty string on failure.
    *
-   * @see \Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::buildPlaceholder().
+   * @see \Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter::buildPlaceholder()
    */
   public static function renderEntity(EntityInterface $entity, array $context) {
     try {

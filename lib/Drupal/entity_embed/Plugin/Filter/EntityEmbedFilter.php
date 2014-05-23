@@ -197,7 +197,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   /**
    * Replace the contents of a DOMNode.
    *
-   * @param $node
+   * @param \DOMNode|\DOMElement $node
    *   A DOMNode or DOMElement object.
    * @param string $content
    *   The text or HTML that will replace the contents of $node.

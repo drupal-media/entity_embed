@@ -237,7 +237,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     try {
       $entity = entity_load($context['entity_type'], $context['entity_id']);
 
-      if ($entity && $entity->access()) {
+      if ($entity && $entity->access('view')) {
         // Protect ourselves from recursive rendering.
         static $depth = 0;
         $depth++;

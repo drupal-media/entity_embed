@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Plugin\EntityEmbedPlugin
+ * Contains \Drupal\entity_embed\Plugin\CKEditorPlugin\EntityEmbedPlugin
  */
 
-namespace Drupal\entity_embed\Plugin\EntityEmbedPlugin;
+namespace Drupal\entity_embed\Plugin\CKEditorPlugin;
 
 use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\editor\Entity\Editor;
@@ -27,8 +27,8 @@ class EntityEmbedPlugin extends CKEditorPluginBase {
   public function getButtons() {
     return array(
       'EntityEmbed' => array(
-        'label' => t('Entity'),
-        'image' => drupal_get_path('module', 'entity_embed')  . '/js/plugins/entityembed/plugin.js',
+        'label' => t('Entity Embed'),
+        'image' => drupal_get_path('module', 'entity_embed') . '/js/plugins/entityembed/entity.png',
       ),
     );
   }
@@ -37,7 +37,7 @@ class EntityEmbedPlugin extends CKEditorPluginBase {
    * {@inheritdoc}
    */
   public function getFile() {
-    return  drupal_get_path('module', 'entity_embed')  . '/js/plugins/entityembed/plugin.js';
+    return drupal_get_path('module', 'entity_embed') . '/js/plugins/entityembed/plugin.js';
   }
 
   /**

@@ -17,6 +17,7 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Drupal\entity_reference\RecursiveRenderingException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -84,14 +85,11 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    * {@inheritdoc}
    */
   public function process($text, $langcode) {
+    $result = new FilterProcessResult($text);
+
     if (strpos($text, 'data-entity-type') !== FALSE && strpos($text, 'data-view-mode') !== FALSE) {
       $dom = Html::load($text);
       $xpath = new \DOMXPath($dom);
-
-      $build = array(
-        '#markup' => $text,
-        '#post_render_cache' => array(),
-      );
 
       foreach ($xpath->query('//*[@data-entity-type and @data-view-mode]') as $node) {
         $entity_type = $node->getAttribute('data-entity-type');
@@ -128,7 +126,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
               $context[$key] = $attribute->nodeValue;
             }
 
-            $placeholder = $this->buildPlaceholder($entity, $build, $context);
+            $placeholder = $this->buildPlaceholder($entity, $result, $context);
             $this->setDomNodeContent($node, $placeholder);
           }
         }
@@ -137,11 +135,10 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
         }
       }
 
-      $build['#markup'] = Html::serialize($dom);
-      return $build;
+      $result->setProcessedText(Html::serialize($dom));
     }
 
-    return $text;
+    return $result;
   }
 
   /**
@@ -166,8 +163,9 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to be rendered.
-   * @param array $build
-   *   The render array from the process() method, can be altered by reference.
+   * @param FilterProcessResult $result
+   *   The filter process result object that will have post_render_cache and
+   *   cache tags added.
    * @param array $context
    *   (optional) An array of contextual information to be included in the
    *   generated placeholder.
@@ -176,7 +174,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    *   The generated render cache placeholder from
    *   drupal_render_cache_generate_placeholder().
    */
-  public function buildPlaceholder(EntityInterface $entity, array &$build, array $context = array()) {
+  public function buildPlaceholder(EntityInterface $entity, FilterProcessResult $result, array $context = array()) {
     $callback = get_called_class() . '::postRender';
     $context += array(
       'entity-type' => $entity->getEntityTypeId(),
@@ -191,14 +189,11 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     // Allow modules to alter the context.
     $this->moduleHandler->alter('entity_embed_context', $context, $entity);
 
-    $build['#post_render_cache'][$callback][$context['token']] = $context;
+    $result->addPostRenderCacheCallback($callback, $context);
 
     // Add cache tags.
     if ($tags = $entity->getCacheTag()) {
-      if (!isset($build['#cache']['tags'])) {
-        $build['#cache']['tags'] = array();
-      }
-      $build['#cache']['tags'] = NestedArray::mergeDeepArray($build['#cache']['tags'], $tags);
+      $result->addCacheTags($tags);
     }
 
     return drupal_render_cache_generate_placeholder($callback, $context, $context['token']);
@@ -207,17 +202,6 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   public static function postRender(array $element, array $context) {
     $callback = get_called_class() . '::postRender';
     $placeholder = drupal_render_cache_generate_placeholder($callback, $context, $context['token']);
-
-    if (strpos($element['#markup'], $placeholder) === FALSE) {
-      // If the text filter is used alongside FilterHtmlCorrector, then we need
-      // to check for an alternate version of the render cache placeholder:
-      // Original placeholder:
-      // <drupal:render-cache-placeholder .. />
-      // After FilterHtmlCorrector::process():
-      // <render-cache-placeholder ... ></render-cache-placeholder>
-      // @todo Remove this when fixed in Drupal core.
-      $placeholder = Html::normalize($placeholder);
-    }
 
     // Do not bother rendering the entity if the placeholder cannot be found.
     if (strpos($element['#markup'], $placeholder) === FALSE) {

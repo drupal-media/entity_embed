@@ -215,6 +215,23 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     return drupal_render_cache_generate_placeholder($callback, array(), $context['token']);
   }
 
+  /**
+   * #post_render_cache callback; renders an embedded entity.
+   *
+   * Replaces the #post_render_cache placeholder with an embedded entity.
+   *
+   * @param array $element
+   *   The renderable array that contains the to be replaced placeholder.
+   * @param array $context
+   *   An array with the following keys:
+   *   - entity-type: The entity type.
+   *   - entity-id: The entity ID.
+   *   - token: The placeholder token generated in buildPlaceholder().
+   *
+   * @return array
+   *   A renderable array representing the placeholder replaced with the
+   *   rendered entity.
+   */
   public static function postRender(array $element, array $context) {
     $callback = get_called_class() . '::postRender';
     $placeholder = drupal_render_cache_generate_placeholder($callback, array(), $context['token']);

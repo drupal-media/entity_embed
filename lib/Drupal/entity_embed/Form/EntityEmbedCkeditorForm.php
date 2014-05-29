@@ -74,6 +74,12 @@ class EntityEmbedCkeditorForm extends FormBase {
         'right' => 'Right',
       ),
     );
+    $form['actions'] =array('#type' => 'actions');
+    $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#name' => 'embed_entity',
+      '#value' => 'Save',
+    );
 
     return $form;
   }

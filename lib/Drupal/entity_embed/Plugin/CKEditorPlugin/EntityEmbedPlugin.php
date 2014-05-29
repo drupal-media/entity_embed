@@ -43,6 +43,15 @@ class EntityEmbedPlugin extends CKEditorPluginBase {
   /**
    * {@inheritdoc}
    */
+  public function getLibraries(Editor $editor) {
+    return array(
+      'core/drupal.ajax',
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getConfig(Editor $editor) {
     return array(
       'drupalEntity_dialogTitleAdd' => t('Embed an entity'),

@@ -7,7 +7,11 @@
 
 namespace Drupal\entity_embed\Form;
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\CloseModalDialogCommand;
+use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
+use Drupal\entity_embed\Ajax\EntityEmbedDialogSave;
 
 /**
  * Provides a form to embed entities by specifying data attributes.
@@ -75,10 +79,15 @@ class EntityEmbedCkeditorForm extends FormBase {
       ),
     );
     $form['actions'] =array('#type' => 'actions');
-    $form['actions']['submit'] = array(
+    $form['actions']['save_modal'] = array(
       '#type' => 'submit',
-      '#name' => 'embed_entity',
       '#value' => 'Save',
+      // No regular submit-handler. This form only works via JavaScript.
+      '#submit' => array(),
+      '#ajax' => array(
+        'callback' => array($this, 'submitForm'),
+        'event' => 'click',
+      ),
     );
 
     return $form;
@@ -87,13 +96,13 @@ class EntityEmbedCkeditorForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, array &$form_state) {
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function submitForm(array &$form, array &$form_state) {
+    $response = new AjaxResponse();
+
+    $response->addCommand(new EntityEmbedDialogSave($form_state['values']));
+    $response->addCommand(new CloseModalDialogCommand());
+
+    return $response;
   }
 
 }

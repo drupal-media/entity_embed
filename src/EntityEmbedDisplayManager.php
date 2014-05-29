@@ -43,19 +43,21 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
   }
 
   /**
-   * Gets the plugin definitions for this entity type.
+   * Gets the valid plugin definitions that can be used for this entity.
    *
-   * @param string $entity_type
-   *   The entity type name.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity object.
    *
    * @return array
-   *   An array of plugin definitions for this entity type.
+   *   An array of plugin definitions that can be used for this entity.
+   *
+   * @see \Drupal\entity_embed\EntityEmbedDisplayBase::access()
    */
   public function getDefinitionsByEntity(EntityInterface $entity) {
     return array_filter($this->getDefinitions(), function ($definition) use ($entity) {
-      $instance = $this->createInstance($definition['id']);
-      $instance->setEntity($entity);
-      return $instance->access();
+      $display = $this->createInstance($definition['id']);
+      $display->setEntity($entity);
+      return $display->access();
     });
   }
 

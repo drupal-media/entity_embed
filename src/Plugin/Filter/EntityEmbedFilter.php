@@ -252,12 +252,13 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
       if ($entity = entity_load($context['entity-type'], $context['entity-id'])) {
         $manager = \Drupal::service('plugin.manager.entity_embed.display');
-        $instance = $manager->createInstance($context['entity-embed-display'], $context['entity-embed-settings']);
-        $instance->setEntity($entity);
-        if ($instance->access()) {
-          $build = $instance->build();
+        $display = $manager->createInstance($context['entity-embed-display'], $context['entity-embed-settings']);
+        $display->setEntity($entity);
+        $display->setContext($context);
+        if ($display->access()) {
+          $build = $display->build();
           // Allow modules to alter the rendered embedded entity.
-          \Drupal::moduleHandler()->alter('entity_embed', $build, $instance);
+          \Drupal::moduleHandler()->alter('entity_embed', $build, $display);
           $entity_output = drupal_render($build);
         }
       }

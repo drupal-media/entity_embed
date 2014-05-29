@@ -10,6 +10,11 @@
  * @{
  */
 
+// @todo Document
+function hook_entity_embed_display_info_alter(&$info) {
+
+}
+
 /**
  * Alter the post_render_cache placeholder context for an embedded entity.
  *

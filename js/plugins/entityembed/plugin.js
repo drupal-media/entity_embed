@@ -35,7 +35,7 @@
 
       // Register the toolbar button.
       if (editor.ui.addButton) {
-        editor.ui.addButton('Entity Embed', {
+        editor.ui.addButton('EntityEmbed', {
           label: Drupal.t('Entity Embed'),
           command: 'entityembed_dialog',
           icon: this.path + '/entity.png',

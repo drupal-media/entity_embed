@@ -26,6 +26,7 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
 
   public function setEntity(EntityInterface $entity) {
     $this->entity = $entity;
+    return $this;
   }
 
   public function getEntity() {
@@ -34,6 +35,7 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
 
   public function setContext(array $context) {
     $this->context = $context;
+    return $this;
   }
 
   public function getContext() {
@@ -84,5 +86,6 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
       $this->defaultConfiguration(),
       $configuration
     );
+    return $this;
   }
 }

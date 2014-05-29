@@ -8,6 +8,7 @@
 namespace Drupal\entity_embed;
 
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Plugin\DefaultPluginManager;
@@ -50,9 +51,11 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
    * @return array
    *   An array of plugin definitions for this entity type.
    */
-  public function getDefinitionsByType($type) {
-    return array_filter($this->getDefinitions(), function ($definition) use ($type) {
-      return (bool) array_intersect($definition['types'], array('entity', $type));
+  public function getDefinitionsByEntity(EntityInterface $entity) {
+    return array_filter($this->getDefinitions(), function ($definition) use ($entity) {
+      $instance = $this->createInstance($definition['id']);
+      $instance->setEntity($entity);
+      return $instance->access();
     });
   }
 

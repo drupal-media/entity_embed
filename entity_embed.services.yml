@@ -1,0 +1,4 @@
+services:
+  plugin.manager.entity_embed.display:
+    class: Drupal\entity_embed\EntityEmbedDisplayManager
+    arguments: ['@container.namespaces', '@cache.discovery', '@language_manager', '@module_handler', '@string_translation']

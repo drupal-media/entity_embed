@@ -17,6 +17,7 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\entity_reference\RecursiveRenderingException;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -190,10 +191,11 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    *   drupal_render_cache_generate_placeholder().
    */
   public function buildPlaceholder(EntityInterface $entity, FilterProcessResult $result, array $context = array()) {
+    $callback = get_called_class() . '::postRender';
     $context += array(
       'entity-type' => $entity->getEntityTypeId(),
       'entity-id' => $entity->id(),
-      'entity-embed-display' => 'Drupal\entity_embed\EntityEmbedDefaultDisplay',
+      'entity-embed-display' => 'default',
       'entity-embed-settings' => array(),
       'langcode' => Language::LANGCODE_DEFAULT,
     );
@@ -201,9 +203,8 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     $context['token'] = drupal_render_cache_generate_token();
 
     // Allow modules to alter the context.
-    $this->moduleHandler->alter('entity_embed_context', $context, $entity);
+    $this->moduleHandler->alter('entity_embed_context', $context, $callback, $entity);
 
-    $callback = $context['entity-embed-display'] . '::postRender';
     $result->addPostRenderCacheCallback($callback, $context);
 
     // Add cache tags.
@@ -240,5 +241,46 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
     // Finally, append the contents to the DOMNode.
     $node->appendChild($replacement_node);
+  }
+
+  public static function postRender(array $element, array $context) {
+    $callback = get_called_class() . '::postRender';
+    $placeholder = drupal_render_cache_generate_placeholder($callback, array(), $context['token']);
+
+    // Do not bother rendering the entity if the placeholder cannot be found.
+    if (strpos($element['#markup'], $placeholder) === FALSE) {
+      return $element;
+    }
+
+    $entity_output = '';
+    try {
+      // Protect ourselves from recursive rendering.
+      static $depth = 0;
+      $depth++;
+      if ($depth > 20) {
+        throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $this->entity->getEntityTypeId(), '@entity_id' => $this->entity->id())));
+      }
+
+      if ($entity = entity_load($context['entity-type'], $context['entity-id'])) {
+        $manager = \Drupal::service('plugin.manager.entity_embed.display');
+        $instance = $manager->createInstance($context['entity-embed-display'], $context['entity-embed-settings']);
+        debug($instance);
+        $instance->setEntity($entity);
+        if ($instance->access()) {
+          $build = $instance->build();
+          // Allow modules to alter the rendered embedded entity.
+          \Drupal::moduleHandler()->alter('entity_embed', $build, $entity, $context);
+          $entity_output = drupal_render($build);
+        }
+      }
+
+      $depth--;
+    }
+    catch (\Exception $e) {
+      watchdog_exception('entity_embed', $e);
+    }
+
+    $element['#markup'] = str_replace($placeholder, $entity_output, $element['#markup']);
+    return $element;
   }
 }

@@ -78,6 +78,11 @@ class EntityEmbedCKEditorForm extends FormBase {
         'right' => 'Right',
       ),
     );
+    $form['show_caption'] = array(
+      '#type' => 'checkbox',
+      '#name' => 'show_caption',
+      '#title' => 'Show Caption',
+    );
     $form['actions'] =array('#type' => 'actions');
     $form['actions']['save_modal'] = array(
       '#type' => 'submit',

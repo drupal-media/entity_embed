@@ -29,7 +29,7 @@
         var saveCallback = function(values) {
         };
         // Open the dialog for the entity embed form.
-        Drupal.ckeditor.openDialog(editor, Drupal.url('admin/entity-embed/embed'), existingValues, saveCallback, dialogSettings);
+        Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/embed/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
       }
       });
 

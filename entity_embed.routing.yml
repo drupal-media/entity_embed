@@ -1,7 +1,7 @@
 entity_embed.ckeditor_form:
-  path: '/admin/entity-embed/embed'
+  path: '/entity-embed/dialog/embed/{filter_format}'
   defaults:
     _form: '\Drupal\entity_embed\Form\EntityEmbedCKEditorForm'
     _title: 'Embed an entity'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _entity_access: 'filter_format.use'

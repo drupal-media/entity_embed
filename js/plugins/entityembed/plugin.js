@@ -69,6 +69,16 @@
       // Set view mode.
       entityDiv.setAttribute('data-view-mode', response.values.view_mode);
 
+      // Set show caption attribute, only if its set in the form.
+      if(response.values.show_caption == 1) {
+        entityDiv.setAttribute('data-show-caption', 'data-show-caption');
+      }
+
+      // Set display links attribute, only if its set in the form.
+      if(response.values.display_links == 1) {
+        entityDiv.setAttribute('data-display-links', 'data-display-links');
+      }
+
       // Set a placeholder.
       entityDiv.innerHTML = response.values.entity_type + ": " + response.values.entity;
 

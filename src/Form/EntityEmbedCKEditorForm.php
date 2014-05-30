@@ -75,7 +75,7 @@ class EntityEmbedCKEditorForm extends FormBase {
       '#name' => 'show_caption',
       '#title' => 'Show Caption',
     );
-    $form['actions'] =array('#type' => 'actions');
+    $form['actions'] = array('#type' => 'actions');
     $form['actions']['save_modal'] = array(
       '#type' => 'submit',
       '#value' => 'Save',
@@ -100,7 +100,7 @@ class EntityEmbedCKEditorForm extends FormBase {
     // whether or not it is a valid UUID.
     $values = $form_state['values'];
     $entity = $values['entity'];
-    if(Uuid::isValid($entity)) {
+    if (Uuid::isValid($entity)) {
       $values['embed_method'] = 'uuid';
     }
     else {

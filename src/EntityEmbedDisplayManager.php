@@ -54,11 +54,13 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
    * @see \Drupal\entity_embed\EntityEmbedDisplayBase::access()
    */
   public function getDefinitionsByEntity(EntityInterface $entity) {
-    return array_filter($this->getDefinitions(), function ($definition) use ($entity) {
-      $display = $this->createInstance($definition['id']);
+    $definitions = $this->getDefinitions();
+    $valid_ids = array_filter(array_keys($definitions), function ($id) use ($entity) {
+      $display = $this->createInstance($id);
       $display->setEntity($entity);
       return $display->access();
     });
+    return array_intersect_key($definitions, array_flip($valid_ids));
   }
 
 }

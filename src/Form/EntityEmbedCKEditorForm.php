@@ -87,6 +87,14 @@ class EntityEmbedCKEditorForm extends FormBase {
       ),
     );
 
+    // Set editor instance as a hidden field.
+    $editor_instance = $form_state['input']['editor_object']['editor-id'];
+    $form['editor_instance'] = array(
+      '#type' => 'hidden',
+      '#name' => 'editor_instance',
+      '#value' => $editor_instance,
+    );
+
     return $form;
   }
 

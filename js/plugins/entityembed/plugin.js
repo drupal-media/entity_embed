@@ -25,12 +25,13 @@
             minWidth: 800
           };
 
-        var existingValues = {};
-        var saveCallback = function(values) {
-        };
-        // Open the dialog for the entity embed form.
-        Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/embed/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
-      }
+          var existingValues = {};
+          existingValues['editor-id'] = editor.name;
+          var saveCallback = function(values) {
+          };
+          // Open the dialog for the entity embed form.
+          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/embed/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
+        }
       });
 
       // Register the toolbar button.
@@ -49,7 +50,8 @@
    * Function to save the data attributes specified in the modal.
    */
   Drupal.AjaxCommands.prototype.entityembedDialogSave = function (ajax, response, status) {
-    var editor = CKEDITOR.instances['edit-body-0-value'];
+    var editor_instance = response.values.editor_instance;
+    var editor = CKEDITOR.instances[editor_instance];
     if (editor.mode == 'wysiwyg') {
       // Prepare the data attributes from supplied values.
       var entityDiv = document.createElement('div');

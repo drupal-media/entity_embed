@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Form\EntityEmbedCkeditorForm
+ * Contains \Drupal\entity_embed\Form\EntityEmbedCKEditorForm
  */
 
 namespace Drupal\entity_embed\Form;
@@ -16,7 +16,7 @@ use Drupal\entity_embed\Ajax\EntityEmbedDialogSave;
 /**
  * Provides a form to embed entities by specifying data attributes.
  */
-class EntityEmbedCkeditorForm extends FormBase {
+class EntityEmbedCKEditorForm extends FormBase {
 
   /**
    * {@inheritdoc}

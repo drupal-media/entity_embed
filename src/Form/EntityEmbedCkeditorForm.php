@@ -22,7 +22,7 @@ class EntityEmbedCkeditorForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'entity_embed_ckedtor_form';
+    return 'entity_embed_ckeditor_form';
   }
 
   /**

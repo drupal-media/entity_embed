@@ -40,6 +40,7 @@ class EntityEmbedCKEditorForm extends FormBase {
       '#type' => 'textfield',
       '#name' => 'entity',
       '#title' => 'Entity',
+      '#required' => TRUE,
       '#placeholder' => 'Enter ID/UUID of the entity',
     );
     $form['view_mode'] = array(

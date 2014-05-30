@@ -8,7 +8,7 @@
 namespace Drupal\entity_embed;
 
 use Drupal\entity_embed\EntityEmbedDisplayBase;
-use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\node\Entity\Node;
 
 abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBase {
@@ -20,18 +20,21 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   /**
    * Get the FieldDefinition object required to render this field's formatter.
    *
-   * @return \Drupal\Core\Field\FieldDefinition
+   * @return \Drupal\Core\Field\FieldDefinitionInterface
    *   The field definition.
    *
    * @see \Drupal\entity_embed\FieldFormatterEntityEmbedDisplayBase::build()
    */
   abstract public function getFieldDefinition();
 
+  public function getFieldValue(FieldDefinitionInterface $definition) {
+    return $this->entity->id();
+  }
+
   /**
    * {@inheritdoc}
    */
   public function build() {
-
     // Load the node, you can also create a temporary object or have your own
     // dummy object that implements EntityInterface. (Might need ContentEntityInterface, not sure).
     $node = Node::create(array('type' => '_entity_embed'));
@@ -39,14 +42,21 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     // Create the field definition, some might need more settings, it currently
     // doesn't load in the field type defaults. https://drupal.org/node/2116341
     // Field name is only set to avoid broken CSS classes.
-    $field = $this->getFieldDefinition();
-    $field->setName('_entity_embed');
+    $definition = $this->getFieldDefinition();
+    // Ensure that the field name is unique each time this is run.
+    $definition->setName('_entity_embed_' . $this->getContextValue('token'));
 
     /* @var \Drupal\Core\Field\FieldItemListInterface $items $items */
     // Create a field item list object, 1 is the value, array('target_id' => 1)
     // would work too, or multiple values. 1 is passed down from the list to the
     // field item, which knows that an integer is the ID.
-    $items = \Drupal::typedDataManager()->create($field, $value, $field->getName(), $node);
+    $items = \Drupal::typedDataManager()->create(
+      $definition,
+      $this->getFieldValue($field),
+      $definition->getName(),
+      $node
+    );
+
     if ($langcode = $this->getContextValue('langcode')) {
       $items->setLangcode($langcode);
     }
@@ -61,7 +71,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     // Create the formatter plugin. Will use the default formatter for that field
     // type if none is passed.
     $formatter = \Drupal::service('plugin.manager.field.formatter')->getInstance(array(
-      'field_definition' => $field,
+      'field_definition' => $definition,
       'view_mode' => '_entity_embed',
       'configuration' => $display,
     ));

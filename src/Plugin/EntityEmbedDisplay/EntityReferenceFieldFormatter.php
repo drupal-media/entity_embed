@@ -28,8 +28,8 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
    * {@inheritdoc}
    */
   public function getFieldDefinition() {
-    $field = FieldDefinition::create('entity_reference')
-      ->setSetting('target_type', $this->getContextValue('entity-type'));
+    $field = FieldDefinition::create('entity_reference');
+    $field->setSetting('target_type', $this->getContextValue('entity-type'));
     return $field;
   }
 

@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\Form;
 
+use Drupal\Component\Uuid\Uuid;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
@@ -36,15 +37,6 @@ class EntityEmbedCKEditorForm extends FormBase {
       '#options' => array(
         'node' => 'Node',
         'others' => 'Others',
-      ),
-    );
-    $form['embed_method'] = array(
-      '#type' => 'select',
-      '#name' => 'embed_method',
-      '#title' => 'Embed using',
-      '#options' => array(
-        'uuid' => 'UUID',
-        'id' => 'ID',
       ),
     );
     $form['entity'] = array(
@@ -104,7 +96,18 @@ class EntityEmbedCKEditorForm extends FormBase {
   public function submitForm(array &$form, array &$form_state) {
     $response = new AjaxResponse();
 
-    $response->addCommand(new EntityEmbedDialogSave($form_state['values']));
+    // Detect if a valid UUID was specified. Set embed method based based on
+    // whether or not it is a valid UUID.
+    $values = $form_state['values'];
+    $entity = $values['entity'];
+    if(Uuid::isValid($entity)) {
+      $values['embed_method'] = 'uuid';
+    }
+    else {
+      $values['embed_method'] = 'id';
+    }
+
+    $response->addCommand(new EntityEmbedDialogSave($values));
     $response->addCommand(new CloseModalDialogCommand());
 
     return $response;

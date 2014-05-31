@@ -10,7 +10,6 @@ namespace Drupal\entity_embed;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\entity_embed\EntityEmbedDisplayInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**

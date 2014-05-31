@@ -7,7 +7,7 @@
 
 namespace Drupal\entity_embed;
 
-use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldDefinition;
 use Drupal\node\Entity\Node;
 
 abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBase {
@@ -22,11 +22,9 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    */
   abstract public function getFieldDefinition();
 
-  public function getFieldValue(FieldDefinitionInterface $definition) {
-    return $this->entity->id();
-  }
+  abstract public function getFieldValue(FieldDefinition $definition);
 
-  public function getFormatter(FieldDefinitionInterface $definition = NULL) {
+  public function getFormatter(FieldDefinition $definition = NULL) {
     if (!isset($definition)) {
       $definition = $this->getFieldDefinition();
     }

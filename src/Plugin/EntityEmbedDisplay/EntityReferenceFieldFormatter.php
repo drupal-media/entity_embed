@@ -33,4 +33,11 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
     return $field;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getFieldValue(FieldDefinition $definition) {
+    return array('target_id' => $this->entity->id());
+  }
+
 }

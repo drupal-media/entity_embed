@@ -7,7 +7,6 @@
 
 namespace Drupal\entity_embed\Plugin\EntityEmbedDisplay;
 
-use Drupal\entity_embed\FieldFormatterEntityEmbedDisplayBase;
 use Drupal\Core\Field\FieldDefinition;
 use Drupal\Core\Session\AccountInterface;
 
@@ -23,7 +22,7 @@ use Drupal\Core\Session\AccountInterface;
  *   provider = "file"
  * )
  */
-class FileFieldFormatter extends FieldFormatterEntityEmbedDisplayBase {
+class FileFieldFormatter extends EntityReferenceFieldFormatter {
 
   /**
    * {@inheritdoc}
@@ -31,6 +30,15 @@ class FileFieldFormatter extends FieldFormatterEntityEmbedDisplayBase {
   public function getFieldDefinition() {
     $field = FieldDefinition::create('file');
     return $field;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFieldValue(FieldDefinition $definition) {
+    $value = parent::getFieldValue($definition);
+    $value += array_intersect_key($this->getContext(), array('description' => ''));
+    return $value;
   }
 
   /**
@@ -67,6 +75,35 @@ class FileFieldFormatter extends FieldFormatterEntityEmbedDisplayBase {
     }
 
     return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function defaultConfiguration() {
+    $defaults = parent::defaultConfiguration();
+    // Add support to store file description.
+    $defaults['description'] = '';
+    return $defaults;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, array &$form_state) {
+    $form = parent::buildConfigurationForm($form, $form_state);
+
+    // Description is stored in the configuration since it doesn't map to an
+    // actual HTML attribute.
+    // @todo Ensure these fields work properly and map to the attributes
+    $form['description'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Description'),
+      '#default_value' => $this->getConfigurationValue('description'),
+      '#description' => $this->t('The description may be used as the label of the link to the file.'),
+    );
+
+    return $form;
   }
 
 }

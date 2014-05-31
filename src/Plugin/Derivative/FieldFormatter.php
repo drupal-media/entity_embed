@@ -14,9 +14,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FormatterPluginManager;
 
 /**
- * Provides block plugin definitions for custom menus.
+ * Provides entity embed display plugin definitions for field formatters.
  *
- * @see \Drupal\system\Plugin\Block\SystemMenuBlock
+ * @see \Drupal\entity_embed\FieldFormatterEntityEmbedDisplayBase
  */
 class FieldFormatter extends DerivativeBase implements ContainerDerivativeInterface {
 
@@ -28,10 +28,10 @@ class FieldFormatter extends DerivativeBase implements ContainerDerivativeInterf
   protected $formatterManager;
 
   /**
-   * Constructs new SystemMenuBlock.
+   * Constructs new FieldFormatterEntityEmbedDisplayBase.
    *
-   * @param \Drupal\Core\Field\FormatterPluginManager $menu_storage
-   *   The menu storage.
+   * @param \Drupal\Core\Field\FormatterPluginManager $formatterManager
+   *   The field formatter plugin manager.
    */
   public function __construct(FormatterPluginManager $formatterManager) {
     $this->formatterManager = $formatterManager;
@@ -50,6 +50,7 @@ class FieldFormatter extends DerivativeBase implements ContainerDerivativeInterf
    * {@inheritdoc}
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
+    // The field type must be defined in the annotation of the display plugin.
     if (!isset($base_plugin_definition['field_type'])) {
       throw new \LogicException("Undefined field_type definition in plugin {$base_plugin_defintion['id']}.");
     }

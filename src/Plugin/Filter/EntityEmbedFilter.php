@@ -138,7 +138,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
             // Support the deprecated view-mode data attribute.
             if (isset($context['view-mode']) && !isset($context['entity-embed-display']) && !isset($context['entity-embed-settings'])) {
-              $context['entity-embed-settings']['view-mode'] = $context['view-mode'];
+              $context['entity-embed-settings']['view_mode'] = $context['view-mode'];
               unset($context['view-mode']);
             }
 

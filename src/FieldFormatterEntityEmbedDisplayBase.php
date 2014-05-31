@@ -13,10 +13,6 @@ use Drupal\node\Entity\Node;
 
 abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBase {
 
-  public function defaultConfiguration() {
-    return array();
-  }
-
   /**
    * Get the FieldDefinition object required to render this field's formatter.
    *
@@ -92,6 +88,14 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     $build = $formatter->viewElements($items);
     show($build[0]);
     return $build[0];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function defaultConfiguration() {
+    $definition = \Drupal::service('plugin.manager.field.formatter')->getDefinition($this->getDerivativeId());
+    return $definition['class']::defaultSettings();
   }
 
   /**

@@ -199,11 +199,11 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       'entity-embed-settings' => array(),
       'langcode' => Language::LANGCODE_DEFAULT,
     );
-    // Some context properties should not be set ahead of time.
-    $context['token'] = drupal_render_cache_generate_token();
 
     // Allow modules to alter the context.
     $this->moduleHandler->alter('entity_embed_context', $context, $callback, $entity);
+
+    $placeholder = drupal_render_cache_generate_placeholder($callback, $context);
 
     $result->addPostRenderCacheCallback($callback, $context);
 
@@ -212,7 +212,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       $result->addCacheTags($tags);
     }
 
-    return drupal_render_cache_generate_placeholder($callback, array(), $context['token']);
+    return $placeholder;
   }
 
   /**
@@ -234,7 +234,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    */
   public static function postRender(array $element, array $context) {
     $callback = get_called_class() . '::postRender';
-    $placeholder = drupal_render_cache_generate_placeholder($callback, array(), $context['token']);
+    $placeholder = drupal_render_cache_generate_placeholder($callback, $context);
 
     // Do not bother rendering the entity if the placeholder cannot be found.
     if (strpos($element['#markup'], $placeholder) === FALSE) {

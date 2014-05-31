@@ -131,4 +131,27 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
     );
     return $this;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, array &$form_state) {
+    return array();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateConfigurationForm(array &$form, array &$form_state) {
+    // Do nothing.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitConfigurationForm(array &$form, array &$form_state) {
+    if (!form_get_errors($form_state)) {
+      $this->configuration = $form_state['values']['settings'];
+    }
+  }
 }

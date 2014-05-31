@@ -17,7 +17,7 @@ use Drupal\Core\Session\AccountInterface;
  *
  * @ingroup entity_embed_api
  */
-interface EntityEmbedDisplayInterface extends ConfigurablePluginInterface, PluginInspectionInterface {
+interface EntityEmbedDisplayInterface extends ConfigurablePluginInterface, PluginFormInterface, PluginInspectionInterface {
 
   /**
    * Indicates whether the entity embed display can be used.

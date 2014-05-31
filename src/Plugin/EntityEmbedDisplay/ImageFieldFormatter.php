@@ -22,8 +22,6 @@ use Drupal\Core\Session\AccountInterface;
  *   field_type = "image",
  *   provider = "image"
  * )
- *
- * @todo Ensure that the 'Link image to: Content' setting is not available.
  */
 class ImageFieldFormatter extends FileFieldFormatter {
 
@@ -45,6 +43,20 @@ class ImageFieldFormatter extends FileFieldFormatter {
 
     $image = \Drupal::service('image.factory')->get($this->entity->getFileUri());
     return $image->isSupported();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, array &$form_state) {
+    $form = parent::buildConfigurationForm($form, $form_state);
+
+    // Ensure that the 'Link image to: Content' setting is not available.
+    if ($this->getDerivativeId() == 'image') {
+      unset($form['image_link']['#options']['content']);
+    }
+
+    return $form;
   }
 
 }

@@ -94,4 +94,10 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     return $build[0];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, array &$form_state) {
+    $this->getFormatter()->settingsForm($form, $form_state);
+  }
 }

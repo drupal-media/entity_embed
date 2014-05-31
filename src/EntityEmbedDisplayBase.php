@@ -76,16 +76,30 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
   public function access(AccountInterface $account = NULL) {
     // @todo Add a hook_entity_embed_display_access()?
 
-    // Check that the entity type is included in the plugin annotations's list
-    // of valid entity types. The 'entity' type matches all entity types.
-    $definition = $this->getPluginDefinition();
-    $entity_type = $this->getEntity()->getEntityTypeId();
-    if (!array_intersect($definition['types'], array('entity', $entity_type))) {
+    // Check that the plugin's registered entity types matches the current
+    // entity type.
+    if (!$this->entityMatchesAllowedTypes()) {
       return FALSE;
     }
 
     // Check that the entity itself can be viewed by the user.
-    return $this->getEntity()->access('view', $account);
+    return $this->entity->access('view', $account);
+  }
+
+  /**
+   * Validate that this display plugin applies to the current entity type.
+   *
+   * This checks the plugin annotation's 'types' value, which should be an
+   * array of entity types that this plugin can process.
+   *
+   * @return bool
+   *   TRUE if the plugin can display the current entity type, or FALSE
+   *   otherwise.
+   */
+  protected function entityMatchesAllowedTypes() {
+    $definition = $this->getPluginDefinition();
+    $entity_type = $this->entity->getEntityTypeId();
+    return (bool) array_intersect($definition['types'], array('entity', $entity_type));
   }
 
   /**

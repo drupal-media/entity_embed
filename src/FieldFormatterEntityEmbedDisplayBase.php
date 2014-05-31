@@ -52,7 +52,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     // field item, which knows that an integer is the ID.
     $items = \Drupal::typedDataManager()->create(
       $definition,
-      $this->getFieldValue($field),
+      $this->getFieldValue($definition),
       $definition->getName(),
       $node
     );

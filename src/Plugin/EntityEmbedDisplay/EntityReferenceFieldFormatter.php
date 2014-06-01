@@ -17,7 +17,7 @@ use Drupal\Core\Field\FieldDefinition;
  *   id = "entity_reference",
  *   label = @Translation("Entity Reference"),
  *   types = {"entity"},
- *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatter",
+ *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "entity_reference",
  *   provider = "entity_reference"
  * )

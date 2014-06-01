@@ -17,7 +17,7 @@ use Drupal\Core\Session\AccountInterface;
  *   id = "file",
  *   label = @Translation("File"),
  *   types = {"file"},
- *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatter",
+ *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "file",
  *   provider = "file"
  * )

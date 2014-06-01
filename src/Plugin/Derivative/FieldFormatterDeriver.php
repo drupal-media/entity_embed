@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Plugin\Derivative\FieldFormatter.
+ * Contains \Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver.
  */
 
 namespace Drupal\entity_embed\Plugin\Derivative;
@@ -18,7 +18,7 @@ use Drupal\Core\Field\FormatterPluginManager;
  *
  * @see \Drupal\entity_embed\FieldFormatterEntityEmbedDisplayBase
  */
-class FieldFormatter extends DerivativeBase implements ContainerDerivativeInterface {
+class FieldFormatterDeriver extends DerivativeBase implements ContainerDerivativeInterface {
 
   /**
    * The manager for formatter plugins.

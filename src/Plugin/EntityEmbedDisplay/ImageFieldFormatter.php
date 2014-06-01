@@ -17,7 +17,7 @@ use Drupal\Core\Session\AccountInterface;
  *   id = "image",
  *   label = @Translation("Image"),
  *   types = {"file"},
- *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatter",
+ *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "image",
  *   provider = "image"
  * )

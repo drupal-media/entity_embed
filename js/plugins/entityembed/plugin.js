@@ -19,8 +19,8 @@
         canUndo: true,
         exec: function (editor, override) {
           var dialogSettings = {
-            title: 'Entity Embed',
-            dialogClass: 'entity-embed-dialog',
+            title: 'Select the entity to be embedded',
+            dialogClass: 'entity-select-dialog',
             resizable: false,
             minWidth: 800
           };
@@ -30,7 +30,7 @@
           var saveCallback = function(values) {
           };
           // Open the dialog for the entity embed form.
-          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/embed/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
+          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity_select/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
         }
       });
 
@@ -47,9 +47,36 @@
   });
 
   /**
+   * Function to allow selection of entity to be embedded.
+   */
+  Drupal.AjaxCommands.prototype.entityembedSelectDialogSave = function (ajax, response, status) {
+    var editor_instance = response.values.editor_instance;
+    var editor = CKEDITOR.instances[editor_instance];
+    // Configure the dialog for the next step.
+    var dialogSettings = {
+      title: 'Embed Entity',
+      dialogClass: 'entity-embed-dialog',
+      resizable: false,
+      minWidth: 800
+    };
+
+    // Populate existing values, i.e. embed_method, entity_type and entity.
+    var existingValues = {};
+    existingValues['entity-type'] = response.values.entity_type;
+    existingValues['embed-method'] = response.values.embed_method;
+    existingValues['entity'] = response.values.entity;
+    existingValues['editor-id'] = editor.name;
+    var saveCallback = function(values) {
+    };
+    // Open the dialog for the entity embed form.
+    Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity_embed/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
+  };
+
+
+  /**
    * Function to save the data attributes specified in the modal.
    */
-  Drupal.AjaxCommands.prototype.entityembedDialogSave = function (ajax, response, status) {
+  Drupal.AjaxCommands.prototype.entityembedSubmitDialogSave = function (ajax, response, status) {
     var editor_instance = response.values.editor_instance;
     var editor = CKEDITOR.instances[editor_instance];
     if (editor.mode == 'wysiwyg') {

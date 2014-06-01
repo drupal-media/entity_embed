@@ -1,0 +1,9 @@
+entity_embed.dialog:
+  version: VERSION
+  js:
+    js/dialog.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal.dialog
+    - core/drupal.ajax
+    - core/ckeditor

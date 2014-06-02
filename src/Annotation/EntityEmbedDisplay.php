@@ -37,13 +37,11 @@ class EntityEmbedDisplay extends Plugin {
   /**
    * The entity types the display can apply to.
    *
-   * To make the display plugin valid for all entity types, include the string
-   * 'entity' in the types.
+   * To make the display plugin valid for all entity types, set this value to
+   * FALSE.
    *
-   * @todo Replace with \Drupal\Core\Plugin\Context\Context?
-   *
-   * @var array
+   * @var bool|array
    */
-  public $types = array();
+  public $entity_types = FALSE;
 
 }

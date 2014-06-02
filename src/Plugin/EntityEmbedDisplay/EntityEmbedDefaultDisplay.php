@@ -17,7 +17,7 @@ use Drupal\entity_embed\EntityEmbedDisplayBase;
  *   label = @Translation("Default"),
  *   context = {
  *     "entity" = {
- *       "type" = "entity:file"
+ *       "type" = "entity"
  *     }
  *   }
  * )

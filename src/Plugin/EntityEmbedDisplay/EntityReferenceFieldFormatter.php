@@ -18,10 +18,7 @@ use Drupal\Core\Field\FieldDefinition;
  *   label = @Translation("Entity Reference"),
  *   context = {
  *     "entity" = {
- *       "type" = "entity:file",
- *       "constraints" = {
- *         "EntityType" = "file"
- *       }
+ *       "type" = "entity"
  *     }
  *   },
  *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",

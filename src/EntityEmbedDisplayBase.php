@@ -58,8 +58,36 @@ abstract class EntityEmbedDisplayBase extends ContextAwarePluginBase implements 
   public function access(AccountInterface $account = NULL) {
     // @todo Add a hook_entity_embed_display_access()?
 
+    // Check that the plugin's registered entity types matches the current
+    // entity type.
+    if (!$this->isValidEntityType()) {
+      return FALSE;
+    }
+
     // Check that the entity itself can be viewed by the user.
     return $this->getContextValue('entity')->access('view', $account);
+  }
+
+  /**
+   * Validate that this display plugin applies to the current entity type.
+   *
+   * This checks the plugin annotation's 'entity_types' value, which should be
+   * an array of entity types that this plugin can process, or FALSE if the
+   * plugin applies to all entity types.
+   *
+   * @return bool
+   *   TRUE if the plugin can display the current entity type, or FALSE
+   *   otherwise.
+   */
+  protected function isValidEntityType() {
+    $definition = $this->getPluginDefinition();
+    if ($definition['entity_types'] === FALSE) {
+      return TRUE;
+    }
+    else {
+      $entity_type = $this->entity->getEntityTypeId();
+      return in_array($entity_type, $definition['entity_types']);
+    }
   }
 
   /**

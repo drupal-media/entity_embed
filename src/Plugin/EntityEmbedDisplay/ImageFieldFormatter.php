@@ -21,6 +21,7 @@ use Drupal\Core\Session\AccountInterface;
  *       "type" = "entity:file"
  *     }
  *   },
+ *   entity_types = {"file"},
  *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "image",
  *   provider = "image"
@@ -74,7 +75,7 @@ class ImageFieldFormatter extends FileFieldFormatter {
       unset($form['image_link']['#options']['content']);
     }
 
-    // Add support for alternate and title text
+    // Add support for editing the alternate and title text attributes
     // @todo Ensure these fields work properly and map to the attributes
     $form['alt'] = array(
       '#type' => 'textfield',

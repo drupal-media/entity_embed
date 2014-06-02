@@ -15,7 +15,6 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Language\Language;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\entity_embed\RecursiveRenderingException;
 use Drupal\filter\FilterProcessResult;
@@ -120,7 +119,15 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
           }
 
           if (!empty($entity)) {
-            $context = array('langcode' => $langcode);
+            $context = array();
+
+            // Set the initial langcode but it can be overridden by a data
+            // attribute.
+            if (!empty($langcode)) {
+              $context['langcode'] = $langcode;
+            }
+
+            // Convert the data attributes to the context array.
             foreach ($node->attributes as $attribute) {
               $key = strtr($attribute->nodeName, array('data-' => ''));
               $context[$key] = $attribute->nodeValue;
@@ -180,7 +187,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       'entity-type' => $entity->getEntityTypeId(),
       'entity-id' => $entity->id(),
       'view-mode' => 'default',
-      'langcode' => Language::LANGCODE_DEFAULT,
+      'langcode' => NULL,
     );
     // Some context properties should not be set ahead of time.
     $context['render-callback'] = get_called_class() . '::renderEntity';

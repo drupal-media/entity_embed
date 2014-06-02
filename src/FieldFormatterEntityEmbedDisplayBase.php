@@ -30,7 +30,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     }
 
     // Ensure that the field name is unique each time this is run.
-    $definition->setName('_entity_embed_' . $this->getContextValue('token'));
+    $definition->setName('_entity_embed_' . $this->getAttributeValue('token'));
 
     $display = array(
       'type' => $this->getDerivativeId(),
@@ -61,7 +61,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     // Field name is only set to avoid broken CSS classes.
     $definition = $this->getFieldDefinition();
     // Ensure that the field name is unique each time this is run.
-    $definition->setName('_entity_embed_' . $this->getContextValue('token'));
+    $definition->setName('_entity_embed_' . $this->getAttributeValue('token'));
 
     /* @var \Drupal\Core\Field\FieldItemListInterface $items $items */
     // Create a field item list object, 1 is the value, array('target_id' => 1)
@@ -74,7 +74,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
       $node
     );
 
-    if ($langcode = $this->getContextValue('langcode')) {
+    if ($langcode = $this->getAttributeValue('langcode')) {
       $items->setLangcode($langcode);
     }
 

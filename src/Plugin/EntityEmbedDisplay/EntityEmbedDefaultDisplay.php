@@ -15,8 +15,14 @@ use Drupal\entity_embed\EntityEmbedDisplayBase;
  * @EntityEmbedDisplay(
  *   id = "default",
  *   label = @Translation("Default"),
- *   types = {"entity"}
+ *   context = {
+ *     "entity" = {
+ *       "type" = "entity:file"
+ *     }
+ *   }
  * )
+ *
+ * @todo Should this use a derivative? http://cgit.drupalcode.org/page_manager/tree/src/Plugin/Deriver/EntityViewDeriver.php
  */
 class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {
 
@@ -38,7 +44,7 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {
     $form['view_mode'] = array(
       '#type' => 'select',
       '#title' => t('View mode'),
-      '#options' => \Drupal::entityManager()->getDisplayModeOptions('view_mode', $this->entity->getEntityTypeId()),
+      '#options' => \Drupal::entityManager()->getDisplayModeOptions('view_mode', $this->getAttributeValue('entity-type')),
       '#default_value' => $this->getConfigurationValue('view_mode'),
       '#required' => TRUE,
     );
@@ -53,10 +59,10 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {
     // Clone the entity since we're going to set some additional properties we
     // don't want kept around afterwards.
     $entity = clone $this->entity;
-    $entity->entity_embed_context = $this->getContext();
+    $entity->entity_embed_attributes = $this->getAttributes();
 
     // Build the rendered entity.
-    $build = entity_view($this->entity, $this->getConfigurationValue('view_mode'), $this->getContextValue('langcode'));
+    $build = entity_view($this->entity, $this->getConfigurationValue('view_mode'), $this->getAttributeValue('langcode'));
 
     // Hide entity links by default.
     if (isset($build['links'])) {

@@ -14,6 +14,7 @@ use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Plugin\Discovery\AlterDecorator;
 use Drupal\Core\Plugin\Discovery\AnnotatedClassDiscovery;
+use Drupal\Component\Plugin\Exception\PluginException;
 
 /**
  * Provides an Entity embed display plugin manager.
@@ -56,9 +57,14 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
   public function getDefinitionsByEntity(EntityInterface $entity) {
     $definitions = $this->getDefinitions();
     $valid_ids = array_filter(array_keys($definitions), function ($id) use ($entity) {
-      $display = $this->createInstance($id);
-      $display->setEntity($entity);
-      return $display->access();
+      try {
+        $display = $this->createInstance($id);
+        $display->setContextValue('entity', $entity);
+        return $display->access();
+      }
+      catch (PluginException $e) {
+        return FALSE;
+      }
     });
     return array_intersect_key($definitions, array_flip($valid_ids));
   }

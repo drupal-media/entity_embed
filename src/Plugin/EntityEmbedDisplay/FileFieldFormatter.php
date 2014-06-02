@@ -16,7 +16,11 @@ use Drupal\Core\Session\AccountInterface;
  * @EntityEmbedDisplay(
  *   id = "file",
  *   label = @Translation("File"),
- *   types = {"file"},
+ *   context = {
+ *     "entity" = {
+ *       "type" = "entity:file"
+ *     }
+ *   },
  *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "file",
  *   provider = "file"
@@ -37,7 +41,7 @@ class FileFieldFormatter extends EntityReferenceFieldFormatter {
    */
   public function getFieldValue(FieldDefinition $definition) {
     $value = parent::getFieldValue($definition);
-    $value += array_intersect_key($this->getContext(), array('description' => ''));
+    $value += array_intersect_key($this->getAttributes(), array('description' => ''));
     return $value;
   }
 
@@ -45,17 +49,12 @@ class FileFieldFormatter extends EntityReferenceFieldFormatter {
    * {@inheritdoc}
    */
   public function access(AccountInterface $account = NULL) {
-    if (!$this->entityMatchesAllowedTypes()) {
-      return FALSE;
-    }
-
-    // Due to issues with access checking with file entities in core, we cannot
-    // actually use Entity::access() which would have been called by
-    // parent::access().
+    // Due to issues with access checking with file entities in core, we must
+    // manually check hook_file_download to see if the user can access the file.
     // @see https://drupal.org/node/2128791
     // @see https://drupal.org/node/2148353
     // @see https://drupal.org/node/2078473
-    switch (file_uri_scheme($this->entity->getFileUri())) {
+    switch (file_uri_scheme($this->getContextValue('entity')->getFileUri())) {
       case 'public':
         return TRUE;
 

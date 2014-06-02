@@ -16,7 +16,14 @@ use Drupal\Core\Field\FieldDefinition;
  * @EntityEmbedDisplay(
  *   id = "entity_reference",
  *   label = @Translation("Entity Reference"),
- *   types = {"entity"},
+ *   context = {
+ *     "entity" = {
+ *       "type" = "entity:file",
+ *       "constraints" = {
+ *         "EntityType" = "file"
+ *       }
+ *     }
+ *   },
  *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "entity_reference",
  *   provider = "entity_reference"
@@ -29,7 +36,7 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
    */
   public function getFieldDefinition() {
     $field = FieldDefinition::create('entity_reference');
-    $field->setSetting('target_type', $this->getContextValue('entity-type'));
+    $field->setSetting('target_type', $this->getAttributeValue('entity-type'));
     return $field;
   }
 
@@ -37,7 +44,7 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
    * {@inheritdoc}
    */
   public function getFieldValue(FieldDefinition $definition) {
-    return array('target_id' => $this->entity->id());
+    return array('target_id' => $this->getContextValue('entity')->id());
   }
 
 }

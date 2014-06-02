@@ -9,7 +9,7 @@ namespace Drupal\entity_embed;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Plugin\PluginBase;
+use Drupal\Core\Plugin\ContextAwarePluginBase;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -17,21 +17,14 @@ use Drupal\Core\Session\AccountInterface;
  *
  * @ingroup entity_embed_api
  */
-abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedDisplayInterface {
+abstract class EntityEmbedDisplayBase extends ContextAwarePluginBase implements EntityEmbedDisplayInterface {
 
-  /**
-   * The entity being embedded.
-   *
-   * @var \Drupal\Core\Entity\EntityInterface
-   */
-  public $entity;
-
-  /**
-   * The context for the embedded entity.
-   *
-   * @var array
-   */
-  public $context = array();
+ /**
+  * The attributes on the embedded entity.
+  *
+  * @var array
+  */
+  public $attributes = array();
 
   /**
    * {@inheritdoc}
@@ -41,32 +34,22 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
     $this->setConfiguration($configuration);
   }
 
-  public function setEntity(EntityInterface $entity) {
-    $this->entity = $entity;
-    return $this;
-  }
-
-  public function getEntity() {
-    return $this->entity;
-  }
-
-  public function setContext(array $context) {
-    $this->context = $context;
-    return $this;
-  }
-
-  public function getContext() {
-    return $this->context;
-  }
-
-  public function getContextValue($name, $default = NULL) {
-    $context = $this->getContext();
-    return array_key_exists($name, $context) ? $context[$name] : $default;
-  }
-
   public function getConfigurationValue($name, $default = NULL) {
     $configuration = $this->getConfiguration();
     return array_key_exists($name, $configuration) ? $configuration[$name] : $default;
+  }
+
+  public function setAttributes(array $attributes) {
+    $this->attributes = $attributes;
+  }
+
+  public function getAttributes() {
+    return $this->attributes;
+  }
+
+  public function getAttributeValue($name, $default = NULL) {
+    $attributes = $this->getAttributes();
+    return array_key_exists($name, $attributes) ? $attributes[$name] : $default;
   }
 
   /**
@@ -75,30 +58,8 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
   public function access(AccountInterface $account = NULL) {
     // @todo Add a hook_entity_embed_display_access()?
 
-    // Check that the plugin's registered entity types matches the current
-    // entity type.
-    if (!$this->entityMatchesAllowedTypes()) {
-      return FALSE;
-    }
-
     // Check that the entity itself can be viewed by the user.
-    return $this->entity->access('view', $account);
-  }
-
-  /**
-   * Validate that this display plugin applies to the current entity type.
-   *
-   * This checks the plugin annotation's 'types' value, which should be an
-   * array of entity types that this plugin can process.
-   *
-   * @return bool
-   *   TRUE if the plugin can display the current entity type, or FALSE
-   *   otherwise.
-   */
-  protected function entityMatchesAllowedTypes() {
-    $definition = $this->getPluginDefinition();
-    $entity_type = $this->entity->getEntityTypeId();
-    return (bool) array_intersect($definition['types'], array('entity', $entity_type));
+    return $this->getContextValue('entity')->access('view', $account);
   }
 
   /**

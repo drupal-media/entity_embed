@@ -253,8 +253,8 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       if ($entity = entity_load($context['entity-type'], $context['entity-id'])) {
         $manager = \Drupal::service('plugin.manager.entity_embed.display');
         $display = $manager->createInstance($context['entity-embed-display'], $context['entity-embed-settings']);
-        $display->setEntity($entity);
-        $display->setContext($context);
+        $display->setContextValue('entity', $entity);
+        $display->setAttributes($context);
         if ($display->access()) {
           $build = $display->build();
           // Allow modules to alter the rendered embedded entity.

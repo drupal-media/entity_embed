@@ -16,7 +16,11 @@ use Drupal\Core\Session\AccountInterface;
  * @EntityEmbedDisplay(
  *   id = "image",
  *   label = @Translation("Image"),
- *   types = {"file"},
+ *   context = {
+ *     "entity" = {
+ *       "type" = "entity:file"
+ *     }
+ *   },
  *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "image",
  *   provider = "image"
@@ -39,7 +43,7 @@ class ImageFieldFormatter extends FileFieldFormatter {
     $value = parent::getFieldValue($definition);
     // File field support descriptions, but images do not.
     unset($value['description']);
-    $value += array_intersect_key($this->getContext(), array('alt' => '', 'title' => ''));
+    $value += array_intersect_key($this->getAttributes(), array('alt' => '', 'title' => ''));
     return $value;
   }
 
@@ -51,7 +55,8 @@ class ImageFieldFormatter extends FileFieldFormatter {
       return FALSE;
     }
 
-    $image = \Drupal::service('image.factory')->get($this->entity->getFileUri());
+    $uri = $this->getContextValue('entity')->getFileUri();
+    $image = \Drupal::service('image.factory')->get($uri);
     return $image->isSupported();
   }
 
@@ -74,7 +79,7 @@ class ImageFieldFormatter extends FileFieldFormatter {
     $form['alt'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Alternate text'),
-      '#default_value' => $this->getContextValue('alt', ''),
+      '#default_value' => $this->getAttributeValue('alt', ''),
       '#description' => $this->t('This text will be used by screen readers, search engines, or when the image cannot be loaded.'),
       '#parents' => array('attributes', 'alt'),
       // @see http://www.gawds.org/show.php?contentid=28
@@ -83,7 +88,7 @@ class ImageFieldFormatter extends FileFieldFormatter {
     $form['title'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Title'),
-      '#default_value' => $this->getContextValue('title', ''),
+      '#default_value' => $this->getAttributeValue('title', ''),
       '#description' => t('The title is used as a tool tip when the user hovers the mouse over the image.'),
       '#parents' => array('attributes', 'title'),
       '#maxlength' => 1024,

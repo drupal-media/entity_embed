@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Plugin\EntityEmbedDisplay\ImageFieldFormatter.
+ * Contains \Drupal\entity_embed\EntityEmbedDisplay\ImageFieldFormatter.
  */
 
-namespace Drupal\entity_embed\Plugin\EntityEmbedDisplay;
+namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Field\FieldDefinition;
 use Drupal\Core\Session\AccountInterface;

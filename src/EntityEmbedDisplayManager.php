@@ -38,7 +38,7 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, LanguageManager $language_manager, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/EntityEmbedDisplay', $namespaces, $module_handler, 'Drupal\entity_embed\Annotation\EntityEmbedDisplay');
+    parent::__construct('EntityEmbedDisplay', $namespaces, $module_handler, 'Drupal\entity_embed\Annotation\EntityEmbedDisplay');
     $this->alterInfo('entity_embed_display_plugins');
     $this->setCacheBackend($cache_backend, $language_manager, 'entity_embed_display_plugins');
   }

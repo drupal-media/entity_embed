@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Plugin\EntityEmbedDisplay\EntityEmbedDefaultDisplay.
+ * Contains \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDefaultDisplay.
  */
 
-namespace Drupal\entity_embed\Plugin\EntityEmbedDisplay;
+namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\entity_embed\EntityEmbedDisplayBase;
 

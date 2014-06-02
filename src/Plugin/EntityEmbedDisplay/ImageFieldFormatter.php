@@ -16,7 +16,7 @@ use Drupal\Core\Session\AccountInterface;
  * @EntityEmbedDisplay(
  *   id = "image",
  *   label = @Translation("Image"),
- *   types = {"file"},
+ *   entity_types = {"file"},
  *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "image",
  *   provider = "image"

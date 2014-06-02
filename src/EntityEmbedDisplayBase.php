@@ -77,7 +77,7 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
 
     // Check that the plugin's registered entity types matches the current
     // entity type.
-    if (!$this->entityMatchesAllowedTypes()) {
+    if (!$this->isValidEntityType()) {
       return FALSE;
     }
 
@@ -88,17 +88,23 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
   /**
    * Validate that this display plugin applies to the current entity type.
    *
-   * This checks the plugin annotation's 'types' value, which should be an
-   * array of entity types that this plugin can process.
+   * This checks the plugin annotation's 'entity_types' value, which should be
+   * an array of entity types that this plugin can process, or FALSE if the
+   * plugin applies to all entity types.
    *
    * @return bool
    *   TRUE if the plugin can display the current entity type, or FALSE
    *   otherwise.
    */
-  protected function entityMatchesAllowedTypes() {
+  protected function isValidEntityType() {
     $definition = $this->getPluginDefinition();
-    $entity_type = $this->entity->getEntityTypeId();
-    return (bool) array_intersect($definition['types'], array('entity', $entity_type));
+    if ($definition['entity_types'] === FALSE) {
+      return TRUE;
+    }
+    else {
+      $entity_type = $this->entity->getEntityTypeId();
+      return in_array($entity_type, $definition['entity_types']);
+    }
   }
 
   /**

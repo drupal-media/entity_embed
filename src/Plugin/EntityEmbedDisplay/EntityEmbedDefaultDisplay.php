@@ -14,8 +14,7 @@ use Drupal\entity_embed\EntityEmbedDisplayBase;
  *
  * @EntityEmbedDisplay(
  *   id = "default",
- *   label = @Translation("Default"),
- *   types = {"entity"}
+ *   label = @Translation("Default")
  * )
  */
 class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {

@@ -11,7 +11,7 @@
  */
 
 // @todo Document
-function hook_entity_embed_display_info_alter(&$info) {
+function hook_entity_embed_display_plugins_alter(&$info) {
 
 }
 

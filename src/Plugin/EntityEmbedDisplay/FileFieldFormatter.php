@@ -16,11 +16,7 @@ use Drupal\Core\Session\AccountInterface;
  * @EntityEmbedDisplay(
  *   id = "file",
  *   label = @Translation("File"),
- *   context = {
- *     "entity" = {
- *       "type" = "entity:file"
- *     }
- *   },
+ *   entity_types = {"file"},
  *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "file",
  *   provider = "file"
@@ -49,8 +45,13 @@ class FileFieldFormatter extends EntityReferenceFieldFormatter {
    * {@inheritdoc}
    */
   public function access(AccountInterface $account = NULL) {
-    // Due to issues with access checking with file entities in core, we must
-    // manually check hook_file_download to see if the user can access the file.
+    if (!$this->isValidEntityType()) {
+      return FALSE;
+    }
+
+    // Due to issues with access checking with file entities in core, we cannot
+    // actually use Entity::access() which would have been called by
+    // parent::access().
     // @see https://drupal.org/node/2128791
     // @see https://drupal.org/node/2148353
     // @see https://drupal.org/node/2078473

@@ -16,14 +16,6 @@ use Drupal\Core\Field\FieldDefinition;
  * @EntityEmbedDisplay(
  *   id = "entity_reference",
  *   label = @Translation("Entity Reference"),
- *   context = {
- *     "entity" = {
- *       "type" = "entity:file",
- *       "constraints" = {
- *         "EntityType" = "file"
- *       }
- *     }
- *   },
  *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "entity_reference",
  *   provider = "entity_reference"

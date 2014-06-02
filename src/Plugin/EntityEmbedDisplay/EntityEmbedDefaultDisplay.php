@@ -14,12 +14,7 @@ use Drupal\entity_embed\EntityEmbedDisplayBase;
  *
  * @EntityEmbedDisplay(
  *   id = "default",
- *   label = @Translation("Default"),
- *   context = {
- *     "entity" = {
- *       "type" = "entity:file"
- *     }
- *   }
+ *   label = @Translation("Default")
  * )
  *
  * @todo Should this use a derivative? http://cgit.drupalcode.org/page_manager/tree/src/Plugin/Deriver/EntityViewDeriver.php

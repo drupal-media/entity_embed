@@ -39,8 +39,21 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, LanguageManager $language_manager, ModuleHandlerInterface $module_handler) {
     parent::__construct('Plugin/EntityEmbedDisplay', $namespaces, $module_handler, 'Drupal\entity_embed\Annotation\EntityEmbedDisplay');
-    $this->alterInfo('entity_embed_display_info');
-    $this->setCacheBackend($cache_backend, $language_manager, 'entity_embed_display_info');
+    $this->alterInfo('entity_embed_display_plugins');
+    $this->setCacheBackend($cache_backend, $language_manager, 'entity_embed_display_plugins');
+  }
+
+  /**
+   * Overrides DefaultPluginManager::processDefinition().
+   */
+  public function processDefinition(&$definition, $plugin_id) {
+    $definition += array(
+      'entity_types' => FALSE,
+    );
+
+    if ($definition['entity_types'] !== FALSE && !is_array($definition['entity_types'])) {
+      $definition['entity_types'] = array($definition['entity_types']);
+    }
   }
 
   /**

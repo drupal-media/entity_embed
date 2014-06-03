@@ -11,6 +11,9 @@ use Drupal\Core\Ajax\CommandInterface;
 
 /**
  * Provides an AJAX command for saving the contents of an entity_embed dialog.
+ *
+ * This command is implemented in entity_embed.ajax.js in
+ * Drupal.AjaxCommands.prototype.entityembedSelectDialogSave.
  */
 class EntityEmbedSelectDialogSave implements CommandInterface {
 

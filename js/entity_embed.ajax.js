@@ -1,3 +1,8 @@
+/**
+ * @file
+ * Provides AJAX commands for saving entity_embed dialogs.
+ */
+
 (function ($, Drupal, CKEDITOR) {
 
   "use strict";

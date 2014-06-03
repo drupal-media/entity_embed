@@ -25,7 +25,7 @@ class EntityEmbedSelectDialogSave implements CommandInterface {
   protected $values;
 
   /**
-   * Constructs a EntityEmbedDialogSave object.
+   * Constructs a EntityEmbedSelectDialogSave object.
    *
    * @param string $values
    *   The values that should be passed to the form constructor in Drupal.

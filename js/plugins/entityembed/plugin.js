@@ -2,6 +2,7 @@
  * @file
  * Entity Embed CKEditor plugin.
  */
+
 (function ($, Drupal, CKEDITOR) {
 
   "use strict";

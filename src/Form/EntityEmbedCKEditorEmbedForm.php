@@ -29,6 +29,8 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, array &$form_state) {
+    $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
+
     // Set the existing values from previous step as hidden fields.
     $existing_values = $form_state['input']['editor_object'];
     $form['embed_method'] = array(

@@ -30,6 +30,8 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, array &$form_state) {
+    $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
+
     $form['entity_type'] = array(
       '#type' => 'select',
       '#name' => 'entity_type',

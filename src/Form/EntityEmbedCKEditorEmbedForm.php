@@ -67,10 +67,10 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
       '#name' => 'align',
       '#title' => $this->t('Align'),
       '#options' => array(
-        'none' => 'None',
-        'left' => 'Left',
-        'center' => 'Center',
-        'right' => 'Right',
+        'none' => $this->t('None'),
+        'left' => $this->t('Left'),
+        'center' => $this->t('Center'),
+        'right' => $this->t('Right'),
       ),
     );
     $form['show_caption'] = array(

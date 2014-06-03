@@ -43,7 +43,7 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       '#name' => 'entity',
       '#title' => $this->t('Entity'),
       '#required' => TRUE,
-      '#placeholder' => 'Enter ID/UUID of the entity',
+      '#placeholder' => $this->t('Enter ID/UUID of the entity'),
     );
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['save_modal'] = array(

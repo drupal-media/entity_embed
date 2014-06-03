@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\EntityEmbedDisplayManager.
+ * Contains \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager.
  */
 
-namespace Drupal\entity_embed;
+namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityInterface;

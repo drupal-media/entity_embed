@@ -7,8 +7,6 @@
 
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
-use Drupal\entity_embed\EntityEmbedDisplayBase;
-
 /**
  * Default embed display, which renders the entity using entity_view().
  *

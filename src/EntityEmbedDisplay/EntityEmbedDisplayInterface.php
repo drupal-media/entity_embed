@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\EntityEmbedDisplayInterface.
+ * Contains \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayInterface.
  */
 
-namespace Drupal\entity_embed;
+namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;

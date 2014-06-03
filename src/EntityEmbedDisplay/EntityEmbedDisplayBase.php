@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\EntityEmbedDisplayBase.
+ * Contains \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayBase.
  */
 
-namespace Drupal\entity_embed;
+namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityInterface;

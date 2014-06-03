@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\FieldFormatterEntityEmbedDisplayBase.
+ * Contains \Drupal\entity_embed\EntityEmbedDisplay\FieldFormatterEntityEmbedDisplayBase.
  */
 
-namespace Drupal\entity_embed;
+namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Field\FieldDefinition;
 use Drupal\node\Entity\Node;

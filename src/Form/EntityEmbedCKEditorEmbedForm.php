@@ -54,18 +54,18 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
     $form['view_mode'] = array(
       '#type' => 'select',
       '#name' => 'view_mode',
-      '#title' => 'View Mode',
+      '#title' => $this->t('View Mode'),
       '#options' => $view_modes,
     );
     $form['display_links'] = array(
       '#type' => 'checkbox',
       '#name' => 'display_links',
-      '#title' => 'Display links',
+      '#title' => $this->t('Display links'),
     );
     $form['align'] = array(
       '#type' => 'select',
       '#name' => 'align',
-      '#title' => 'Align',
+      '#title' => $this->t('Align'),
       '#options' => array(
         'none' => 'None',
         'left' => 'Left',
@@ -76,12 +76,12 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
     $form['show_caption'] = array(
       '#type' => 'checkbox',
       '#name' => 'show_caption',
-      '#title' => 'Show Caption',
+      '#title' => $this->t('Show Caption'),
     );
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['save_modal'] = array(
       '#type' => 'submit',
-      '#value' => 'Save',
+      '#value' => $this->t('Save'),
       // No regular submit-handler. This form only works via JavaScript.
       '#submit' => array(),
       '#ajax' => array(

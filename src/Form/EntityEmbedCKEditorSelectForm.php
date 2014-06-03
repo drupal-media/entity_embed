@@ -23,7 +23,7 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'entity_embed_ckeditor_form';
+    return 'entity_embed_ckeditor_select_form';
   }
 
   /**

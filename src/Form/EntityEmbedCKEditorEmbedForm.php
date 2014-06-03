@@ -113,7 +113,7 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
       $status_messages = array('#theme' => 'status_messages');
       $output = drupal_render($form);
       $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
-      $response->addCommand(new HtmlCommand('#entity-embed-ckeditor-select-form', $output));
+      $response->addCommand(new HtmlCommand('#entity-embed-ckeditor-embed-form', $output));
     }
     else {
       $response->addCommand(new EntityEmbedSubmitDialogSave($form_state['values']));

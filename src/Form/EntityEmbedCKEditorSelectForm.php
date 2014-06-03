@@ -74,19 +74,29 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
   public function submitForm(array &$form, array &$form_state) {
     $response = new AjaxResponse();
 
-    // Detect if a valid UUID was specified. Set embed method based based on
-    // whether or not it is a valid UUID.
-    $values = $form_state['values'];
-    $entity = $values['entity'];
-    if (Uuid::isValid($entity)) {
-      $values['embed_method'] = 'uuid';
+    // Display errors in form, if any.
+    if (form_get_errors($form_state)) {
+      unset($form['#prefix'], $form['#suffix']);
+      $status_messages = array('#theme' => 'status_messages');
+      $output = drupal_render($form);
+      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
+      $response->addCommand(new HtmlCommand('#entity-embed-ckeditor-select-form', $output));
     }
     else {
-      $values['embed_method'] = 'id';
-    }
+      // Detect if a valid UUID was specified. Set embed method based based on
+      // whether or not it is a valid UUID.
+      $values = $form_state['values'];
+      $entity = $values['entity'];
+      if (Uuid::isValid($entity)) {
+        $values['embed_method'] = 'uuid';
+      }
+      else {
+        $values['embed_method'] = 'id';
+      }
 
-    $response->addCommand(new EntityEmbedSelectDialogSave($values));
-    $response->addCommand(new CloseModalDialogCommand());
+      $response->addCommand(new EntityEmbedSelectDialogSave($values));
+      $response->addCommand(new CloseModalDialogCommand());
+    }
 
     return $response;
   }

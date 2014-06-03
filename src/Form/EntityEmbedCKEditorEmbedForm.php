@@ -107,8 +107,18 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
   public function submitForm(array &$form, array &$form_state) {
     $response = new AjaxResponse();
 
-    $response->addCommand(new EntityEmbedSubmitDialogSave($form_state['values']));
-    $response->addCommand(new CloseModalDialogCommand());
+    // Display errors in form, if any.
+    if (form_get_errors($form_state)) {
+      unset($form['#prefix'], $form['#suffix']);
+      $status_messages = array('#theme' => 'status_messages');
+      $output = drupal_render($form);
+      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
+      $response->addCommand(new HtmlCommand('#entity-embed-ckeditor-select-form', $output));
+    }
+    else {
+      $response->addCommand(new EntityEmbedSubmitDialogSave($form_state['values']));
+      $response->addCommand(new CloseModalDialogCommand());
+    }
 
     return $response;
   }

@@ -49,13 +49,12 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {
    * {@inheritdoc}
    */
   public function build() {
-    // Clone the entity since we're going to set some additional properties we
-    // don't want kept around afterwards.
-    $entity = clone $this->entity;
-    $entity->entity_embed_attributes = $this->getAttributes();
+    $entity = $this->getContextValue('entity');
+    $view_mode = $this->getConfigurationValue('view_mode');
+    $langcode = $this->getAttributeValue('langcode');
 
     // Build the rendered entity.
-    $build = entity_view($this->entity, $this->getConfigurationValue('view_mode'), $this->getAttributeValue('langcode'));
+    $build = entity_view($entity, $view_mode, $langcode);
 
     // Hide entity links by default.
     if (isset($build['links'])) {

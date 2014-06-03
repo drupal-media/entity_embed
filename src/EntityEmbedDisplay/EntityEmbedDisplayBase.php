@@ -46,11 +46,20 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
     return array_key_exists($name, $configuration) ? $configuration[$name] : $default;
   }
 
+  /**
+   * Sets the value for a defined context.
+   *
+   * @param string $name
+   *   The name of the context in the plugin definition.
+   * @param mixed $value
+   *   The value to set the context to. The value has to validate against the
+   *   provided context definition.
+   */
   public function setContextValue($name, $value) {
     $this->context[$name] = $value;
   }
 
-  public function getContext() {
+  public function getContextValues() {
     return $this->context;
   }
 
@@ -62,12 +71,12 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
     $this->attributes = $attributes;
   }
 
-  public function getAttributes() {
+  public function getAttributeValues() {
     return $this->attributes;
   }
 
   public function getAttributeValue($name, $default = NULL) {
-    $attributes = $this->getAttributes();
+    $attributes = $this->getAttributeValues();
     return array_key_exists($name, $attributes) ? $attributes[$name] : $default;
   }
 

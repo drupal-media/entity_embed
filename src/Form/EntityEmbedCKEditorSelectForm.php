@@ -37,6 +37,7 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       '#name' => 'entity_type',
       '#title' => 'Entity type',
       '#options' => \Drupal::entityManager()->getEntityTypeLabels(TRUE),
+      '#required' => TRUE,
     );
     $form['entity'] = array(
       '#type' => 'textfield',

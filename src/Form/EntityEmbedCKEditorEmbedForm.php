@@ -56,6 +56,7 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
       '#name' => 'view_mode',
       '#title' => 'View Mode',
       '#options' => $view_modes,
+      '#required' => TRUE,
     );
     $form['display_links'] = array(
       '#type' => 'checkbox',

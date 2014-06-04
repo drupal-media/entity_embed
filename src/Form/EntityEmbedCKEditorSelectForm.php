@@ -63,10 +63,10 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
     );
 
     // Set default values if existing values were set.
-    if($entity_type) {
+    if ($entity_type) {
       $form['entity_type']['#value'] = $entity_type;
     }
-    if($entity) {
+    if ($entity) {
       $form['entity']['#value'] = $entity;
     }
 

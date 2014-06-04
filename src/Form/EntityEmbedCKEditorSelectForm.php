@@ -35,20 +35,20 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
     $form['entity_type'] = array(
       '#type' => 'select',
       '#name' => 'entity_type',
-      '#title' => 'Entity type',
+      '#title' => $this->t('Entity type'),
       '#options' => \Drupal::entityManager()->getEntityTypeLabels(TRUE),
     );
     $form['entity'] = array(
       '#type' => 'textfield',
       '#name' => 'entity',
-      '#title' => 'Entity',
+      '#title' => $this->t('Entity'),
       '#required' => TRUE,
-      '#placeholder' => 'Enter ID/UUID of the entity',
+      '#placeholder' => $this->t('Enter ID/UUID of the entity'),
     );
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['save_modal'] = array(
       '#type' => 'submit',
-      '#value' => 'Next',
+      '#value' => $this->t('Next'),
       // No regular submit-handler. This form only works via JavaScript.
       '#submit' => array(),
       '#ajax' => array(

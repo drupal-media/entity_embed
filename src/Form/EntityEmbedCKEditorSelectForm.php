@@ -42,7 +42,6 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       '#name' => 'entity_type',
       '#title' => 'Entity type',
       '#options' => \Drupal::entityManager()->getEntityTypeLabels(TRUE),
-      '#value' => $entity_type,
     );
     $form['entity'] = array(
       '#type' => 'textfield',
@@ -50,7 +49,6 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       '#title' => 'Entity',
       '#required' => TRUE,
       '#placeholder' => 'Enter ID/UUID of the entity',
-      '#value' => $entity,
     );
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['save_modal'] = array(
@@ -63,6 +61,14 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
         'event' => 'click',
       ),
     );
+
+    // Set default values if existing values were set.
+    if($entity_type) {
+      $form['entity_type']['#value'] = $entity_type;
+    }
+    if($entity) {
+      $form['entity']['#value'] = $entity;
+    }
 
     // Set editor instance as a hidden field.
     $editor_instance = $form_state['input']['editor_object']['editor-id'];

@@ -124,6 +124,14 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
     return $response;
   }
 
+  /**
+   * Form submission handler to go back to the previous step of the form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param array $form_state
+   *   An associative array containing the current state of the form.
+   */
   public function goBack(array &$form, array &$form_state) {
     $response = new AjaxResponse();
 

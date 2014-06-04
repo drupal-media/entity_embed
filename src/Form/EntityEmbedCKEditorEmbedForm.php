@@ -80,7 +80,7 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
       '#title' => 'Show Caption',
     );
     $form['actions'] = array('#type' => 'actions');
-    $form['actions']['back_modal'] = array(
+    $form['actions']['go_back'] = array(
       '#type' => 'submit',
       '#value' => 'Back',
       // No regular submit-handler. This form only works via JavaScript.

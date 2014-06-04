@@ -39,7 +39,7 @@ class ImageFieldFormatter extends FileFieldFormatter {
     $value = parent::getFieldValue($definition);
     // File field support descriptions, but images do not.
     unset($value['description']);
-    $value += array_intersect_key($this->getAttributes(), array('alt' => '', 'title' => ''));
+    $value += array_intersect_key($this->getAttributeValues(), array('alt' => '', 'title' => ''));
     return $value;
   }
 

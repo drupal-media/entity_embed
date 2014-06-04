@@ -32,11 +32,17 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
   public function buildForm(array $form, array &$form_state) {
     $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
 
+    // Get the existing values (if any).
+    $existing_values = $form_state['input']['editor_object'];
+    $entity_type = $existing_values['entity-type'];
+    $entity = $existing_values['entity'];
+
     $form['entity_type'] = array(
       '#type' => 'select',
       '#name' => 'entity_type',
       '#title' => 'Entity type',
       '#options' => \Drupal::entityManager()->getEntityTypeLabels(TRUE),
+      '#value' => $entity_type,
     );
     $form['entity'] = array(
       '#type' => 'textfield',
@@ -44,6 +50,7 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       '#title' => 'Entity',
       '#required' => TRUE,
       '#placeholder' => 'Enter ID/UUID of the entity',
+      '#value' => $entity,
     );
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['save_modal'] = array(

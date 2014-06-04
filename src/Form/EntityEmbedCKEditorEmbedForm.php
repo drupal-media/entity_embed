@@ -2,22 +2,21 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Form\EntityEmbedCKEditorForm
+ * Contains \Drupal\entity_embed\Form\EntityEmbedCKEditorEmbedForm
  */
 
 namespace Drupal\entity_embed\Form;
 
-use Drupal\Component\Uuid\Uuid;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
-use Drupal\entity_embed\Ajax\EntityEmbedDialogSave;
+use Drupal\entity_embed\Ajax\EntityEmbedSubmitDialogSave;
 
 /**
  * Provides a form to embed entities by specifying data attributes.
  */
-class EntityEmbedCKEditorForm extends FormBase {
+class EntityEmbedCKEditorEmbedForm extends FormBase {
 
   /**
    * {@inheritdoc}
@@ -30,27 +29,33 @@ class EntityEmbedCKEditorForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, array &$form_state) {
+    $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
+
+    // Set the existing values from previous step as hidden fields.
+    $existing_values = $form_state['input']['editor_object'];
+    $form['embed_method'] = array(
+      '#type' => 'hidden',
+      '#name' => 'embed_method',
+      '#value' => $existing_values['embed-method'],
+    );
     $form['entity_type'] = array(
-      '#type' => 'select',
+      '#type' => 'hidden',
       '#name' => 'entity_type',
-      '#title' => 'Entity type',
-      '#options' => \Drupal::entityManager()->getEntityTypeLabels(TRUE),
+      '#value' => $existing_values['entity-type'],
     );
     $form['entity'] = array(
-      '#type' => 'textfield',
+      '#type' => 'hidden',
       '#name' => 'entity',
-      '#title' => 'Entity',
-      '#required' => TRUE,
-      '#placeholder' => 'Enter ID/UUID of the entity',
+      '#value' => $existing_values['entity'],
     );
+
+    // Genrate list of view modes for selected entity type.
+    $view_modes = \Drupal::entityManager()->getViewModeOptions($existing_values['entity-type']);
     $form['view_mode'] = array(
       '#type' => 'select',
       '#name' => 'view_mode',
       '#title' => 'View Mode',
-      '#options' => array(
-        'teaser' => 'Teaser',
-        'others' => 'Others',
-      ),
+      '#options' => $view_modes,
     );
     $form['display_links'] = array(
       '#type' => 'checkbox',
@@ -86,7 +91,7 @@ class EntityEmbedCKEditorForm extends FormBase {
     );
 
     // Set editor instance as a hidden field.
-    $editor_instance = $form_state['input']['editor_object']['editor-id'];
+    $editor_instance = $existing_values['editor-id'];
     $form['editor_instance'] = array(
       '#type' => 'hidden',
       '#name' => 'editor_instance',
@@ -102,18 +107,7 @@ class EntityEmbedCKEditorForm extends FormBase {
   public function submitForm(array &$form, array &$form_state) {
     $response = new AjaxResponse();
 
-    // Detect if a valid UUID was specified. Set embed method based based on
-    // whether or not it is a valid UUID.
-    $values = $form_state['values'];
-    $entity = $values['entity'];
-    if (Uuid::isValid($entity)) {
-      $values['embed_method'] = 'uuid';
-    }
-    else {
-      $values['embed_method'] = 'id';
-    }
-
-    $response->addCommand(new EntityEmbedDialogSave($values));
+    $response->addCommand(new EntityEmbedSubmitDialogSave($form_state['values']));
     $response->addCommand(new CloseModalDialogCommand());
 
     return $response;

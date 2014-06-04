@@ -1,7 +1,8 @@
 /**
  * @file
- * Entity Embed plugin.
+ * Entity Embed CKEditor plugin.
  */
+
 (function ($, Drupal, CKEDITOR) {
 
   "use strict";
@@ -19,8 +20,8 @@
         canUndo: true,
         exec: function (editor, override) {
           var dialogSettings = {
-            title: 'Entity Embed',
-            dialogClass: 'entity-embed-dialog',
+            title: 'Select the entity to be embedded',
+            dialogClass: 'entity-select-dialog',
             resizable: false,
             minWidth: 800
           };
@@ -30,7 +31,7 @@
           var saveCallback = function(values) {
           };
           // Open the dialog for the entity embed form.
-          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/embed/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
+          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity_select/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
         }
       });
 
@@ -45,49 +46,5 @@
     }
 
   });
-
-  /**
-   * Function to save the data attributes specified in the modal.
-   */
-  Drupal.AjaxCommands.prototype.entityembedDialogSave = function (ajax, response, status) {
-    var editor_instance = response.values.editor_instance;
-    var editor = CKEDITOR.instances[editor_instance];
-    if (editor.mode == 'wysiwyg') {
-      // Prepare the data attributes from supplied values.
-      var entityDiv = document.createElement('div');
-
-      // Set entity type.
-      entityDiv.setAttribute('data-entity-type', response.values.entity_type);
-
-      // Set entity UUID/ID depending on which method was chosen.
-      if(response.values.embed_method == 'uuid') {
-        entityDiv.setAttribute('data-entity-uuid', response.values.entity);
-      } else {
-        entityDiv.setAttribute('data-entity-id', response.values.entity);
-      }
-
-      // Set view mode.
-      entityDiv.setAttribute('data-view-mode', response.values.view_mode);
-
-      // Set show caption attribute, only if its set in the form.
-      if(response.values.show_caption == 1) {
-        entityDiv.setAttribute('data-show-caption', 'data-show-caption');
-      }
-
-      // Set display links attribute, only if its set in the form.
-      if(response.values.display_links == 1) {
-        entityDiv.setAttribute('data-display-links', 'data-display-links');
-      }
-
-      // Set a placeholder.
-      entityDiv.innerHTML = response.values.entity_type + ": " + response.values.entity;
-
-      // Generate HTML of the DOM Object.
-      var entityHTML = entityDiv.outerHTML;
-
-      var existingContent = editor.getData();
-      editor.setData(existingContent + entityHTML);
-    }
-  };
 
 })(jQuery, Drupal, CKEDITOR);

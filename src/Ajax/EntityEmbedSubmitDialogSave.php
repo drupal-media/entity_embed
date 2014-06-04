@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Ajax\EntityEmbedDialogSave
+ * Contains \Drupal\entity_embed\Ajax\EntityEmbedSubmitDialogSave
  */
 
 namespace Drupal\entity_embed\Ajax;
@@ -11,8 +11,11 @@ use Drupal\Core\Ajax\CommandInterface;
 
 /**
  * Provides an AJAX command for saving the contents of an entity_embed dialog.
+ *
+ * This command is implemented in entity_embed.ajax.js in
+ * Drupal.AjaxCommands.prototype.entityembedSubmitDialogSave.
  */
-class EntityEmbedDialogSave implements CommandInterface {
+class EntityEmbedSubmitDialogSave implements CommandInterface {
 
   /**
    * An array of values that will be passed back to the editor by the dialog.
@@ -22,7 +25,7 @@ class EntityEmbedDialogSave implements CommandInterface {
   protected $values;
 
   /**
-   * Constructs a EntityEmbedDialogSave object.
+   * Constructs a EntityEmbedSubmitDialogSave object.
    *
    * @param string $values
    *   The values that should be passed to the form constructor in Drupal.
@@ -36,7 +39,7 @@ class EntityEmbedDialogSave implements CommandInterface {
    */
   public function render() {
     return array(
-      'command' => 'entityembedDialogSave',
+      'command' => 'entityembedSubmitDialogSave',
       'values' => $this->values,
     );
   }

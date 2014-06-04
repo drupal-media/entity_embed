@@ -50,7 +50,7 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
     );
 
     // Genrate list of view modes for selected entity type.
-    $view_modes = \Drupal::entityManager()->getViewModeOptions($existing_values['entity_type']);
+    $view_modes = \Drupal::entityManager()->getViewModeOptions($existing_values['entity-type']);
     $form['view_mode'] = array(
       '#type' => 'select',
       '#name' => 'view_mode',

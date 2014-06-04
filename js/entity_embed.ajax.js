@@ -34,6 +34,31 @@
   };
 
   /**
+   * Function to go to back to first step of the embed form.
+   */
+  Drupal.AjaxCommands.prototype.entityembedSubmitDialogGoBack = function (ajax, response, status) {
+    var editor_instance = response.values.editor_instance;
+    var editor = CKEDITOR.instances[editor_instance];
+    // Configure the dialog for the previous step.
+    var dialogSettings = {
+      title: 'Embed Entity',
+      dialogClass: 'entity-embed-dialog',
+      resizable: false,
+      minWidth: 800
+    };
+
+    // Populate existing values, i.e. embed_method, entity_type and entity.
+    var existingValues = {};
+    existingValues['entity-type'] = response.values.entity_type;
+    existingValues['entity'] = response.values.entity;
+    existingValues['editor-id'] = editor.name;
+    var saveCallback = function(values) {
+    };
+    // Open the dialog for the entity embed form.
+    Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity_select/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
+  };
+
+  /**
    * Function to save the data attributes specified in the modal.
    */
   Drupal.AjaxCommands.prototype.entityembedSubmitDialogSave = function (ajax, response, status) {

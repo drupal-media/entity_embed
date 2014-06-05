@@ -37,13 +37,12 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    * {@inheritdoc}
    */
   public function build() {
-    // Load the node, you can also create a temporary object or have your own
-    // dummy object that implements EntityInterface. (Might need ContentEntityInterface, not sure).
+    // Create a temporary node object to which our fake field value can be
+    // added.
     $node = Node::create(array('type' => '_entity_embed'));
 
     // Create the field definition, some might need more settings, it currently
     // doesn't load in the field type defaults. https://drupal.org/node/2116341
-    // Field name is only set to avoid broken CSS classes.
     $definition = $this->getFieldDefinition();
     // Ensure that the field name is unique each time this is run.
     $definition->setName('_entity_embed_' . $this->getAttributeValue('token'));
@@ -64,8 +63,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     }
 
     $formatter = $this->getFormatter($definition);
-    // Prepare, expects an array of items, keyed by parent entity ID, not sure if
-    // actually used, just array($items) worked too.
+    // Prepare, expects an array of items, keyed by parent entity ID.
     $formatter->prepareView(array($node->id() => $items));
     $build = $formatter->viewElements($items);
     show($build[0]);

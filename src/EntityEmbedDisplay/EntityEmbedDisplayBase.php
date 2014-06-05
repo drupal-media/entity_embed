@@ -41,6 +41,18 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
     $this->setConfiguration($configuration);
   }
 
+  /**
+   * Gets a configuration value.
+   *
+   * @param string $name
+   *   The name of the plugin configuration value.
+   * @param mixed $default
+   *   The default value to return if the configuration value does not exist.
+   *
+   * @return mixed
+   *    The currently set configuration value, or the value of $default if the
+   *    configuration value is not set.
+   */
   public function getConfigurationValue($name, $default = NULL) {
     $configuration = $this->getConfiguration();
     return array_key_exists($name, $configuration) ? $configuration[$name] : $default;
@@ -59,22 +71,57 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
     $this->context[$name] = $value;
   }
 
+  /**
+   * Gets the values for all defined contexts.
+   *
+   * @return array
+   *   An array of set context values, keyed by context name.
+   */
   public function getContextValues() {
     return $this->context;
   }
 
+  /**
+   * Gets the value for a defined context.
+   *
+   * @param string $name
+   *   The name of the context in the plugin configuration.
+   *
+   * @return mixed
+   *    The currently set context value.
+   */
   public function getContextValue($name) {
     return $this->context[$name];
   }
-
+  /**
+   * Sets the values for all attributes.
+   *
+   * @param array $attributes
+   *   An array of attributes, keyed by attribute name.
+   */
   public function setAttributes(array $attributes) {
     $this->attributes = $attributes;
   }
 
+  /**
+   * Gets the values for all attributes.
+   *
+   * @return array
+   *   An array of set attribute values, keyed by attribute name.
+   */
   public function getAttributeValues() {
     return $this->attributes;
   }
 
+  /**
+   * Gets the value for an attribute.
+   *
+   * @param string $name
+   *   The name of the attribute.
+   *
+   * @return mixed
+   *    The currently set attribute value.
+   */
   public function getAttributeValue($name, $default = NULL) {
     $attributes = $this->getAttributeValues();
     return array_key_exists($name, $attributes) ? $attributes[$name] : $default;

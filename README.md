@@ -31,6 +31,6 @@ A more advanced use for embedding entities uses an entity embed display plugin, 
 - file:_formatter_id_: Renders the entity using a specific File field formatter. This will only work if the entity is a file entity type.
 - image:_formatter_id_: Renders the entity using a specific Image field formatter. This will only work if the entity is a file entity type, and the file is an image.
 
-Configuration for the display plugin can be provided by using a data-entity-embed-settings attribute, which contains a JSON-encoded array value.
+Configuration for the display plugin can be provided by using a data-entity-embed-settings attribute, which contains a JSON-encoded array value. Note that care must be used to use single quotes around the attribute value since JSON-encoded arrays typically contain double quotes.
 
 The above example renders the entity using the _entity_reference_entity_view_ formatter from the Entity Reference module, using the _teaser_ view mode.

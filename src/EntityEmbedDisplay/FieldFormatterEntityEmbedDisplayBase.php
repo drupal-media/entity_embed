@@ -15,38 +15,23 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   /**
    * Get the FieldDefinition object required to render this field's formatter.
    *
-   * @return \Drupal\Core\Field\FieldDefinitionInterface
+   * @return \Drupal\Core\Field\FieldDefinition
    *   The field definition.
    *
    * @see \Drupal\entity_embed\FieldFormatterEntityEmbedDisplayBase::build()
    */
   abstract public function getFieldDefinition();
 
+  /**
+   * Get the field value required to pass into the field formatter.
+   *
+   * @param \Drupal\Core\Field\FieldDefinition $definition
+   *   The field definition.
+   *
+   * @return mixed
+   *   The field value.
+   */
   abstract public function getFieldValue(FieldDefinition $definition);
-
-  public function getFormatter(FieldDefinition $definition = NULL) {
-    if (!isset($definition)) {
-      $definition = $this->getFieldDefinition();
-    }
-
-    // Ensure that the field name is unique each time this is run.
-    $definition->setName('_entity_embed_' . $this->getAttributeValue('token'));
-
-    $display = array(
-      'type' => $this->getDerivativeId(),
-      'settings' => $this->getConfiguration(),
-      'label' => 'hidden',
-    );
-
-    /* @var \Drupal\Core\Field\FormatterInterface $formatter */
-    // Create the formatter plugin. Will use the default formatter for that field
-    // type if none is passed.
-    return \Drupal::service('plugin.manager.field.formatter')->getInstance(array(
-      'field_definition' => $definition,
-      'view_mode' => '_entity_embed',
-      'configuration' => $display,
-    ));
-  }
 
   /**
    * {@inheritdoc}
@@ -100,5 +85,38 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    */
   public function buildConfigurationForm(array $form, array &$form_state) {
     $this->getFormatter()->settingsForm($form, $form_state);
+  }
+
+  /**
+   * Constructs a \Drupal\Core\Field\FormatterInterface object.
+   *
+   * @param \Drupal\Core\Field\FieldDefinition $definition
+   *   The field definition.
+   *
+   * @return \Drupal\Core\Field\FormatterInterface
+   *   The formatter object.
+   */
+  protected function getFormatter(FieldDefinition $definition = NULL) {
+    if (!isset($definition)) {
+      $definition = $this->getFieldDefinition();
+    }
+
+    // Ensure that the field name is unique each time this is run.
+    $definition->setName('_entity_embed_' . $this->getAttributeValue('token'));
+
+    $display = array(
+      'type' => $this->getDerivativeId(),
+      'settings' => $this->getConfiguration(),
+      'label' => 'hidden',
+    );
+
+    /* @var \Drupal\Core\Field\FormatterInterface $formatter */
+    // Create the formatter plugin. Will use the default formatter for that field
+    // type if none is passed.
+    return \Drupal::service('plugin.manager.field.formatter')->getInstance(array(
+      'field_definition' => $definition,
+      'view_mode' => '_entity_embed',
+      'configuration' => $display,
+    ));
   }
 }

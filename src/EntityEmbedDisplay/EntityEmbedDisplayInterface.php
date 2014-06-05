@@ -29,7 +29,7 @@ interface EntityEmbedDisplayInterface extends ConfigurablePluginInterface, Plugi
    *   The user session for which to check access.
    *
    * @return bool
-   *   TRUE if the entity embe display can be used, or FALSE otherwise.
+   *   TRUE if this entity embed display plugin can be used, or FALSE otherwise.
    */
   public function access(AccountInterface $account = NULL);
 

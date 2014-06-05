@@ -42,6 +42,104 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function access(AccountInterface $account = NULL) {
+    // @todo Add a hook_entity_embed_display_access()?
+
+    // Check that the plugin's registered entity types matches the current
+    // entity type.
+    if (!$this->isValidEntityType()) {
+      return FALSE;
+    }
+
+    // Check that the entity itself can be viewed by the user.
+    return $this->getContextValue('entity')->access('view', $account);
+  }
+
+  /**
+   * Validate that this display plugin applies to the current entity type.
+   *
+   * This checks the plugin annotation's 'entity_types' value, which should be
+   * an array of entity types that this plugin can process, or FALSE if the
+   * plugin applies to all entity types.
+   *
+   * @return bool
+   *   TRUE if the plugin can display the current entity type, or FALSE
+   *   otherwise.
+   */
+  protected function isValidEntityType() {
+    $definition = $this->getPluginDefinition();
+    if ($definition['entity_types'] === FALSE) {
+      return TRUE;
+    }
+    else {
+      $entity_type = $this->getContextValue('entity')->getEntityTypeId();
+      return in_array($entity_type, $definition['entity_types']);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  abstract public function build();
+
+  /**
+   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::calculateDependencies().
+   */
+  public function calculateDependencies() {
+    return array();
+  }
+
+  /**
+   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::defaultConfiguration().
+   */
+  public function defaultConfiguration() {
+    return array();
+  }
+
+  /**
+   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::getConfiguration().
+   */
+  public function getConfiguration() {
+    return $this->configuration;
+  }
+
+  /**
+   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::setConfiguration().
+   */
+  public function setConfiguration(array $configuration) {
+    $this->configuration = NestedArray::mergeDeep(
+      $this->defaultConfiguration(),
+      $configuration
+    );
+    return $this;
+  }
+
+  /**
+   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::buildConfiguration().
+   */
+  public function buildConfigurationForm(array $form, array &$form_state) {
+    return array();
+  }
+
+  /**
+   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::validateConfigurationForm().
+   */
+  public function validateConfigurationForm(array &$form, array &$form_state) {
+    // Do nothing.
+  }
+
+  /**
+   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::submitConfigurationForm().
+   */
+  public function submitConfigurationForm(array &$form, array &$form_state) {
+    if (!form_get_errors($form_state)) {
+      $this->configuration = array_intersect_key($form_state['values'], $this->defaultConfiguration());
+    }
+  }
+
+  /**
    * Gets a configuration value.
    *
    * @param string $name
@@ -93,6 +191,7 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
   public function getContextValue($name) {
     return $this->context[$name];
   }
+
   /**
    * Sets the values for all attributes.
    *
@@ -125,103 +224,5 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
   public function getAttributeValue($name, $default = NULL) {
     $attributes = $this->getAttributeValues();
     return array_key_exists($name, $attributes) ? $attributes[$name] : $default;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function access(AccountInterface $account = NULL) {
-    // @todo Add a hook_entity_embed_display_access()?
-
-    // Check that the plugin's registered entity types matches the current
-    // entity type.
-    if (!$this->isValidEntityType()) {
-      return FALSE;
-    }
-
-    // Check that the entity itself can be viewed by the user.
-    return $this->getContextValue('entity')->access('view', $account);
-  }
-
-  /**
-   * Validate that this display plugin applies to the current entity type.
-   *
-   * This checks the plugin annotation's 'entity_types' value, which should be
-   * an array of entity types that this plugin can process, or FALSE if the
-   * plugin applies to all entity types.
-   *
-   * @return bool
-   *   TRUE if the plugin can display the current entity type, or FALSE
-   *   otherwise.
-   */
-  protected function isValidEntityType() {
-    $definition = $this->getPluginDefinition();
-    if ($definition['entity_types'] === FALSE) {
-      return TRUE;
-    }
-    else {
-      $entity_type = $this->getContextValue('entity')->getEntityTypeId();
-      return in_array($entity_type, $definition['entity_types']);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  abstract public function build();
-
-  /**
-   * {@inheritdoc}
-   */
-  public function calculateDependencies() {
-    return array();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function defaultConfiguration() {
-    return array();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getConfiguration() {
-    return $this->configuration;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setConfiguration(array $configuration) {
-    $this->configuration = NestedArray::mergeDeep(
-      $this->defaultConfiguration(),
-      $configuration
-    );
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildConfigurationForm(array $form, array &$form_state) {
-    return array();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateConfigurationForm(array &$form, array &$form_state) {
-    // Do nothing.
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitConfigurationForm(array &$form, array &$form_state) {
-    if (!form_get_errors($form_state)) {
-      $this->configuration = array_intersect_key($form_state['values'], $this->defaultConfiguration());
-    }
   }
 }

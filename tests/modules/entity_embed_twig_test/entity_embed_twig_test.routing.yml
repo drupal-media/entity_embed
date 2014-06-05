@@ -1,0 +1,6 @@
+entity_embed_twig_test.entity_embed_twig_test:
+  path: '/entity_embed_twig_test'
+  defaults:
+    _content: '\Drupal\entity_embed_twig_test\EntityEmbedTwigTestController::render'
+  requirements:
+    _access: 'TRUE'

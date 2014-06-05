@@ -2,3 +2,7 @@ services:
   plugin.manager.entity_embed.display:
     class: Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler']
+  entity_embed.twig.entity_embed_twig_extension:
+    class: Drupal\entity_embed\Twig\EntityEmbedTwigExtension
+    tags:
+      - { name: twig.extension }

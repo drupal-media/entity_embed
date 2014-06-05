@@ -1,0 +1,5 @@
+name: 'Entity Embed Twig test'
+type: module
+description: 'Testing of {{ entity_embed() }}'
+# package: Testin
+core: 8.x

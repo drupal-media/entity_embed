@@ -81,7 +81,11 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       $status_messages = array('#theme' => 'status_messages');
       $output = drupal_render($form);
       $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
-      $response->addCommand(new HtmlCommand('#entity-embed-ckeditor-select-form', $output));
+      # Using drupal_html_class() to obtain hypen separated form id. Using
+      # drupal_html_id() instead results in adding an unnecessary counter at the
+      # end of the string.
+      $form_id = '#' . drupal_html_class($form_state['values']['form_id']);
+      $response->addCommand(new HtmlCommand($form_id, $output));
     }
     else {
       // Detect if a valid UUID was specified. Set embed method based based on

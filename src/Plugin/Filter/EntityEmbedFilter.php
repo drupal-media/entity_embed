@@ -93,7 +93,6 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       foreach ($xpath->query('//*[@data-entity-type and (@data-entity-uuid or @data-entity-id) and (@data-entity-embed-display or @data-view-mode)]') as $node) {
         $entity_type = $node->getAttribute('data-entity-type');
         $entity = NULL;
-        $view_mode = $node->getAttribute('data-view-mode');
 
         try {
           // Load the entity either by UUID (preferred) or ID.

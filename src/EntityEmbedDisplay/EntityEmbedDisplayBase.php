@@ -58,7 +58,7 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
   }
 
   /**
-   * Validate that this display plugin applies to the current entity type.
+   * Validates that this display plugin applies to the current entity type.
    *
    * This checks the plugin annotation's 'entity_types' value, which should be
    * an array of entity types that this plugin can process, or FALSE if the

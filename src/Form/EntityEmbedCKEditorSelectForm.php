@@ -42,6 +42,7 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       '#type' => 'textfield',
       '#name' => 'entity',
       '#title' => 'Entity',
+      '#maxlength' => 128,
       '#required' => TRUE,
       '#placeholder' => 'Enter ID/UUID of the entity',
     );

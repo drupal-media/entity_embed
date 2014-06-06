@@ -23,6 +23,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase implements ContainerFactoryPluginInterface {
 
   /**
+   * The entity manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityManagerInterface
+   */
+  protected $entityManager;
+
+  /**
    * {@inheritdoc}
    *
    * @param EntityManagerInterface $entity_manager

@@ -82,7 +82,7 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['go_back'] = array(
       '#type' => 'submit',
-      '#value' => '$this->t(Back'),
+      '#value' => $this->t('Back'),
       // No regular submit-handler. This form only works via JavaScript.
       '#submit' => array(),
       '#ajax' => array(

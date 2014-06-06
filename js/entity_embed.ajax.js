@@ -27,10 +27,8 @@
     existingValues['embed-method'] = response.values.embed_method;
     existingValues['entity'] = response.values.entity;
     existingValues['editor-id'] = editor.name;
-    var saveCallback = function(values) {
-    };
     // Open the dialog for the entity embed form.
-    Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity_embed/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
+    Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity_embed/' + editor.config.drupal.format), existingValues, null, dialogSettings);
   };
 
   /**
@@ -52,10 +50,8 @@
     existingValues['entity-type'] = response.values.entity_type;
     existingValues['entity'] = response.values.entity;
     existingValues['editor-id'] = editor.name;
-    var saveCallback = function(values) {
-    };
     // Open the dialog for the entity embed form.
-    Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity_select/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
+    Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity_select/' + editor.config.drupal.format), existingValues, null, dialogSettings);
   };
 
   /**

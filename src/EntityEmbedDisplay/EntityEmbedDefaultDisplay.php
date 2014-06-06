@@ -37,7 +37,7 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {
     $form['view_mode'] = array(
       '#type' => 'select',
       '#title' => t('View mode'),
-      '#options' => \Drupal::entityManager()->getDisplayModeOptions('view_mode', $this->getAttributeValue('entity-type')),
+      '#options' => $this->entityManager->getDisplayModeOptions('view_mode', $this->getAttributeValue('entity-type')),
       '#default_value' => $this->getConfigurationValue('view_mode'),
       '#required' => TRUE,
     );

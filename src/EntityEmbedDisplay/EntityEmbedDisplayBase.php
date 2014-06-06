@@ -11,16 +11,13 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a base display implementation that most display plugins will extend.
  *
  * @ingroup entity_embed_api
  */
-abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedDisplayInterface, ContainerFactoryPluginInterface{
+abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedDisplayInterface {
 
  /**
   * The context for the plugin.
@@ -39,22 +36,9 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->entityManager = $entity_manager;
     $this->setConfiguration($configuration);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('entity.manager')
-    );
   }
 
   /**

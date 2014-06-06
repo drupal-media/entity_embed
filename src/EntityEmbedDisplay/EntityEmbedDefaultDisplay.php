@@ -6,6 +6,9 @@
  */
 
 namespace Drupal\entity_embed\EntityEmbedDisplay;
+use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Default embed display, which renders the entity using entity_view().
@@ -17,7 +20,30 @@ namespace Drupal\entity_embed\EntityEmbedDisplay;
  *
  * @todo Should this use a derivative? http://cgit.drupalcode.org/page_manager/tree/src/Plugin/Deriver/EntityViewDeriver.php
  */
-class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {
+class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * {@inheritdoc}
+   *
+   * @param EntityManagerInterface $entity_manager
+   *   Needed for displaying entities.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->entityManager = $entity_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity.manager')
+    );
+  }
 
   /**
    * {@inheritdoc}

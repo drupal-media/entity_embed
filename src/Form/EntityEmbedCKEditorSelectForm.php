@@ -23,7 +23,7 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'entity_embed_ckeditor_form';
+    return 'entity_embed_ckeditor_select_form';
   }
 
   /**
@@ -37,6 +37,7 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       '#name' => 'entity_type',
       '#title' => $this->t('Entity type'),
       '#options' => \Drupal::entityManager()->getEntityTypeLabels(TRUE),
+      '#required' => TRUE,
     );
     $form['entity'] = array(
       '#type' => 'textfield',
@@ -76,19 +77,33 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
   public function submitForm(array &$form, array &$form_state) {
     $response = new AjaxResponse();
 
-    // Detect if a valid UUID was specified. Set embed method based based on
-    // whether or not it is a valid UUID.
-    $values = $form_state['values'];
-    $entity = $values['entity'];
-    if (Uuid::isValid($entity)) {
-      $values['embed_method'] = 'uuid';
+    // Display errors in form, if any.
+    if (\Drupal::formBuilder()->getErrors($form_state)) {
+      unset($form['#prefix'], $form['#suffix']);
+      $status_messages = array('#theme' => 'status_messages');
+      $output = drupal_render($form);
+      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
+      # Using drupal_html_class() to obtain hypen separated form id. Using
+      # drupal_html_id() instead results in adding an unnecessary counter at the
+      # end of the string.
+      $form_id = '#' . drupal_html_class($form_state['values']['form_id']);
+      $response->addCommand(new HtmlCommand($form_id, $output));
     }
     else {
-      $values['embed_method'] = 'id';
-    }
+      // Detect if a valid UUID was specified. Set embed method based based on
+      // whether or not it is a valid UUID.
+      $values = $form_state['values'];
+      $entity = $values['entity'];
+      if (Uuid::isValid($entity)) {
+        $values['embed_method'] = 'uuid';
+      }
+      else {
+        $values['embed_method'] = 'id';
+      }
 
-    $response->addCommand(new EntityEmbedSelectDialogSave($values));
-    $response->addCommand(new CloseModalDialogCommand());
+      $response->addCommand(new EntityEmbedSelectDialogSave($values));
+      $response->addCommand(new CloseModalDialogCommand());
+    }
 
     return $response;
   }

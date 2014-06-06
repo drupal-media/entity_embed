@@ -22,7 +22,7 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'entity_embed_ckeditor_form';
+    return 'entity_embed_ckeditor_embed_form';
   }
 
   /**
@@ -56,6 +56,7 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
       '#name' => 'view_mode',
       '#title' => $this->t('View Mode'),
       '#options' => $view_modes,
+      '#required' => TRUE,
     );
     $form['display_links'] = array(
       '#type' => 'checkbox',
@@ -104,11 +105,38 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, array &$form_state) {
+    $entity_type = $form_state['values']['entity_type'];
+    $entity = $form_state['values']['entity'];
+    if (empty($entity_type) || empty($entity)) {
+      $this->setFormError('', $form_state, $this->t('Required fields from previous step of the form are missing. Go back and try again.'));
+    }
+
+    parent::validateForm($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, array &$form_state) {
     $response = new AjaxResponse();
 
-    $response->addCommand(new EntityEmbedSubmitDialogSave($form_state['values']));
-    $response->addCommand(new CloseModalDialogCommand());
+    // Display errors in form, if any.
+    if (\Drupal::formBuilder()->getErrors($form_state)) {
+      unset($form['#prefix'], $form['#suffix']);
+      $status_messages = array('#theme' => 'status_messages');
+      $output = drupal_render($form);
+      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
+      # Using drupal_html_class() to obtain hypen separated form id. Using
+      # drupal_html_id() instead results in adding an unnecessary counter at the
+      # end of the string.
+      $form_id = '#' . drupal_html_class($form_state['values']['form_id']);
+      $response->addCommand(new HtmlCommand($form_id, $output));
+    }
+    else {
+      $response->addCommand(new EntityEmbedSubmitDialogSave($form_state['values']));
+      $response->addCommand(new CloseModalDialogCommand());
+    }
 
     return $response;
   }

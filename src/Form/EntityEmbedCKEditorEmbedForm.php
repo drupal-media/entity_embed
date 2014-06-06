@@ -105,6 +105,19 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, array &$form_state) {
+    $entity_type = $form_state['values']['entity_type'];
+    $entity = $form_state['values']['entity'];
+    if (empty($entity_type) || empty($entity)) {
+      $this->setFormError('', $form_state, $this->t('Required fields from previous step of the form are missing. Go back and try again.'));
+    }
+
+    parent::validateForm($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, array &$form_state) {
     $response = new AjaxResponse();
 

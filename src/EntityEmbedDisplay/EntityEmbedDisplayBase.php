@@ -41,6 +41,7 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->entityManager = $entity_manager;
     $this->setConfiguration($configuration);
   }
 

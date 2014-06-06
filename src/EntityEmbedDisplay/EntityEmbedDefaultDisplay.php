@@ -53,8 +53,11 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {
     $view_mode = $this->getConfigurationValue('view_mode');
     $langcode = $this->getAttributeValue('langcode');
 
-    // Build the rendered entity.
-    $build = entity_view($entity, $view_mode, $langcode);
+    // These two lines are essentially entity_view() without the $reset variable
+    // which is not needed here. The injected entityManager property is used
+    // instead of entity_view() for eventual unit-testability.
+    $render_controller = $this->entityManager->getViewBuilder($entity->getEntityTypeId());
+    $build = $render_controller->view($entity, $view_mode, $langcode);
 
     // Hide entity links by default.
     if (isset($build['links'])) {

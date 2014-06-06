@@ -85,28 +85,28 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
   abstract public function build();
 
   /**
-   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::calculateDependencies().
+   * {@inheritdoc}
    */
   public function calculateDependencies() {
     return array();
   }
 
   /**
-   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::defaultConfiguration().
+   * {@inheritdoc}
    */
   public function defaultConfiguration() {
     return array();
   }
 
   /**
-   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::getConfiguration().
+   * {@inheritdoc}
    */
   public function getConfiguration() {
     return $this->configuration;
   }
 
   /**
-   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::setConfiguration().
+   * {@inheritdoc}
    */
   public function setConfiguration(array $configuration) {
     $this->configuration = NestedArray::mergeDeep(
@@ -117,21 +117,21 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
   }
 
   /**
-   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::buildConfiguration().
+   * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, array &$form_state) {
     return array();
   }
 
   /**
-   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::validateConfigurationForm().
+   * {@inheritdoc}
    */
   public function validateConfigurationForm(array &$form, array &$form_state) {
     // Do nothing.
   }
 
   /**
-   * Implements \Drupal\Component\Plugin\ConfigurablePluginInterface::submitConfigurationForm().
+   * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, array &$form_state) {
     if (!form_get_errors($form_state)) {

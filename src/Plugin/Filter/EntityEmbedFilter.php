@@ -253,6 +253,9 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       }
 
       if ($entity = entity_load($context['entity-type'], $context['entity-id'])) {
+        // @todo, This direct usage can be replaced with injection following
+        // https://drupal.org/node/2247779 .
+        // @see https://drupal.org/node/2281487 .
         $manager = \Drupal::service('plugin.manager.entity_embed.display');
         $display = $manager->createInstance($context['entity-embed-display'], $context['entity-embed-settings']);
         $display->setContextValue('entity', $entity);

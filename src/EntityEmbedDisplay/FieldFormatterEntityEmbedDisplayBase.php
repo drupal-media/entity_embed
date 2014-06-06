@@ -66,6 +66,9 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     // Prepare, expects an array of items, keyed by parent entity ID.
     $formatter->prepareView(array($node->id() => $items));
     $build = $formatter->viewElements($items);
+    // For some reason $build[0]['#printed'] is TRUE, which means it will fail
+    // to render later. So for now we manually fix that.
+    // @todo Investigate why this is needed.
     show($build[0]);
     return $build[0];
   }

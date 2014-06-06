@@ -76,7 +76,7 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
     $response = new AjaxResponse();
 
     // Display errors in form, if any.
-    if (form_get_errors($form_state)) {
+    if (\Drupal::formBuilder()->getErrors($form_state)) {
       unset($form['#prefix'], $form['#suffix']);
       $status_messages = array('#theme' => 'status_messages');
       $output = drupal_render($form);

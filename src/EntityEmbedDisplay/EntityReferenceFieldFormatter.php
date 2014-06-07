@@ -9,6 +9,7 @@ namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Field\FieldDefinition;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\entity_embed\EntityHelperTrait;
 
 /**
  * Embed entity displays for entity_reference field formatters.
@@ -22,6 +23,7 @@ use Drupal\Core\Session\AccountInterface;
  * )
  */
 class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase {
+  use EntityHelperTrait;
 
   /**
    * {@inheritdoc}
@@ -51,8 +53,10 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
       case 'entity_reference_entity_view':
         // Cannot render an entity if it does not have a view controller.
         // @todo Remove when https://drupal.org/node/2204325 is fixed in core.
-        $entity_type = $this->getContextValue('entity')->getEntityTypeId();
-        return $this->entityManager->hasController($entity_type, 'view_builder');
+        // The entity manager is not injected via dependency here because
+        // ideally we resolve the core issue here rather than a concern about
+        // proper testability here on a one-off basis.
+        return $this->canRenderEntity($this->getContextValue('entity'));
 
       default:
         return TRUE;

@@ -12,6 +12,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\entity_embed\RecursiveRenderingException;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
@@ -28,13 +29,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * The entity manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
-   */
-  protected $entityManager;
+  use EntityHelperTrait;
 
   /**
    * The Module Handler.
@@ -59,7 +54,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->entityManager = $entity_manager;
+    $this->setEntityManager($entity_manager);
     $this->moduleHandler = $module_handler;
   }
 
@@ -92,28 +87,17 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
         try {
           // Load the entity either by UUID (preferred) or ID.
-          if ($node->hasAttribute('data-entity-uuid')) {
-            $uuid = $node->getAttribute('data-entity-uuid');
+          $id = $node->getAttribute('data-entity-uuid') ?: $node->getAttribute('data-entity-id');
+          $entity = $this->loadEntity($entity_type, $id);
 
-            $entity_type_definition = $this->entityManager->getDefinition($entity_type);
-            $uuid_key = $entity_type_definition->getKey('uuid');
-            $controller = $this->entityManager->getStorage($entity_type);
-            $entities = $controller->loadByProperties(array($uuid_key => $uuid));
-            $entity = reset($entities);
-          }
-          elseif ($node->hasAttribute('data-entity-id')) {
-            $id = $node->getAttribute('data-entity-id');
-
-            $controller = $this->entityManager->getStorage($entity_type);
-            $entity = $controller->load($id);
-
-            // Add the entity UUID attribute to the parent node.
-            if ($entity && $uuid = $entity->uuid()) {
+          if ($entity) {
+            // If a UUID was not used, but is available, add it to the HTML.
+            if (!$node->getAttribute('data-entity-uuid') && $uuid = $entity->uuid()) {
               $node->setAttribute('data-entity-uuid', $uuid);
             }
           }
 
-          if (!empty($entity)) {
+          if ($entity) {
             $context = array();
 
             // Set the initial langcode but it can be overridden by a data

@@ -10,6 +10,7 @@ namespace Drupal\entity_embed\EntityEmbedDisplay;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\entity_embed\EntityHelperTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -23,23 +24,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @todo Should this use a derivative? http://cgit.drupalcode.org/page_manager/tree/src/Plugin/Deriver/EntityViewDeriver.php
  */
 class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * The entity manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
-   */
-  protected $entityManager;
+  use EntityHelperTrait;
 
   /**
    * {@inheritdoc}
    *
-   * @param EntityManagerInterface $entity_manager
-   *   Needed for displaying entities.
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   *   The entity manager service.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->entityManager = $entity_manager;
+    $this->setEntityManager($entity_manager);
   }
 
   /**
@@ -63,8 +58,7 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase implements Contai
     }
 
     // Cannot render an entity if it does not have a view controller.
-    $entity_type = $this->getContextValue('entity')->getEntityTypeId();
-    return $this->entityManager->hasController($entity_type, 'view_builder');
+    return $this->canRenderEntity($this->getContextValue('entity'));
   }
 
   /**
@@ -85,7 +79,7 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase implements Contai
     $form['view_mode'] = array(
       '#type' => 'select',
       '#title' => t('View mode'),
-      '#options' => $this->entityManager->getViewModeOptions($this->getAttributeValue('entity-type')),
+      '#options' => $this->entityManager()->getViewModeOptions($this->getAttributeValue('entity-type')),
       '#default_value' => $this->getConfigurationValue('view_mode'),
       '#required' => TRUE,
     );
@@ -100,13 +94,6 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase implements Contai
     $entity = $this->getContextValue('entity');
     $view_mode = $this->getConfigurationValue('view_mode');
     $langcode = $this->getAttributeValue('langcode');
-
-    // These two lines are essentially entity_view() without the $reset variable
-    // which is not needed here. The injected entityManager property is used
-    // instead of entity_view() for eventual unit-testability.
-    $render_controller = $this->entityManager->getViewBuilder($entity->getEntityTypeId());
-    $build = $render_controller->view($entity, $view_mode, $langcode);
-
-    return $build;
+    return $this->renderEntity($entity, $view_mode, $langcode);
   }
 }

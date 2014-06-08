@@ -70,7 +70,7 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase implements Contai
     $form['view_mode'] = array(
       '#type' => 'select',
       '#title' => t('View mode'),
-      '#options' => $this->entityManager->getViewModeOptions('view_mode', $this->getAttributeValue('entity-type')),
+      '#options' => $this->entityManager->getViewModeOptions($this->getAttributeValue('entity-type')),
       '#default_value' => $this->getConfigurationValue('view_mode'),
       '#required' => TRUE,
     );

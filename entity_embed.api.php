@@ -30,6 +30,22 @@ function hook_entity_embed_context_alter(array &$context, &$callback, \Drupal\Co
 }
 
 /**
+ * Act on an entity before it is about to be rendered in an embed.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity object.
+ * @param array $context
+ *   The context array.
+ */
+function hook_entity_preembed(\Drupal\Core\Entity\EntityInterface $entity, array $context) {
+  if (isset($context['overrides']) && is_array($context['overrides'])) {
+    foreach ($context['overrides'] as $key => $value) {
+      $entity->key = $value;
+    }
+  }
+}
+
+/**
  * Alter the result of \Drupal\entity_embed\EntityEmbedDisplayBase::build().
  *
  * This hook is called after the content has been assembled in a structured

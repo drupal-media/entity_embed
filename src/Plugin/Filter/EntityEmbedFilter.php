@@ -257,7 +257,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
         // https://drupal.org/node/2247779 .
         // @see https://drupal.org/node/2281487 .
         // Allow modules to alter the entity prior to display rendering.
-        \Drupal::moduleHandler()->invokeAll('entity_preembed', $entity, $context);
+        \Drupal::moduleHandler()->invokeAll('entity_preembed', array($entity, $context));
         // Build the display plugin.
         $manager = \Drupal::service('plugin.manager.entity_embed.display');
         $display = $manager->createInstance($context['entity-embed-display'], $context['entity-embed-settings']);

@@ -11,6 +11,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
+use Drupal\entity_embed\Ajax\EntityEmbedSubmitDialogGoBack;
 use Drupal\entity_embed\Ajax\EntityEmbedSubmitDialogSave;
 
 /**
@@ -80,6 +81,16 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
       '#title' => $this->t('Show Caption'),
     );
     $form['actions'] = array('#type' => 'actions');
+    $form['actions']['go_back'] = array(
+      '#type' => 'submit',
+      '#value' => $this->t('Back'),
+      // No regular submit-handler. This form only works via JavaScript.
+      '#submit' => array(),
+      '#ajax' => array(
+        'callback' => array($this, 'goBack'),
+        'event' => 'click',
+      ),
+    );
     $form['actions']['save_modal'] = array(
       '#type' => 'submit',
       '#value' => $this->t('Save'),
@@ -137,6 +148,23 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
       $response->addCommand(new EntityEmbedSubmitDialogSave($form_state['values']));
       $response->addCommand(new CloseModalDialogCommand());
     }
+
+    return $response;
+  }
+
+  /**
+   * Form submission handler to go back to the previous step of the form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param array $form_state
+   *   An associative array containing the current state of the form.
+   */
+  public function goBack(array &$form, array &$form_state) {
+    $response = new AjaxResponse();
+
+    $response->addCommand(new EntityEmbedSubmitDialogGoBack($form_state['values']));
+    $response->addCommand(new CloseModalDialogCommand());
 
     return $response;
   }

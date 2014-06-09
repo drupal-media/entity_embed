@@ -32,6 +32,17 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
   public function buildForm(array $form, array &$form_state) {
     $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
 
+    $entity_type = null;
+    $entity = null;
+    // Get the existing values (if any).
+    $existing_values = $form_state['input']['editor_object'];
+    if (isset($existing_values['entity_type'])) {
+      $entity_type = $existing_values['entity-type'];
+    }
+    if (isset($existing_values['entity'])) {
+      $entity = $existing_values['entity'];
+    }
+
     $form['entity_type'] = array(
       '#type' => 'select',
       '#name' => 'entity_type',
@@ -59,6 +70,14 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
         'event' => 'click',
       ),
     );
+
+    // Set default values if existing values were set.
+    if ($entity_type) {
+      $form['entity_type']['#default_value'] = $entity_type;
+    }
+    if ($entity) {
+      $form['entity']['#default_value'] = $entity;
+    }
 
     // Set editor instance as a hidden field.
     $editor_instance = $form_state['input']['editor_object']['editor-id'];

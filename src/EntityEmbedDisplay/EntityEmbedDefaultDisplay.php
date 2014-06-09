@@ -55,6 +55,19 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase implements Contai
   /**
    * {@inheritdoc}
    */
+  public function access(AccountInterface $account = NULL) {
+    if (!parent::access($account)) {
+      return FALSE;
+    }
+
+    // Cannot render an entity if it does not have a view controller.
+    $entity_type = $this->getContextValue('entity')->getEntityTypeId();
+    return $this->entityManager->hasController($entity_type, 'view_builder');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function defaultConfiguration() {
     return array(
       'view_mode' => 'embed',

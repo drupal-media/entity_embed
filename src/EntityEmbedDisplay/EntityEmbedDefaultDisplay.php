@@ -105,11 +105,6 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase implements Contai
     $render_controller = $this->entityManager->getViewBuilder($entity->getEntityTypeId());
     $build = $render_controller->view($entity, $view_mode, $langcode);
 
-    // Hide entity links by default.
-    if (isset($build['links'])) {
-      $build['links']['#access'] = FALSE;
-    }
-
     return $build;
   }
 }

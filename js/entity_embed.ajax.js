@@ -82,11 +82,6 @@
         entityDiv.setAttribute('data-show-caption', 'data-show-caption');
       }
 
-      // Set display links attribute, only if its set in the form.
-      if(response.values.display_links == 1) {
-        entityDiv.setAttribute('data-display-links', 'data-display-links');
-      }
-
       // Set a placeholder.
       entityDiv.innerHTML = response.values.entity_type + ": " + response.values.entity;
 

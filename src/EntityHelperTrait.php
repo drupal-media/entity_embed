@@ -9,6 +9,7 @@ namespace Drupal\entity_embed;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Wrapper methods for entity loading and rendering.
@@ -106,6 +107,39 @@ trait EntityHelperTrait {
   protected function renderEntity(EntityInterface $entity, $view_mode, $langcode = NULL) {
     $render_controller = $this->entityManager()->getViewBuilder($entity->getEntityTypeId());
     return $render_controller->view($entity, $view_mode, $langcode);
+  }
+
+  protected function accessEntity(EntityInterface $entity, $op = 'view', AccountInterface $account = NULL) {
+    switch ($entity->getEntityTypeId()) {
+      case 'file':
+        // Due to issues with access checking with file entities in core, we cannot
+        // actually use Entity::access() which would have been called by
+        // parent::access().
+        // @see https://drupal.org/node/2128791
+        // @see https://drupal.org/node/2148353
+        // @see https://drupal.org/node/2078473
+        switch (file_uri_scheme($this->getContextValue('entity')->getFileUri())) {
+          case 'public':
+            return TRUE;
+
+          case 'private':
+          case 'temporary':
+            $headers = $this->moduleHandler()->invokeAll('file_download', array($uri));
+            foreach ($headers as $result) {
+              if ($result == -1) {
+                return FALSE;
+              }
+            }
+
+            if (count($headers)) {
+              return TRUE;
+            }
+            break;
+        }
+
+      default:
+        return $entity->access('view', $account);
+    }
   }
 
   /**

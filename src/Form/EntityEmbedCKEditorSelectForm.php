@@ -100,8 +100,8 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       $id = trim($form_state['values']['entity']);
       try {
         if ($entity = $this->loadEntity($entity_type, $id)) {
-          if (!$entity->access('view')) {
-            $this->setFormError('entity', $form_state, $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)))
+          if (!$this->accessEntity($entity, 'view')) {
+            $this->setFormError('entity', $form_state, $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
           }
           else {
             // @todo Should probably be setting the embed_mode value here since we

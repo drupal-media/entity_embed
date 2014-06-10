@@ -155,7 +155,10 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
         if ($entity_type = $form_state['values']['attributes']['data-entity-type']) {
           $id = trim($form_state['values']['attributes']['data-entity-id']);
           if ($entity = $this->loadEntity($entity_type, $id)) {
-            if ($uuid = $entity->uuid()) {
+            if (!$this->accessEntity($entity, 'view')) {
+              $this->setFormError('entity', $form_state, $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
+            }
+            elseif ($uuid = $entity->uuid()) {
               \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], $uuid, $form_state);
               \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], '', $form_state);
             }

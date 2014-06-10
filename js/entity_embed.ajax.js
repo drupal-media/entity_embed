@@ -15,7 +15,6 @@
     var editor = CKEDITOR.instances[editor_instance];
     if (editor.mode == 'wysiwyg') {
       var attributes = response.values.attributes;
-      console.log(attributes);
       // Prepare the data attributes from supplied values.
       var entityDiv = document.createElement('div');
 

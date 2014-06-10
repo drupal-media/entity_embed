@@ -20,7 +20,7 @@
         canUndo: true,
         exec: function (editor, override) {
           var dialogSettings = {
-            title: 'Select the entity to be embedded',
+            title: 'Insert Entity',
             dialogClass: 'entity-select-dialog',
             resizable: false,
             minWidth: 800

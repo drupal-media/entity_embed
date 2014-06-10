@@ -11,7 +11,7 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityStorageException;
 
 /**
- * Wrapper methods for the Link Generator and Url Generator.
+ * Wrapper methods for entity loading and rendering.
  *
  * This utility trait should only be used in application-level code, such as
  * classes that would implement ContainerInjectionInterface. Services registered
@@ -28,15 +28,32 @@ trait EntityHelperTrait {
   protected $entityManager;
 
   /**
-   * @todo Document.
+   * Loads an entity from the database.
+   *
+   * @param string $entity_type
+   *   The entity type to load, e.g. node or user.
+   * @param mixed $id
+   *   The id or UUID of the entity to load.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The entity object, or NULL if there is no entity with the given id or
+   *   UUID.
    */
   protected function loadEntity($entity_type, $id) {
     $entities = $this->loadMultipleEntities($entity_type, array($id));
-    return reset($entities);
+    return !empty($entities) ? reset($entities) : NULL;
   }
 
   /**
-   * @todo Document.
+   * Loads multiple entities from the database.
+   *
+   * @param string $entity_type
+   *   The entity type to load, e.g. node or user.
+   * @param array $ids
+   *   An array of entity IDs or UUIDs.
+   *
+   * @return array
+   *   An array of entity objects indexed by their ids.
    */
   protected function loadMultipleEntities($entity_type, array $ids) {
     $entities = array();
@@ -59,7 +76,13 @@ trait EntityHelperTrait {
   }
 
   /**
-   * @todo Document.
+   * Determines if an entity can be rendered.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity object.
+   *
+   * @return bool
+   *   TRUE if the entity's type has a view builder controller, otherwise FALSE.
    */
   protected function canRenderEntity(EntityInterface $entity) {
     $entity_type = $entity->getEntityTypeId();
@@ -67,9 +90,20 @@ trait EntityHelperTrait {
   }
 
   /**
-   * @todo Document.
+   * Returns the render array for an entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to be rendered.
+   * @param string $view_mode
+   *   The view mode that should be used to display the entity.
+   * @param string $langcode
+   *   (optional) For which language the entity should be rendered, defaults to
+   *   the current content language.
+   *
+   * @return array
+   *   A render array for the entity.
    */
-  protected function renderEntity(EntityInterface $entity, $view_mode = 'default', $langcode = NULL) {
+  protected function renderEntity(EntityInterface $entity, $view_mode, $langcode = NULL) {
     $render_controller = $this->entityManager()->getViewBuilder($entity->getEntityTypeId());
     return $render_controller->view($entity, $view_mode, $langcode);
   }

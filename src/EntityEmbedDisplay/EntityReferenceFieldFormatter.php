@@ -38,4 +38,25 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
     return array('target_id' => $this->getContextValue('entity')->id());
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function access(AccountInterface $account = NULL) {
+    if (!parent::access($account)) {
+      return FALSE;
+    }
+
+    switch ($this->getDerivativeId()) {
+      case 'entity_reference_entity_view':
+        // Cannot render an entity if it does not have a view controller.
+        // @todo Remove when https://drupal.org/node/2204325 is fixed in core.
+        $entity_type = $this->getContextValue('entity')->getEntityTypeId();
+        return $this->entityManager->hasController($entity_type, 'view_builder');
+
+      default:
+        return TRUE;
+
+    }
+  }
+
 }

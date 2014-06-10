@@ -42,15 +42,15 @@ class EntityEmbedDialog extends FormBase {
       $entity_element += $form_state['values']['attributes'];
     }
     $entity_element += array(
-      'data_entity_type' => NULL,
-      'data_entity_uuid' => '',
-      'data_entity_id' => '',
+      'data-entity-type' => NULL,
+      'data-entity-uuid' => '',
+      'data-entity-id' => '',
       'data_view_mode' => 'default',
     );
 
     if (!isset($form_state['step'])) {
       // If an entity has been selected, then always skip to the embed options.
-      if (!empty($entity_element['data_entity_type']) && (!empty($entity_element['data_entity_uuid']) || !empty($entity_element['data_entity_id']))) {
+      if (!empty($entity_element['data-entity-type']) && (!empty($entity_element['data-entity-uuid']) || !empty($entity_element['data-entity-id']))) {
         $form_state['step'] = 'embed';
       }
       else {
@@ -65,22 +65,22 @@ class EntityEmbedDialog extends FormBase {
 
     switch ($form_state['step']) {
       case 'select':
-        $form['attributes']['data_entity_type'] = array(
+        $form['attributes']['data-entity-type'] = array(
           '#type' => 'select',
           '#title' => $this->t('Entity type'),
-          '#default_value' => $entity_element['data_entity_type'],
+          '#default_value' => $entity_element['data-entity-type'],
           '#options' => $this->entityManager()->getEntityTypeLabels(TRUE),
           '#required' => TRUE,
         );
-        $form['attributes']['data_entity_id'] = array(
+        $form['attributes']['data-entity-id'] = array(
           '#type' => 'textfield',
           '#title' => $this->t('Entity ID or UUID'),
-          '#default_value' => $entity_element['data_entity_uuid'] ?: $entity_element['data_entity_id'],
+          '#default_value' => $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id'],
           '#required' => TRUE,
         );
-        $form['attributes']['data_entity_uuid'] = array(
+        $form['attributes']['data-entity-uuid'] = array(
           '#type' => 'value',
-          '#title' => $entity_element['data_entity_uuid'],
+          '#title' => $entity_element['data-entity-uuid'],
         );
         $form['actions'] = array(
           '#type' => 'actions',
@@ -103,29 +103,29 @@ class EntityEmbedDialog extends FormBase {
         break;
 
       case 'embed':
-        $entity = $this->loadEntity($entity_element['data_entity_type'], $entity_element['data_entity_uuid'] ?: $entity_element['data_entity_id']);
+        $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']);
         $form['entity'] = array(
           '#type' => 'item',
           '#title' => $this->t('Selected entity'),
           '#markup' => $entity->label(),
         );
-        $form['attributes']['data_entity_type'] = array(
+        $form['attributes']['data-entity-type'] = array(
           '#type' => 'value',
-          '#value' => $entity_element['data_entity_type'],
+          '#value' => $entity_element['data-entity-type'],
         );
-        $form['attributes']['data_entity_id'] = array(
+        $form['attributes']['data-entity-id'] = array(
           '#type' => 'value',
-          '#value' => $entity_element['data_entity_id'],
+          '#value' => $entity_element['data-entity-id'],
         );
-        $form['attributes']['data_entity_uuid'] = array(
+        $form['attributes']['data-entity-uuid'] = array(
           '#type' => 'value',
-          '#value' => $entity_element['data_entity_uuid'],
+          '#value' => $entity_element['data-entity-uuid'],
         );
         $form['attributes']['data_view_mode'] = array(
           '#type' => 'select',
           '#name' => 'view_mode',
           '#title' => $this->t('View Mode'),
-          '#options' => $this->entityManager()->getViewModeOptions($entity_element['data_entity_type']),
+          '#options' => $this->entityManager()->getViewModeOptions($entity_element['data-entity-type']),
           '#default_value' => $entity_element['data_view_mode'],
           '#required' => TRUE,
         );
@@ -163,19 +163,19 @@ class EntityEmbedDialog extends FormBase {
   public function validateForm(array &$form, array &$form_state) {
     switch ($form_state['step']) {
       case 'select':
-        if ($entity_type = $form_state['values']['attributes']['data_entity_type']) {
-          $id = trim($form_state['values']['attributes']['data_entity_id']);
+        if ($entity_type = $form_state['values']['attributes']['data-entity-type']) {
+          $id = trim($form_state['values']['attributes']['data-entity-id']);
           if ($entity = $this->loadEntity($entity_type, $id)) {
             if (!$this->accessEntity($entity, 'view')) {
               $this->setFormError('entity', $form_state, $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
             }
             elseif ($uuid = $entity->uuid()) {
-              \Drupal::formBuilder()->setValue($form['attributes']['data_entity_uuid'], $uuid, $form_state);
-              \Drupal::formBuilder()->setValue($form['attributes']['data_entity_id'], '', $form_state);
+              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], $uuid, $form_state);
+              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], '', $form_state);
             }
             else {
-              \Drupal::formBuilder()->setValue($form['attributes']['data_entity_uuid'], '', $form_state);
-              \Drupal::formBuilder()->setValue($form['attributes']['data_entity_id'], $entity->id(), $form_state);
+              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], '', $form_state);
+              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], $entity->id(), $form_state);
             }
           }
           else {

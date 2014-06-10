@@ -45,7 +45,7 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-type' => NULL,
       'data-entity-uuid' => '',
       'data-entity-id' => '',
-      'data_view_mode' => 'default',
+      'data-view-mode' => 'default',
     );
 
     if (!isset($form_state['step'])) {
@@ -121,12 +121,12 @@ class EntityEmbedDialog extends FormBase {
           '#type' => 'value',
           '#value' => $entity_element['data-entity-uuid'],
         );
-        $form['attributes']['data_view_mode'] = array(
+        $form['attributes']['data-view-mode'] = array(
           '#type' => 'select',
           '#name' => 'view_mode',
           '#title' => $this->t('View Mode'),
           '#options' => $this->entityManager()->getViewModeOptions($entity_element['data-entity-type']),
-          '#default_value' => $entity_element['data_view_mode'],
+          '#default_value' => $entity_element['data-view-mode'],
           '#required' => TRUE,
         );
         // @todo Re-add caption and alignment attributes.

@@ -44,13 +44,14 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       $entity_element += $form_state['values']['attributes'];
     }
     $entity_element += array(
-      'data-entity-type' => '',
+      'data-entity-type' => NULL,
       'data-entity-uuid' => '',
       'data-entity-id' => '',
       'data-view-mode' => 'default',
     );
 
     if (!isset($form_state['step'])) {
+      // If an entity has been selected, then always skip to the embed options.
       if (!empty($entity_element['data-entity-type']) && (!empty($entity_element['data-entity-uuid']) || !empty($entity_element['data-entity-id']))) {
         $form_state['step'] = 'embed';
       }
@@ -151,20 +152,21 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
   public function validateForm(array &$form, array &$form_state) {
     switch ($form_state['step']) {
       case 'select':
-        $entity_type = $form_state['values']['attributes']['data-entity-type'];
-        $id = trim($form_state['values']['attributes']['data-entity-id']);
-        if ($entity = $this->loadEntity($entity_type, $id)) {
-          if ($uuid = $entity->uuid()) {
-            \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], $uuid, $form_state);
-            \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], '', $form_state);
+        if ($entity_type = $form_state['values']['attributes']['data-entity-type']) {
+          $id = trim($form_state['values']['attributes']['data-entity-id']);
+          if ($entity = $this->loadEntity($entity_type, $id)) {
+            if ($uuid = $entity->uuid()) {
+              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], $uuid, $form_state);
+              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], '', $form_state);
+            }
+            else {
+              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], '', $form_state);
+              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], $entity->id(), $form_state);
+            }
           }
           else {
-            \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], '', $form_state);
-            \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], $entity->id(), $form_state);
+            $this->setFormError('entity', $form_state, $this->t('Unable to load @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
           }
-        }
-        else {
-          $this->setFormError('entity', $form_state, $this->t('Unable to load @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
         }
         break;
     }

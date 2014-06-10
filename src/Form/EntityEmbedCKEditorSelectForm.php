@@ -13,11 +13,13 @@ use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\entity_embed\Ajax\EntityEmbedSelectDialogSave;
+use Drupal\entity_embed\EntityHelperTrait;
 
 /**
  * Provides a form to embed entities by specifying data attributes.
  */
 class EntityEmbedCKEditorSelectForm extends FormBase {
+  use EntityHelperTrait;
 
   /**
    * {@inheritdoc}
@@ -47,7 +49,7 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       '#type' => 'select',
       '#name' => 'entity_type',
       '#title' => $this->t('Entity type'),
-      '#options' => \Drupal::entityManager()->getEntityTypeLabels(TRUE),
+      '#options' => $this->entityManager()->getEntityTypeLabels(TRUE),
       '#required' => TRUE,
     );
     $form['entity'] = array(
@@ -88,6 +90,21 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
     );
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, array &$form_state) {
+    $entity_type = $form_state['values']['entity_type'];
+    $id = trim($form_state['values']['entity']);
+    if ($entity = $this->loadEntity($entity_type, $id)) {
+      // @todo Should probably be setting the embed_mode value here since we
+      // can grab $entity->uuid() if needed.
+    }
+    else {
+      $this->setFormError('entity', $form_state, $this->t('Unable to load @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
+    }
   }
 
   /**

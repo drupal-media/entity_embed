@@ -13,11 +13,13 @@ use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\entity_embed\Ajax\EntityEmbedSubmitDialogGoBack;
 use Drupal\entity_embed\Ajax\EntityEmbedSubmitDialogSave;
+use Drupal\entity_embed\EntityHelperTrait;
 
 /**
  * Provides a form to embed entities by specifying data attributes.
  */
 class EntityEmbedCKEditorEmbedForm extends FormBase {
+  use EntityHelperTrait;
 
   /**
    * {@inheritdoc}
@@ -51,7 +53,7 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
     );
 
     // Genrate list of view modes for selected entity type.
-    $view_modes = \Drupal::entityManager()->getViewModeOptions($existing_values['entity-type']);
+    $view_modes = $this->entityManager()->getViewModeOptions($existing_values['entity-type']);
     $form['view_mode'] = array(
       '#type' => 'select',
       '#name' => 'view_mode',
@@ -106,19 +108,6 @@ class EntityEmbedCKEditorEmbedForm extends FormBase {
     );
 
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, array &$form_state) {
-    $entity_type = $form_state['values']['entity_type'];
-    $entity = $form_state['values']['entity'];
-    if (empty($entity_type) || empty($entity)) {
-      $this->setFormError('', $form_state, $this->t('Required fields from previous step of the form are missing. Go back and try again.'));
-    }
-
-    parent::validateForm($form, $form_state);
   }
 
   /**

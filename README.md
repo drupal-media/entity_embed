@@ -2,8 +2,8 @@
 
 ## Requirements
 
-* Drupal 8 core must have a current patch from https://drupal.org/node/2217877
-  applied.
+* Drupal 8 core must have a current patch from https://drupal.org/node/2247779
+* applied.
 
 ## Usage
 

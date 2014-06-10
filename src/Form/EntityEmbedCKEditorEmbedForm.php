@@ -17,6 +17,7 @@ use Drupal\entity_embed\EntityHelperTrait;
 
 /**
  * Provides a form to embed entities by specifying data attributes.
+ * @todo Remove this file.
  */
 class EntityEmbedCKEditorEmbedForm extends FormBase {
   use EntityHelperTrait;

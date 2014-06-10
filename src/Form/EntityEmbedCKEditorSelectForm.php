@@ -12,11 +12,13 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
+use Drupal\editor\Ajax\EditorDialogSave;
 use Drupal\entity_embed\Ajax\EntityEmbedSelectDialogSave;
 use Drupal\entity_embed\EntityHelperTrait;
 
 /**
  * Provides a form to embed entities by specifying data attributes.
+ * @todo Rename this to just EntityEmbedDialog?
  */
 class EntityEmbedCKEditorSelectForm extends FormBase {
   use EntityHelperTrait;
@@ -25,69 +27,120 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'entity_embed_ckeditor_select_form';
+    return 'entity_embed_dialog';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, array &$form_state) {
-    $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
-
-    $entity_type = null;
-    $entity = null;
-    // Get the existing values (if any).
-    $existing_values = $form_state['input']['editor_object'];
-    if (isset($existing_values['entity_type'])) {
-      $entity_type = $existing_values['entity-type'];
+    // The default values are set directly from \Drupal::request()->request,
+    // provided by the editor plugin opening the dialog.
+    if (!isset($form_state['entity_element'])) {
+      $form_state['entity_element'] = isset($form_state['input']['editor_object']) ? $form_state['input']['editor_object'] : array();
     }
-    if (isset($existing_values['entity'])) {
-      $entity = $existing_values['entity'];
+    $entity_element = $form_state['entity_element'];
+    if (!empty($form_state['values']['attributes'])) {
+      $entity_element += $form_state['values']['attributes'];
     }
-
-    $form['entity_type'] = array(
-      '#type' => 'select',
-      '#name' => 'entity_type',
-      '#title' => $this->t('Entity type'),
-      '#options' => $this->entityManager()->getEntityTypeLabels(TRUE),
-      '#required' => TRUE,
-    );
-    $form['entity'] = array(
-      '#type' => 'textfield',
-      '#name' => 'entity',
-      '#title' => 'Entity',
-      '#maxlength' => 128,
-      '#title' => $this->t('Entity'),
-      '#required' => TRUE,
-      '#placeholder' => $this->t('Enter ID/UUID of the entity'),
-    );
-    $form['actions'] = array('#type' => 'actions');
-    $form['actions']['save_modal'] = array(
-      '#type' => 'submit',
-      '#value' => $this->t('Next'),
-      // No regular submit-handler. This form only works via JavaScript.
-      '#submit' => array(),
-      '#ajax' => array(
-        'callback' => array($this, 'submitForm'),
-        'event' => 'click',
-      ),
+    $entity_element += array(
+      'data-entity-type' => '',
+      'data-entity-uuid' => '',
+      'data-entity-id' => '',
+      'data-view-mode' => 'default',
     );
 
-    // Set default values if existing values were set.
-    if ($entity_type) {
-      $form['entity_type']['#default_value'] = $entity_type;
-    }
-    if ($entity) {
-      $form['entity']['#default_value'] = $entity;
+    if (!isset($form_state['step'])) {
+      if (!empty($entity_element['data-entity-type']) && (!empty($entity_element['data-entity-uuid']) || !empty($entity_element['data-entity-id']))) {
+        $form_state['step'] = 'embed';
+      }
+      else {
+        $form_state['step'] = 'select';
+      }
     }
 
-    // Set editor instance as a hidden field.
-    $editor_instance = $form_state['input']['editor_object']['editor-id'];
-    $form['editor_instance'] = array(
-      '#type' => 'hidden',
-      '#name' => 'editor_instance',
-      '#value' => $editor_instance,
-    );
+    $form['#tree'] = TRUE;
+    $form['#prefix'] = '<div id="entity-embed-dialog-form">';
+    $form['#suffix'] = '</div>';
+    $form['#attached']['library'][] = 'editor/drupal.editor.dialog';
+
+    switch ($form_state['step']) {
+      case 'select':
+        $form['attributes']['data-entity-type'] = array(
+          '#type' => 'select',
+          '#title' => $this->t('Entity type'),
+          '#default_value' => $entity_element['data-entity-type'],
+          '#options' => $this->entityManager()->getEntityTypeLabels(TRUE),
+          '#required' => TRUE,
+        );
+        $form['attributes']['data-entity-id'] = array(
+          '#type' => 'textfield',
+          '#title' => $this->t('Entity ID or UUID'),
+          '#default_value' => $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id'],
+          '#required' => TRUE,
+        );
+        $form['attributes']['data-entity-uuid'] = array(
+          '#type' => 'value',
+          '#title' => $entity_element['data-entity-uuid'],
+        );
+        $form['actions'] = array(
+          '#type' => 'actions',
+        );
+        $form['actions']['save_modal'] = array(
+          '#type' => 'submit',
+          '#value' => $this->t('Next'),
+          // No regular submit-handler. This form only works via JavaScript.
+          '#submit' => array(),
+          '#ajax' => array(
+            'callback' => array($this, 'submitForm'),
+            'event' => 'click',
+          ),
+        );
+        break;
+
+      case 'embed':
+        $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']);
+        $form['entity'] = array(
+          '#type' => 'item',
+          '#title' => $this->t('Selected entity'),
+          '#markup' => $entity->label(),
+        );
+        $form['attributes']['data-entity-type'] = array(
+          '#type' => 'value',
+          '#value' => $entity_element['data-entity-type'],
+        );
+        $form['attributes']['data-entity-id'] = array(
+          '#type' => 'value',
+          '#value' => $entity_element['data-entity-id'],
+        );
+        $form['attributes']['data-entity-uuid'] = array(
+          '#type' => 'value',
+          '#value' => $entity_element['data-entity-uuid'],
+        );
+        $form['attributes']['data-view-mode'] = array(
+          '#type' => 'select',
+          '#name' => 'view_mode',
+          '#title' => $this->t('View Mode'),
+          '#options' => $this->entityManager()->getViewModeOptions($entity_element['data-entity-type']),
+          '#default_value' => $entity_element['data-view-mode'],
+          '#required' => TRUE,
+        );
+        // @todo Re-add caption and alignment attributes.
+        $form['actions'] = array(
+          '#type' => 'actions',
+        );
+        $form['actions']['save_modal'] = array(
+          '#type' => 'submit',
+          '#value' => $this->t('Embed'),
+          // No regular submit-handler. This form only works via JavaScript.
+          '#submit' => array(),
+          '#ajax' => array(
+            'callback' => array($this, 'submitForm'),
+            'event' => 'click',
+          ),
+        );
+        break;
+    }
 
     return $form;
   }
@@ -96,14 +149,24 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, array &$form_state) {
-    $entity_type = $form_state['values']['entity_type'];
-    $id = trim($form_state['values']['entity']);
-    if ($entity = $this->loadEntity($entity_type, $id)) {
-      // @todo Should probably be setting the embed_mode value here since we
-      // can grab $entity->uuid() if needed.
-    }
-    else {
-      $this->setFormError('entity', $form_state, $this->t('Unable to load @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
+    switch ($form_state['step']) {
+      case 'select':
+        $entity_type = $form_state['values']['attributes']['data-entity-type'];
+        $id = trim($form_state['values']['attributes']['data-entity-id']);
+        if ($entity = $this->loadEntity($entity_type, $id)) {
+          if ($uuid = $entity->uuid()) {
+            \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], $uuid, $form_state);
+            \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], '', $form_state);
+          }
+          else {
+            \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], '', $form_state);
+            \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], $entity->id(), $form_state);
+          }
+        }
+        else {
+          $this->setFormError('entity', $form_state, $this->t('Unable to load @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
+        }
+        break;
     }
   }
 
@@ -119,26 +182,27 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
       $status_messages = array('#theme' => 'status_messages');
       $output = drupal_render($form);
       $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
-      # Using drupal_html_class() to obtain hypen separated form id. Using
-      # drupal_html_id() instead results in adding an unnecessary counter at the
-      # end of the string.
-      $form_id = '#' . drupal_html_class($form_state['values']['form_id']);
-      $response->addCommand(new HtmlCommand($form_id, $output));
+      $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
     }
     else {
-      // Detect if a valid UUID was specified. Set embed method based based on
-      // whether or not it is a valid UUID.
-      $values = $form_state['values'];
-      $entity = $values['entity'];
-      if (Uuid::isValid($entity)) {
-        $values['embed_method'] = 'uuid';
-      }
-      else {
-        $values['embed_method'] = 'id';
-      }
+      switch ($form_state['step']) {
+        case 'select':
+          $form_state['rebuild'] = TRUE;
+          $form_state['step'] = 'embed';
+          $rebuild_form = \Drupal::formBuilder()->rebuildForm('entity_embed_dialog', $form_state, $form);
+          unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+          $status_messages = array('#theme' => 'status_messages');
+          $output = drupal_render($rebuild_form);
+          $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
+          $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
+          break;
 
-      $response->addCommand(new EntityEmbedSelectDialogSave($values));
-      $response->addCommand(new CloseModalDialogCommand());
+        case 'embed':
+          // @todo Fix our JS plugin to work with the new attribute values.
+          $response->addCommand(new EditorDialogSave($values));
+          $response->addCommand(new CloseModalDialogCommand());
+          break;
+      }
     }
 
     return $response;

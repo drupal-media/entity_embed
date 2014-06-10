@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Form\EntityEmbedCKEditorSelectForm
+ * Contains \Drupal\entity_embed\Form\EntityEmbedDialog
  */
 
 namespace Drupal\entity_embed\Form;
@@ -18,9 +18,8 @@ use Drupal\entity_embed\EntityHelperTrait;
 
 /**
  * Provides a form to embed entities by specifying data attributes.
- * @todo Rename this to just EntityEmbedDialog?
  */
-class EntityEmbedCKEditorSelectForm extends FormBase {
+class EntityEmbedDialog extends FormBase {
   use EntityHelperTrait;
 
   /**

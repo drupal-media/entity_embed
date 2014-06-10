@@ -29,7 +29,7 @@
           var existingValues = {};
           existingValues['editor-id'] = editor.name;
           // Open the dialog for the entity embed form.
-          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity_select/' + editor.config.drupal.format), existingValues, null, dialogSettings);
+          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format), existingValues, null, dialogSettings);
         }
       });
 

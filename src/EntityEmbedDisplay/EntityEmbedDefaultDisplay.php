@@ -6,8 +6,10 @@
  */
 
 namespace Drupal\entity_embed\EntityEmbedDisplay;
+
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

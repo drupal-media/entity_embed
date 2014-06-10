@@ -8,6 +8,7 @@
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Embed entity displays for entity_reference field formatters.

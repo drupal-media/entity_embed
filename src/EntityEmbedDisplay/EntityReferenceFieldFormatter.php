@@ -51,8 +51,7 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
       case 'entity_reference_entity_view':
         // Cannot render an entity if it does not have a view controller.
         // @todo Remove when https://drupal.org/node/2204325 is fixed in core.
-        $entity_type = $this->getContextValue('entity')->getEntityTypeId();
-        return $this->entityManager->hasController($entity_type, 'view_builder');
+        return $this->canRenderEntity($this->getContextValue('entity'));
 
       default:
         return TRUE;

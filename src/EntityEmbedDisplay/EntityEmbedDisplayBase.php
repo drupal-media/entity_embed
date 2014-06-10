@@ -9,15 +9,20 @@ namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\entity_embed\EntityHelperTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a base display implementation that most display plugins will extend.
  *
  * @ingroup entity_embed_api
  */
-abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedDisplayInterface {
+abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFactoryPluginInterface, EntityEmbedDisplayInterface {
+  use EntityHelperTrait;
 
  /**
   * The context for the plugin.
@@ -35,10 +40,26 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
 
   /**
    * {@inheritdoc}
+   *
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   *   The entity manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->setConfiguration($configuration);
+    $this->setEntityManager($entity_manager);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity.manager')
+    );
   }
 
   /**
@@ -54,7 +75,9 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements EntityEmbedD
     }
 
     // Check that the entity itself can be viewed by the user.
-    return $this->getContextValue('entity')->access('view', $account);
+    // This uses the accessEntity method on the helper trait instead of
+    // Entity::access() because there are bugs with file access.
+    return $this->accessEntity($this->getContextValue('entity'), 'view', $account);
   }
 
   /**

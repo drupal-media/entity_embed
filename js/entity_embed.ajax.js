@@ -23,6 +23,9 @@
         entityDiv.setAttribute(key, attributes[key]);
       }
 
+      // Set a placeholder text in the entity div, otherwise the div will be
+      // discarded by CKEditor.
+      entityDiv.innerHTML = attributes['data-entity-type'] + ": " + attributes['data-entity-uuid'];
       // Generate HTML of the DOM Object.
       var entityHTML = entityDiv.outerHTML;
 

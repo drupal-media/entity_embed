@@ -171,7 +171,7 @@ class EntityEmbedDialog extends FormBase {
             }
             elseif ($uuid = $entity->uuid()) {
               \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], $uuid, $form_state);
-              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], '', $form_state);
+              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], $entity->id(), $form_state);
             }
             else {
               \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], '', $form_state);

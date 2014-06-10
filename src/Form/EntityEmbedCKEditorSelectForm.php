@@ -96,14 +96,25 @@ class EntityEmbedCKEditorSelectForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, array &$form_state) {
-    $entity_type = $form_state['values']['entity_type'];
-    $id = trim($form_state['values']['entity']);
-    if ($entity = $this->loadEntity($entity_type, $id)) {
-      // @todo Should probably be setting the embed_mode value here since we
-      // can grab $entity->uuid() if needed.
-    }
-    else {
-      $this->setFormError('entity', $form_state, $this->t('Unable to load @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
+    if ($entity_type = $form_state['values']['entity_type']) {
+      $id = trim($form_state['values']['entity']);
+      try {
+        if ($entity = $this->loadEntity($entity_type, $id)) {
+          if (!$entity->access('view')) {
+            $this->setFormError('entity', $form_state, $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)))
+          }
+          else {
+            // @todo Should probably be setting the embed_mode value here since we
+            // can grab $entity->uuid() if needed.
+          }
+        }
+        else {
+          $this->setFormError('entity', $form_state, $this->t('Unable to load @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
+        }
+      }
+      catch (\Exception $e) {
+        $this->setFormError('entity', $form_state, $e->getMessage());
+      }
     }
   }
 

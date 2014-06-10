@@ -55,6 +55,8 @@ trait EntityHelperTrait {
    *
    * @return array
    *   An array of entity objects indexed by their ids.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function loadMultipleEntities($entity_type, array $ids) {
     $entities = array();

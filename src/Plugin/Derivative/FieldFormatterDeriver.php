@@ -8,7 +8,6 @@
 namespace Drupal\entity_embed\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DerivativeBase;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDerivativeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FormatterPluginManager;
@@ -48,11 +47,13 @@ class FieldFormatterDeriver extends DerivativeBase implements ContainerDerivativ
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \LogicException
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
     // The field type must be defined in the annotation of the display plugin.
     if (!isset($base_plugin_definition['field_type'])) {
-      throw new \LogicException("Undefined field_type definition in plugin {$base_plugin_defintion['id']}.");
+      throw new \LogicException("Undefined field_type definition in plugin {$base_plugin_definition['id']}.");
     }
     foreach ($this->formatterManager->getOptions($base_plugin_definition['field_type']) as $formatter => $label) {
       $this->derivatives[$formatter] = $base_plugin_definition;

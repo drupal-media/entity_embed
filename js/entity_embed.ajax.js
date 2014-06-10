@@ -20,13 +20,13 @@
       var entityDiv = document.createElement('div');
 
       // Set entity type.
-      entityDiv.setAttribute('data-entity-type', attributes.entity_type);
+      entityDiv.setAttribute('data-entity-type', attributes.data_entity_type);
 
       // Set entity UUID.
-      entityDiv.setAttribute('data-entity-uuid', attributes.entity);
+      entityDiv.setAttribute('data-entity-uuid', attributes.data_entity_uuid);
 
       // Set view mode.
-      entityDiv.setAttribute('data-view-mode', attributes.view_mode);
+      entityDiv.setAttribute('data-view-mode', attributes.data_view_mode);
 
       // Set show caption attribute, only if its set in the form.
       if(attributes.show_caption == 1) {
@@ -34,7 +34,7 @@
       }
 
       // Set a placeholder.
-      entityDiv.innerHTML = attributes.entity_type + ": " + attributes.entity;
+      entityDiv.innerHTML = attributes.data_entity_type + ": " + attributes.data_entity_uuid;
 
       // Generate HTML of the DOM Object.
       var entityHTML = entityDiv.outerHTML;

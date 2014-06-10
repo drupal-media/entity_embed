@@ -103,7 +103,7 @@ class EntityEmbedDialog extends FormBase {
         break;
 
       case 'embed':
-        $entity = $this_>loadEntity($entity_element['data_entity_type'], $entity_element['data_entity_uuid'] ?: $entity_element['data_entity_id']);
+        $entity = $this->loadEntity($entity_element['data_entity_type'], $entity_element['data_entity_uuid'] ?: $entity_element['data_entity_id']);
         $form['entity'] = array(
           '#type' => 'item',
           '#title' => $this->t('Selected entity'),
@@ -125,7 +125,7 @@ class EntityEmbedDialog extends FormBase {
           '#type' => 'select',
           '#name' => 'view_mode',
           '#title' => $this->t('View Mode'),
-          '#options' => $this_>entityManager()->getViewModeOptions($entity_element['data_entity_type']),
+          '#options' => $this->entityManager()->getViewModeOptions($entity_element['data_entity_type']),
           '#default_value' => $entity_element['data_view_mode'],
           '#required' => TRUE,
         );
@@ -175,7 +175,7 @@ class EntityEmbedDialog extends FormBase {
             }
             else {
               \Drupal::formBuilder()->setValue($form['attributes']['data_entity_uuid'], '', $form_state);
-              \Drupal::formBuilder()->setValue($form['attributes']['data_entity_id'], $entity_>id(), $form_state);
+              \Drupal::formBuilder()->setValue($form['attributes']['data_entity_id'], $entity->id(), $form_state);
             }
           }
           else {

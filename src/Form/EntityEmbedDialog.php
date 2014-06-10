@@ -12,8 +12,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
-use Drupal\editor\Ajax\EditorDialogSave;
-use Drupal\entity_embed\Ajax\EntityEmbedSelectDialogSave;
+use Drupal\entity_embed\Ajax\EntityEmbedDialogSave;
 use Drupal\entity_embed\EntityHelperTrait;
 
 /**
@@ -62,7 +61,7 @@ class EntityEmbedDialog extends FormBase {
     $form['#tree'] = TRUE;
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
-    $form['#attached']['library'][] = 'editor/drupal.editor.dialog';
+    $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
 
     switch ($form_state['step']) {
       case 'select':
@@ -96,6 +95,11 @@ class EntityEmbedDialog extends FormBase {
             'event' => 'click',
           ),
         );
+
+        // Set editor instance as a form state attribute.
+        $existing_values = $form_state['input']['editor_object'];
+        $editor_instance = $existing_values['editor-id'];
+        $form_state['editor_instance'] = $editor_instance;
         break;
 
       case 'embed':
@@ -138,6 +142,14 @@ class EntityEmbedDialog extends FormBase {
             'callback' => array($this, 'submitForm'),
             'event' => 'click',
           ),
+        );
+        // Set editor instance as a hidden field.
+        // @todo Fix the way we are storing editor_instance attribute.
+        $editor_instance = $form_state['editor_instance'];
+        $form['editor_instance'] = array(
+          '#type' => 'hidden',
+          '#name' => 'editor_instance',
+          '#value' => $editor_instance,
         );
         break;
     }
@@ -202,8 +214,7 @@ class EntityEmbedDialog extends FormBase {
           break;
 
         case 'embed':
-          // @todo Fix our JS plugin to work with the new attribute values.
-          $response->addCommand(new EditorDialogSave($values));
+          $response->addCommand(new EntityEmbedDialogSave($form_state['values']));
           $response->addCommand(new CloseModalDialogCommand());
           break;
       }

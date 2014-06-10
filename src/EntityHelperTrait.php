@@ -109,7 +109,21 @@ trait EntityHelperTrait {
     return $render_controller->view($entity, $view_mode, $langcode);
   }
 
-  protected function accessEntity(EntityInterface $entity, $op = 'view', AccountInterface $account = NULL) {
+  /**
+   * Check access to an entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity object.
+   * @param string $operation
+   *   (optional) The operation to be performed. Defaults to view.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   (optional) The user for which to check access, or NULL to check access
+   *   for the current user. Defaults to NULL.
+   *
+   * @return bool|null
+   *   self::ALLOW, self::DENY, or self::KILL.
+   */
+  protected function accessEntity(EntityInterface $entity, $operation = 'view', AccountInterface $account = NULL) {
     switch ($entity->getEntityTypeId()) {
       case 'file':
         // Due to issues with access checking with file entities in core, we cannot

@@ -118,13 +118,13 @@ trait EntityHelperTrait {
         // @see https://drupal.org/node/2128791
         // @see https://drupal.org/node/2148353
         // @see https://drupal.org/node/2078473
-        switch (file_uri_scheme($this->getContextValue('entity')->getFileUri())) {
+        switch (file_uri_scheme($entity->getFileUri())) {
           case 'public':
             return TRUE;
 
           case 'private':
           case 'temporary':
-            $headers = $this->moduleHandler()->invokeAll('file_download', array($uri));
+            $headers = \Drupal::moduleHandler()->invokeAll('file_download', array($uri));
             foreach ($headers as $result) {
               if ($result == -1) {
                 return FALSE;

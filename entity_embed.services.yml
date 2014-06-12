@@ -1,7 +1,7 @@
 services:
   plugin.manager.entity_embed.display:
     class: Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager
-    arguments: ['@container.namespaces', '@cache.discovery', '@language_manager', '@module_handler', '@string_translation']
+    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler']
   entity_embed.post_render_cache:
     class: Drupal\entity_embed\EntityEmbedPostRenderCache
     arguments: ['@entity.manager', '@module_handler', '@plugin.manager.entity_embed.display']

@@ -1,10 +1,5 @@
 # Entity Embed Module
 
-## Requirements
-
-* Drupal 8 core must have a current patch from https://drupal.org/node/2217877
-  applied.
-
 ## Usage
 
 Allows any entity to be embedded using a WYSIWYG and text format.

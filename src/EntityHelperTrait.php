@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @file Contains Drupal\entity_embed\EntityHelperTrait.
+ * @file
+ * Contains Drupal\entity_embed\EntityHelperTrait.
  */
 
 namespace Drupal\entity_embed;
@@ -26,7 +27,7 @@ trait EntityHelperTrait {
    *
    * @var \Drupal\Core\Entity\EntityManagerInterface
    */
-  protected $entityManager;
+  protected $entity_manager;
 
   /**
    * Loads an entity from the database.
@@ -128,9 +129,10 @@ trait EntityHelperTrait {
   protected function accessEntity(EntityInterface $entity, $operation = 'view', AccountInterface $account = NULL) {
     switch ($entity->getEntityTypeId()) {
       case 'file':
-        // Due to issues with access checking with file entities in core, we cannot
-        // actually use Entity::access() which would have been called by
-        // parent::access().
+        // Due to issues with access checking with file entities in core,
+        // we cannot actually use Entity::access() which would have been called
+        // by parent::access().
+        //
         // @see https://drupal.org/node/2128791
         // @see https://drupal.org/node/2148353
         // @see https://drupal.org/node/2078473
@@ -165,22 +167,22 @@ trait EntityHelperTrait {
    *   The entity manager.
    */
   protected function entityManager() {
-    if (!isset($this->entityManager)) {
-      $this->entityManager = \Drupal::service('entity.manager');
+    if (!isset($this->entity_manager)) {
+      $this->entity_manager = \Drupal::service('entity.manager');
     }
-    return $this->entityManager;
+    return $this->entity_manager;
   }
 
   /**
    * Sets the entity manager service.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager service.
    *
    * @return self
    */
-  public function setEntityManager(EntityManagerInterface $entityManager) {
-    $this->entityManager = $entityManager;
+  public function setEntityManager(EntityManagerInterface $entity_manager) {
+    $this->entity_manager = $entity_manager;
     return $this;
   }
 }

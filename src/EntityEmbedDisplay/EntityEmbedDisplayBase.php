@@ -23,18 +23,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFactoryPluginInterface, EntityEmbedDisplayInterface {
   use EntityHelperTrait;
 
- /**
-  * The context for the plugin.
-  *
-  * @var array
-  */
+  /**
+   * The context for the plugin.
+   *
+   * @var array
+   */
   public $context = array();
 
- /**
-  * The attributes on the embedded entity.
-  *
-  * @var array
-  */
+  /**
+   * The attributes on the embedded entity.
+   *
+   * @var array
+   */
   public $attributes = array();
 
   /**
@@ -170,8 +170,8 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
    *   The default value to return if the configuration value does not exist.
    *
    * @return mixed
-   *    The currently set configuration value, or the value of $default if the
-   *    configuration value is not set.
+   *   The currently set configuration value, or the value of $default if the
+   *   configuration value is not set.
    */
   public function getConfigurationValue($name, $default = NULL) {
     $configuration = $this->getConfiguration();
@@ -208,7 +208,7 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
    *   The name of the context in the plugin configuration.
    *
    * @return mixed
-   *    The currently set context value.
+   *   The currently set context value.
    */
   public function getContextValue($name) {
     return $this->context[$name];
@@ -241,7 +241,7 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
    *   The name of the attribute.
    *
    * @return mixed
-   *    The currently set attribute value.
+   *   The currently set attribute value.
    */
   public function getAttributeValue($name, $default = NULL) {
     $attributes = $this->getAttributeValues();

@@ -3,7 +3,7 @@
 ## Requirements
 
 * Latest dev release of Drupal 8.x as this module will not work with the last
- alpha release.
+  alpha release.
 
 ## Usage
 

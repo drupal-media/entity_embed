@@ -27,7 +27,7 @@ trait EntityHelperTrait {
    *
    * @var \Drupal\Core\Entity\EntityManagerInterface
    */
-  protected $entity_manager;
+  protected $entityManager;
 
   /**
    * Loads an entity from the database.
@@ -167,22 +167,22 @@ trait EntityHelperTrait {
    *   The entity manager.
    */
   protected function entityManager() {
-    if (!isset($this->entity_manager)) {
-      $this->entity_manager = \Drupal::service('entity.manager');
+    if (!isset($this->entityManager)) {
+      $this->entityManager = \Drupal::service('entity.manager');
     }
-    return $this->entity_manager;
+    return $this->entityManager;
   }
 
   /**
    * Sets the entity manager service.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entityManager
    *   The entity manager service.
    *
    * @return self
    */
-  public function setEntityManager(EntityManagerInterface $entity_manager) {
-    $this->entity_manager = $entity_manager;
+  public function setEntityManager(EntityManagerInterface $entityManager) {
+    $this->entityManager = $entityManager;
     return $this;
   }
 }

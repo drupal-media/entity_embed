@@ -24,16 +24,16 @@ class FieldFormatterDeriver extends DerivativeBase implements ContainerDerivativ
    *
    * @var \Drupal\Core\Field\FormatterPluginManager.
    */
-  protected $formatter_manager;
+  protected $formatterManager;
 
   /**
    * Constructs new FieldFormatterEntityEmbedDisplayBase.
    *
-   * @param \Drupal\Core\Field\FormatterPluginManager $formatter_manager
+   * @param \Drupal\Core\Field\FormatterPluginManager $formatterManager
    *   The field formatter plugin manager.
    */
-  public function __construct(FormatterPluginManager $formatter_manager) {
-    $this->formatter_manager = $formatter_manager;
+  public function __construct(FormatterPluginManager $formatterManager) {
+    $this->formatterManager = $formatterManager;
   }
 
   /**
@@ -55,7 +55,7 @@ class FieldFormatterDeriver extends DerivativeBase implements ContainerDerivativ
     if (!isset($base_plugin_definition['field_type'])) {
       throw new \LogicException("Undefined field_type definition in plugin {$base_plugin_definition['id']}.");
     }
-    foreach ($this->formatter_manager->getOptions($base_plugin_definition['field_type']) as $formatter => $label) {
+    foreach ($this->formatterManager->getOptions($base_plugin_definition['field_type']) as $formatter => $label) {
       $this->derivatives[$formatter] = $base_plugin_definition;
       $this->derivatives[$formatter]['label'] = $label;
     }

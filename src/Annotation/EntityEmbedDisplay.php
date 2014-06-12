@@ -42,6 +42,6 @@ class EntityEmbedDisplay extends Plugin {
    *
    * @var bool|array
    */
-  public $entityTypes = FALSE;
+  public $entity_types = FALSE;
 
 }

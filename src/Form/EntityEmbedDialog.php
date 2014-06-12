@@ -177,6 +177,16 @@ class EntityEmbedDialog extends FormBase {
         $form['actions'] = array(
           '#type' => 'actions',
         );
+        $form['actions']['back'] = array(
+          '#type' => 'submit',
+          '#value' => $this->t('Back'),
+          // No regular submit-handler. This form only works via JavaScript.
+          '#submit' => array(),
+          '#ajax' => array(
+            'callback' => array($this, 'goBack'),
+            'event' => 'click',
+          ),
+        );
         $form['actions']['save_modal'] = array(
           '#type' => 'submit',
           '#value' => $this->t('Embed'),
@@ -279,6 +289,29 @@ class EntityEmbedDialog extends FormBase {
    */
   public function updatePluginConfigurationForm(array &$form, array &$form_state) {
     return $form['attributes']['data-entity-embed-settings'];
+  }
+
+  /**
+   * Form submission handler to go back to the previous step of the form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param array $form_state
+   *   An associative array containing the current state of the form.
+   */
+  public function goBack(array &$form, array &$form_state) {
+    $response = new AjaxResponse();
+
+    $form_state['rebuild'] = TRUE;
+    $form_state['step'] = 'select';
+    $rebuild_form = \Drupal::formBuilder()->rebuildForm('entity_embed_dialog', $form_state, $form);
+    unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+    $status_messages = array('#theme' => 'status_messages');
+    $output = drupal_render($rebuild_form);
+    $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
+    $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
+
+    return $response;
   }
 
 }

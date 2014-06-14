@@ -31,13 +31,6 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   use EntityHelperTrait;
 
   /**
-   * The Module Handler.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface.
-   */
-  protected $moduleHandler;
-
-  /**
    * Constructs a EntityEmbedFilter object.
    *
    * @param array $configuration
@@ -54,7 +47,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->setEntityManager($entity_manager);
-    $this->moduleHandler = $module_handler;
+    $this->setModuleHandler($module_handler);
   }
 
   /**
@@ -182,7 +175,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     );
 
     // Allow modules to alter the context.
-    $this->moduleHandler->alter('entity_embed_context', $context, $callback, $entity);
+    $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);
 
     $placeholder = drupal_render_cache_generate_placeholder($callback, $context);
 

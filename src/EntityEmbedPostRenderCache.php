@@ -17,20 +17,6 @@ class EntityEmbedPostRenderCache {
   use EntityHelperTrait;
 
   /**
-   * The Module Handler.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface.
-   */
-  protected $moduleHandler;
-
-  /**
-   * The display plugin manager.
-   *
-   * @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager.
-   */
-  protected $pluginManager;
-
-  /**
    * Constructs a EntityEmbedPostRenderCache object.
    *
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
@@ -42,8 +28,8 @@ class EntityEmbedPostRenderCache {
    */
   public function __construct(EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler, EntityEmbedDisplayManager $plugin_manager) {
     $this->setEntityManager($entity_manager);
-    $this->moduleHandler = $module_handler;
-    $this->pluginManager = $plugin_manager;
+    $this->setModuleHandler($module_handler);
+    $this->setDisplayPluginManager($plugin_manager);
   }
 
   /**
@@ -85,31 +71,14 @@ class EntityEmbedPostRenderCache {
 
     $entity_output = '';
     try {
-      // Protect ourselves from recursive rendering.
-      static $depth = 0;
-      $depth++;
-      if ($depth > 20) {
-        throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $this->entity->getEntityTypeId(), '@entity_id' => $this->entity->id())));
-      }
-
       if ($entity = $this->loadEntity($context['entity-type'], $context['entity-id'])) {
-        // Allow modules to alter the entity prior to display rendering.
-        $this->moduleHandler->invokeAll('entity_preembed', array($entity, $context));
-        // Build the display plugin.
-        $display = $this->pluginManager->createInstance($context['entity-embed-display'], $context['entity-embed-settings']);
-        $display->setContextValue('entity', $entity);
-        $display->setAttributes($context);
-        // Check if the display plugin is accessible. This also checks entity
-        // access, which is why we never call $entity->access() here.
-        if ($display->access()) {
-          $build = $display->build();
-          // Allow modules to alter the rendered embedded entity.
-          $this->moduleHandler->alter('entity_embed', $build, $display);
-          $entity_output = drupal_render($build);
-        }
+        $entity_output = $this->renderEntityEmbedDisplayPlugin(
+          $entity,
+          $context['entity-embed-display'],
+          $context['entity-embed-settings'],
+          $context
+        );
       }
-
-      $depth--;
     }
     catch (\Exception $e) {
       watchdog_exception('entity_embed', $e);

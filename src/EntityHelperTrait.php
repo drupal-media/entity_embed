@@ -10,7 +10,9 @@ namespace Drupal\entity_embed;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 
 /**
  * Wrapper methods for entity loading and rendering.
@@ -28,6 +30,20 @@ trait EntityHelperTrait {
    * @var \Drupal\Core\Entity\EntityManagerInterface
    */
   protected $entityManager;
+
+  /**
+   * The module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface.
+   */
+  protected $moduleHandler;
+
+  /**
+   * The display plugin manager.
+   *
+   * @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager.
+   */
+  protected $displayPluginManager;
 
   /**
    * Loads an entity from the database.
@@ -113,6 +129,56 @@ trait EntityHelperTrait {
   }
 
   /**
+   * Renders an entity using an EntityEmbedDisplay plugin.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to be rendered.
+   * @param string $plugin_id
+   *   The EntityEmbedDisplay plugin ID.
+   * @param array $plugin_configuration
+   *   (optional) Array of plugin configuration values.
+   * @param array $context
+   *   (optional) Array of additional context values, usually the embed HTML
+   *   tag's attributes.
+   *
+   * @return string
+   *   The HTML of the entity rendered with the display plugin.
+   *
+   * @throws \Drupal\entity_embed\RecursiveRenderingException;
+   */
+  protected function renderEntityEmbedDisplayPlugin(EntityInterface $entity, $plugin_id, array $plugin_configuration = array(), array $context = array()) {
+    // Protect ourselves from recursive rendering.
+    static $depth = 0;
+    $depth++;
+    if ($depth > 20) {
+      throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $entity->getEntityTypeId(), '@entity_id' => $entity->id())));
+    }
+
+    // Allow modules to alter the entity prior to display rendering.
+    $this->moduleHandler()->invokeAll('entity_preembed', array($entity, $context));
+
+    // Build the display plugin.
+    $display = $this->displayPluginManager()->createInstance($plugin_id, $plugin_configuration);
+    $display->setContextValue('entity', $entity);
+    $display->setAttributes($context);
+
+    // Check if the display plugin is accessible. This also checks entity
+    // access, which is why we never call $entity->access() here.
+    if (!$display->access()) {
+      return '';
+    }
+
+    // Build and render the display plugin, allowing modules to alter the
+    // result before rendering.
+    $build = $display->build();
+    $this->moduleHandler()->alter('entity_embed', $build, $display);
+    $entity_output = drupal_render($build);
+
+    $depth--;
+    return $entity_output;
+  }
+
+  /**
    * Check access to an entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
@@ -126,7 +192,7 @@ trait EntityHelperTrait {
    * @return bool|null
    *   self::ALLOW, self::DENY, or self::KILL.
    */
-  protected function accessEntity(EntityInterface $entity, $operation = 'view', AccountInterface $account = NULL) {
+  protected function accessEntity(EntityInterface $entity, $op = 'view', AccountInterface $account = NULL) {
     switch ($entity->getEntityTypeId()) {
       case 'file':
         // Due to issues with access checking with file entities in core,
@@ -142,7 +208,7 @@ trait EntityHelperTrait {
 
           case 'private':
           case 'temporary':
-            $headers = \Drupal::moduleHandler()->invokeAll('file_download', array($uri));
+            $headers = $this->moduleHandler()->invokeAll('file_download', array($uri));
             foreach ($headers as $result) {
               if ($result == -1) {
                 return FALSE;
@@ -156,7 +222,7 @@ trait EntityHelperTrait {
         }
 
       default:
-        return $entity->access('view', $account);
+        return $entity->access($op, $account);
     }
   }
 
@@ -168,7 +234,7 @@ trait EntityHelperTrait {
    */
   protected function entityManager() {
     if (!isset($this->entityManager)) {
-      $this->entityManager = \Drupal::service('entity.manager');
+      $this->entityManager = \Drupal::entityManager();
     }
     return $this->entityManager;
   }
@@ -183,6 +249,58 @@ trait EntityHelperTrait {
    */
   public function setEntityManager(EntityManagerInterface $entityManager) {
     $this->entityManager = $entityManager;
+    return $this;
+  }
+
+  /**
+   * Returns the module handler.
+   *
+   * @return \Drupal\Core\Extension\ModuleHandlerInterface
+   *   The module handler.
+   */
+  protected function moduleHandler() {
+    if (!isset($this->moduleHandler)) {
+      $this->moduleHandler = \Drupal::moduleHandler();
+    }
+    return $this->moduleHandler;
+  }
+
+  /**
+   * Sets the module handler service.
+   *
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
+   *   The module handler service.
+   *
+   * @return self
+   */
+  public function setModuleHandler(ModuleHandlerInterface $moduleHandler) {
+    $this->moduleHandler = $moduleHandler;
+    return $this;
+  }
+
+  /**
+   * Returns the display plugin manager.
+   *
+   * @return \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager
+   *   The display plugin manager.
+   */
+  protected function displayPluginManager() {
+    if (!isset($this->displayPluginManager)) {
+      $this->displayPluginManager = \Drupal::service('plugin.manager.entity_embed.display');
+    }
+    return $this->displayPluginManager;
+  }
+
+  /**
+   * Sets the display plugin manager service.
+   *
+   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $displayPluginManager
+   *   The display plugin manager service.
+   *
+   * @return self
+   */
+  public function setDisplayPluginManager(EntityEmbedDisplayManager $displayPluginManager) {
+    $this->displayPluginManager = $displayPluginManager;
     return $this;
   }
 }

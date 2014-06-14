@@ -123,7 +123,6 @@ class EntityEmbedDialog extends FormBase {
         );
         $form['attributes']['data-view-mode'] = array(
           '#type' => 'select',
-          '#name' => 'view_mode',
           '#title' => $this->t('View Mode'),
           '#options' => $this->entityManager()->getViewModeOptions($entity_element['data-entity-type']),
           '#default_value' => $entity_element['data-view-mode'],
@@ -148,7 +147,6 @@ class EntityEmbedDialog extends FormBase {
         $editor_instance = $form_state['editor_instance'];
         $form['editor_instance'] = array(
           '#type' => 'hidden',
-          '#name' => 'editor_instance',
           '#value' => $editor_instance,
         );
         break;

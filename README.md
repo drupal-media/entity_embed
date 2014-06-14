@@ -2,8 +2,8 @@
 
 ## Requirements
 
-* Drupal 8 core must have a current patch from https://drupal.org/node/2247779
-* applied.
+* Latest dev release of Drupal 8.x as this module will not work with the last
+  alpha release.
 
 ## Usage
 

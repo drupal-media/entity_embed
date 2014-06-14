@@ -112,8 +112,8 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     );
 
     /* @var \Drupal\Core\Field\FormatterInterface $formatter */
-    // Create the formatter plugin. Will use the default formatter for that field
-    // type if none is passed.
+    // Create the formatter plugin. Will use the default formatter for that
+    // field type if none is passed.
     return \Drupal::service('plugin.manager.field.formatter')->getInstance(array(
       'field_definition' => $definition,
       'view_mode' => '_entity_embed',

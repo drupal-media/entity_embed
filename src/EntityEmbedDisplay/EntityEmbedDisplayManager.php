@@ -10,7 +10,6 @@ namespace Drupal\entity_embed\EntityEmbedDisplay;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Component\Plugin\Exception\PluginException;
 
@@ -55,22 +54,25 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
   }
 
   /**
-   * Gets the valid plugin definitions that can be used for this entity.
+   * Determines plugins whose constraints are satisfied by a set of contexts.
    *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity object.
+   * @param array $contexts
+   *   An array of contexts.
    *
    * @return array
-   *   An array of plugin definitions that can be used for this entity.
+   *   An array of plugin definitions.
    *
-   * @see \Drupal\entity_embed\EntityEmbedDisplayBase::access()
+   * @todo At some point convert this to use ContextAwarePluginManagerTrait
+   * @see https://drupal.org/node/2277981
    */
-  public function getDefinitionsByEntity(EntityInterface $entity) {
+  public function getDefinitionsForContexts(array $contexts = array()) {
     $definitions = $this->getDefinitions();
-    $valid_ids = array_filter(array_keys($definitions), function ($id) use ($entity) {
+    $valid_ids = array_filter(array_keys($definitions), function ($id) use ($contexts) {
       try {
         $display = $this->createInstance($id);
-        $display->setContextValue('entity', $entity);
+        foreach ($contexts as $name => $value) {
+          $display->setContextValue($name, $value);
+        }
         return $display->access();
       }
       catch (PluginException $e) {
@@ -78,6 +80,22 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
       }
     });
     return array_intersect_key($definitions, array_flip($valid_ids));
+  }
+
+  /**
+   * Provides an list of plugins that can be used for a certain entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   An entity object.
+   *
+   * @return array
+   *   An array of valid plugin labels, keyed by plugin ID.
+   */
+  public function getDefinitionOptionsForEntity(EntityInterface $entity) {
+    $definitions = $this->getDefinitionsForContexts(array('entity' => $entity));
+    return array_map(function ($definition) {
+      return (string) $definition['label'];
+    }, $definitions);
   }
 
 }

@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @file Contains Drupal\entity_embed\EntityHelperTrait.
+ * @file
+ * Contains Drupal\entity_embed\EntityHelperTrait.
  */
 
 namespace Drupal\entity_embed;
@@ -128,9 +129,10 @@ trait EntityHelperTrait {
   protected function accessEntity(EntityInterface $entity, $operation = 'view', AccountInterface $account = NULL) {
     switch ($entity->getEntityTypeId()) {
       case 'file':
-        // Due to issues with access checking with file entities in core, we cannot
-        // actually use Entity::access() which would have been called by
-        // parent::access().
+        // Due to issues with access checking with file entities in core,
+        // we cannot actually use Entity::access() which would have been called
+        // by parent::access().
+        //
         // @see https://drupal.org/node/2128791
         // @see https://drupal.org/node/2148353
         // @see https://drupal.org/node/2078473
@@ -174,7 +176,7 @@ trait EntityHelperTrait {
   /**
    * Sets the entity manager service.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entityManager
    *   The entity manager service.
    *
    * @return self

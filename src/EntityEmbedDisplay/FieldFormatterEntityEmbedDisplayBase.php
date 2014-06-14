@@ -77,15 +77,14 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    $definition = \Drupal::service('plugin.manager.field.formatter')->getDefinition($this->getDerivativeId());
-    return $definition['class']::defaultSettings();
+    return \Drupal::service('plugin.manager.field.formatter')->getDefaultSettings($this->getDerivativeId());
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, array &$form_state) {
-    $this->getFormatter()->settingsForm($form, $form_state);
+    return $this->getFormatter()->settingsForm($form, $form_state);
   }
 
   /**

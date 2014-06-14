@@ -13,7 +13,6 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\entity_embed\EntityHelperTrait;
-use Drupal\entity_embed\RecursiveRenderingException;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -32,13 +31,6 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   use EntityHelperTrait;
 
   /**
-   * The Module Handler.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface.
-   */
-  protected $moduleHandler;
-
-  /**
    * Constructs a EntityEmbedFilter object.
    *
    * @param array $configuration
@@ -55,7 +47,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->setEntityManager($entity_manager);
-    $this->moduleHandler = $module_handler;
+    $this->setModuleHandler($module_handler);
   }
 
   /**
@@ -173,7 +165,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    *   drupal_render_cache_generate_placeholder().
    */
   public function buildPlaceholder(EntityInterface $entity, FilterProcessResult $result, array $context = array()) {
-    $callback = get_called_class() . '::postRender';
+    $callback = 'entity_embed.post_render_cache:renderEmbed';
     $context += array(
       'entity-type' => $entity->getEntityTypeId(),
       'entity-id' => $entity->id(),
@@ -183,7 +175,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     );
 
     // Allow modules to alter the context.
-    $this->moduleHandler->alter('entity_embed_context', $context, $callback, $entity);
+    $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);
 
     $placeholder = drupal_render_cache_generate_placeholder($callback, $context);
 
@@ -195,72 +187,6 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     }
 
     return $placeholder;
-  }
-
-  /**
-   * #post_render_cache callback; renders an embedded entity.
-   *
-   * Replaces the #post_render_cache placeholder with an embedded entity.
-   *
-   * @param array $element
-   *   The renderable array that contains the to be replaced placeholder.
-   * @param array $context
-   *   An array with the following keys:
-   *   - entity-type: The entity type.
-   *   - entity-id: The entity ID.
-   *   - token: The placeholder token generated in buildPlaceholder().
-   *
-   * @return array
-   *   A renderable array representing the placeholder replaced with the
-   *   rendered entity.
-   */
-  public static function postRender(array $element, array $context) {
-    $callback = get_called_class() . '::postRender';
-    $placeholder = drupal_render_cache_generate_placeholder($callback, $context);
-
-    // Do not bother rendering the entity if the placeholder cannot be found.
-    if (strpos($element['#markup'], $placeholder) === FALSE) {
-      return $element;
-    }
-
-    $entity_output = '';
-    try {
-      // Protect ourselves from recursive rendering.
-      static $depth = 0;
-      $depth++;
-      if ($depth > 20) {
-        throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $this->entity->getEntityTypeId(), '@entity_id' => $this->entity->id())));
-      }
-
-      if ($entity = entity_load($context['entity-type'], $context['entity-id'])) {
-        // @todo, This direct usage can be replaced with injection following
-        // https://drupal.org/node/2247779 .
-        // @see https://drupal.org/node/2281487 .
-        // Allow modules to alter the entity prior to display rendering.
-        \Drupal::moduleHandler()->invokeAll('entity_preembed', array($entity, $context));
-        // Build the display plugin.
-        $manager = \Drupal::service('plugin.manager.entity_embed.display');
-        $display = $manager->createInstance($context['entity-embed-display'], $context['entity-embed-settings']);
-        $display->setContextValue('entity', $entity);
-        $display->setAttributes($context);
-        // Check if the display plugin is accessible. This also checks entity
-        // access, which is why we never call $entity->access() here.
-        if ($display->access()) {
-          $build = $display->build();
-          // Allow modules to alter the rendered embedded entity.
-          \Drupal::moduleHandler()->alter('entity_embed', $build, $display);
-          $entity_output = drupal_render($build);
-        }
-      }
-
-      $depth--;
-    }
-    catch (\Exception $e) {
-      watchdog_exception('entity_embed', $e);
-    }
-
-    $element['#markup'] = str_replace($placeholder, $entity_output, $element['#markup']);
-    return $element;
   }
 
   /**

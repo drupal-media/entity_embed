@@ -157,11 +157,14 @@ class EntityEmbedDialog extends FormBase {
           '#title' => $this->t('Display as'),
           '#options' => $manager->getDefinitionOptionsForEntity($entity),
           '#ajax' => array(
-            'callback' => array($this, 'rebuildEmbedForm'),
+            'callback' => array($this, 'updatePluginConfigurationForm'),
             'event' => 'change',
+            'wrapper' => 'data-entity-embed-settings-form',
           ),
         );
         $form['attributes']['data-entity-embed-settings'] = $display->buildConfigurationForm($form, $form_state);
+        $form['attributes']['data-entity-embed-settings']['#prefix'] = '<div id="data-entity-embed-settings-form">';
+        $form['attributes']['data-entity-embed-settings']['#suffix'] = '</div>';
         $form['attributes']['data-view-mode'] = array(
           '#type' => 'select',
           '#title' => $this->t('View Mode'),
@@ -266,26 +269,15 @@ class EntityEmbedDialog extends FormBase {
   }
 
   /**
-   * Form submission handler to build or rebuild the embed step of the form.
+   * Form submission handler to update the plugin configuration form.
    *
    * @param array $form
    *   An associative array containing the structure of the form.
    * @param array $form_state
    *   An associative array containing the current state of the form.
    */
-  public function rebuildEmbedForm(array &$form, array &$form_state) {
-    $response = new AjaxResponse();
-
-    $form_state['rebuild'] = TRUE;
-    $form_state['step'] = 'embed';
-    $rebuild_form = \Drupal::formBuilder()->rebuildForm('entity_embed_dialog', $form_state, $form);
-    unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
-    $status_messages = array('#theme' => 'status_messages');
-    $output = drupal_render($rebuild_form);
-    $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
-    $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
-
-    return $response;
+  public function updatePluginConfigurationForm(array &$form, array &$form_state) {
+    return $form['attributes']['data-entity-embed-settings'];
   }
 
 }

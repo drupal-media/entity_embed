@@ -5,6 +5,12 @@
 * Latest dev release of Drupal 8.x as this module will not work with the last
   alpha release.
 
+## Configuration
+
+* Install and enable the module.
+* Enable the entity-embed filter 'Display embedded entities' for the desired text formats from the configuration page: '/admin/config/content/formats'.
+* To enable the WYSIWYG plugin, move the entity-embed 'E' button into the Active toolbar for the desired text formats from the configuration page: '/admin/config/content/formats'.
+
 ## Usage
 
 Allows any entity to be embedded using a WYSIWYG and text format.

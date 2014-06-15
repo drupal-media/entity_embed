@@ -107,6 +107,16 @@ class EntityEmbedDialog extends FormBase {
 
       case 'embed':
         $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']);
+
+        $plugin_configuration = $entity_element;
+        $plugin_configuration['entity'] = $entity;
+        $plugin_id = $entity_element['data-entity-embed-display'];
+        $display = $manager->createInstance($plugin_id);
+        // Set attributes as context values.
+        foreach ($plugin_configuration as $name => $value) {
+          $display->setContextValue($name, $value);
+        }
+
         $form['entity'] = array(
           '#type' => 'item',
           '#title' => $this->t('Selected entity'),
@@ -133,6 +143,7 @@ class EntityEmbedDialog extends FormBase {
             'event' => 'change',
           ),
         );
+        $form['attributes']['entity-embed-settings'] = $display->buildConfigurationForm($form, $form_state);
         $form['attributes']['data-view-mode'] = array(
           '#type' => 'select',
           '#title' => $this->t('View Mode'),

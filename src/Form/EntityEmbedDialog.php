@@ -14,6 +14,7 @@ use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\entity_embed\Ajax\EntityEmbedDialogSave;
 use Drupal\entity_embed\EntityHelperTrait;
+use Drupal\Component\Serialization\Json;
 
 /**
  * Provides a form to embed entities by specifying data attributes.
@@ -235,6 +236,9 @@ class EntityEmbedDialog extends FormBase {
           break;
 
         case 'embed':
+          // Serialize entity embed settings to JSON string.
+          $form_state['values']['attributes']['entity-embed-settings'] = JSON::encode($form_state['values']['attributes']['entity-embed-settings']);
+
           $response->addCommand(new EntityEmbedDialogSave($form_state['values']));
           $response->addCommand(new CloseModalDialogCommand());
           break;

@@ -13,14 +13,35 @@ use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\entity_embed\Ajax\EntityEmbedDialogSave;
+use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\Component\Serialization\Json;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a form to embed entities by specifying data attributes.
  */
 class EntityEmbedDialog extends FormBase {
   use EntityHelperTrait;
+
+  /**
+   * Constructs a EntityEmbedDialog object.
+   *
+   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
+   *   The Module Handler.
+   */
+  public function __construct(EntityEmbedDisplayManager $plugin_manager) {
+    $this->setDisplayPluginManager($plugin_manager);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('plugin.manager.entity_embed.display')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -65,7 +86,7 @@ class EntityEmbedDialog extends FormBase {
     $form['#suffix'] = '</div>';
     $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
 
-    $manager = \Drupal::service('plugin.manager.entity_embed.display');
+    $manager = $this->displayPluginManager;
 
     switch ($form_state['step']) {
       case 'select':

@@ -237,7 +237,11 @@ class EntityEmbedDialog extends FormBase {
 
         case 'embed':
           // Serialize entity embed settings to JSON string.
-          $form_state['values']['attributes']['entity-embed-settings'] = JSON::encode($form_state['values']['attributes']['entity-embed-settings']);
+          $entity_embed_settings = JSON::encode($form_state['values']['attributes']['entity-embed-settings']);
+          $entity_embed_settings = str_replace('"', "'", $entity_embed_settings);
+          // Replace double quotes with single quotes to avoid confusion, since
+          // the data attribute itself is surrounded by double quotes.
+          $form_state['values']['attributes']['entity-embed-settings'] = $entity_embed_settings;
 
           $response->addCommand(new EntityEmbedDialogSave($form_state['values']));
           $response->addCommand(new CloseModalDialogCommand());

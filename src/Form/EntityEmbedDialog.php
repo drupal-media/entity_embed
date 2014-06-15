@@ -161,7 +161,7 @@ class EntityEmbedDialog extends FormBase {
             'event' => 'change',
           ),
         );
-        $form['attributes']['entity-embed-settings'] = $display->buildConfigurationForm($form, $form_state);
+        $form['attributes']['data-entity-embed-settings'] = $display->buildConfigurationForm($form, $form_state);
         $form['attributes']['data-view-mode'] = array(
           '#type' => 'select',
           '#title' => $this->t('View Mode'),
@@ -254,7 +254,7 @@ class EntityEmbedDialog extends FormBase {
 
         case 'embed':
           // Serialize entity embed settings to JSON string.
-          $form_state['values']['attributes']['entity-embed-settings'] = JSON::encode($form_state['values']['attributes']['entity-embed-settings']);
+          $form_state['values']['attributes']['data-entity-embed-settings'] = JSON::encode($form_state['values']['attributes']['entity-embed-settings']);
 
           $response->addCommand(new EntityEmbedDialogSave($form_state['values']));
           $response->addCommand(new CloseModalDialogCommand());

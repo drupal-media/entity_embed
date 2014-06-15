@@ -45,6 +45,7 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-type' => NULL,
       'data-entity-uuid' => '',
       'data-entity-id' => '',
+      'data-entity-embed-display' => 'default',
       'data-view-mode' => 'default',
     );
 
@@ -62,6 +63,8 @@ class EntityEmbedDialog extends FormBase {
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
     $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
+
+    $manager = \Drupal::service('plugin.manager.entity_embed.display');
 
     switch ($form_state['step']) {
       case 'select':
@@ -120,6 +123,15 @@ class EntityEmbedDialog extends FormBase {
         $form['attributes']['data-entity-uuid'] = array(
           '#type' => 'value',
           '#value' => $entity_element['data-entity-uuid'],
+        );
+        $form['attributes']['data-entity-embed-display'] = array(
+          '#type' => 'select',
+          '#title' => $this->t('Display as'),
+          '#options' => $manager->getDefinitionOptionsForEntity($entity),
+          '#ajax' => array(
+            'callback' => array($this, 'rebuildEmbedForm'),
+            'event' => 'change',
+          ),
         );
         $form['attributes']['data-view-mode'] = array(
           '#type' => 'select',
@@ -217,6 +229,21 @@ class EntityEmbedDialog extends FormBase {
           break;
       }
     }
+
+    return $response;
+  }
+
+  public function rebuildEmbedForm(array &$form, array &$form_state) {
+    $response = new AjaxResponse();
+
+    $form_state['rebuild'] = TRUE;
+    $form_state['step'] = 'embed';
+    $rebuild_form = \Drupal::formBuilder()->rebuildForm('entity_embed_dialog', $form_state, $form);
+    unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+    $status_messages = array('#theme' => 'status_messages');
+    $output = drupal_render($rebuild_form);
+    $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
+    $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
 
     return $response;
   }

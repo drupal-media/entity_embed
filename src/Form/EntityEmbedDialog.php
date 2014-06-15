@@ -86,7 +86,7 @@ class EntityEmbedDialog extends FormBase {
     $form['#suffix'] = '</div>';
     $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
 
-    $manager = $this->displayPluginManager;
+    $manager = $this->displayPluginManager();
 
     switch ($form_state['step']) {
       case 'select':

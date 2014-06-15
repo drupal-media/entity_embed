@@ -252,6 +252,14 @@ class EntityEmbedDialog extends FormBase {
     return $response;
   }
 
+  /**
+   * Form submission handler to build or rebuild the embed step of the form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param array $form_state
+   *   An associative array containing the current state of the form.
+   */
   public function rebuildEmbedForm(array &$form, array &$form_state) {
     $response = new AjaxResponse();
 

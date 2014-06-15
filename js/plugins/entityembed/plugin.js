@@ -8,6 +8,9 @@
   "use strict";
 
   CKEDITOR.plugins.add('entityembed', {
+    // This plugin requires the Widgets System defined in the 'widget' plugin.
+    requires: 'widget',
+
     // Register the icon used for the toolbar button. It must be the same as the
     // name of the widget.
     icons: 'entityembed',
@@ -30,6 +33,38 @@
           existingValues['editor-id'] = editor.name;
           // Open the dialog for the entity embed form.
           Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format), existingValues, null, dialogSettings);
+        }
+      });
+
+      // Register the entity embed widget.
+      editor.widgets.add('entityembed', {
+        // Minimum HTML which is required by this widget to work.
+        requiredContent: 'div[data-entity-type,data-entity-uuid]',
+
+        // Add entity embed button
+        button: 'Insert entity',
+
+        // Generate the preview of the element and render it.
+        upcast: function (element) {
+          var attributes = element.attributes;
+          console.log(attributes);
+          if (element.name != 'div') {
+            return;
+          }
+          if (attributes['data-entity-type'] === undefined || (attributes['data-entity-type'] === undefined && attributes['data-entity-type'] === undefined)) {
+            return;
+          }
+          var attributes = element.attributes;
+          element.setHtml('Set preview here.');
+          return element;
+        },
+
+        // Downcast the element. Do not set the html to be empty, otherwise the
+        // div element will be discarded by the CKEditor.
+        // Using entity_type:entity_id as placeholder.
+        downcast: function (element) {
+          element.setHtml('Set placeholder here.');
+          return element;
         }
       });
 

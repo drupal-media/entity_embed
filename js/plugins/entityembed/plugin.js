@@ -47,14 +47,12 @@
         // Generate the preview of the element and render it.
         upcast: function (element) {
           var attributes = element.attributes;
-          console.log(attributes);
           if (element.name != 'div') {
             return;
           }
           if (attributes['data-entity-type'] === undefined || (attributes['data-entity-id'] === undefined && attributes['data-entity-uuid'] === undefined)) {
             return;
           }
-          var attributes = element.attributes;
           element.setHtml('Set preview here.');
           return element;
         },

@@ -51,7 +51,7 @@
           if (element.name != 'div') {
             return;
           }
-          if (attributes['data-entity-type'] === undefined || (attributes['data-entity-type'] === undefined && attributes['data-entity-type'] === undefined)) {
+          if (attributes['data-entity-type'] === undefined || (attributes['data-entity-id'] === undefined && attributes['data-entity-uuid'] === undefined)) {
             return;
           }
           var attributes = element.attributes;

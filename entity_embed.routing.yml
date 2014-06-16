@@ -6,3 +6,12 @@ entity_embed.dialog:
   requirements:
     _entity_access: 'filter_format.use'
     _module_dependencies: 'editor'
+
+entity_embed.preview:
+  path: '/entity-embed/preview/{filter_format}'
+  defaults:
+    _controller: '\Drupal\entity_embed\EntityEmbedController::preview'
+    _title: 'Preview embedded entity'
+  requirements:
+    _entity_access: 'filter_format.use'
+    _module_dependencies: 'editor'

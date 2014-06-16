@@ -156,6 +156,7 @@ class EntityEmbedDialog extends FormBase {
           '#type' => 'select',
           '#title' => $this->t('Display as'),
           '#options' => $manager->getDefinitionOptionsForEntity($entity),
+          '#default_value' => $entity_element['data-entity-embed-display'],
           '#ajax' => array(
             'callback' => array($this, 'updatePluginConfigurationForm'),
             'event' => 'change',

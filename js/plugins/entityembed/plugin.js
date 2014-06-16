@@ -54,7 +54,7 @@
             return;
           }
           jQuery.ajax({
-            url: Drupal.url('entity-embed/preview/?' + jQuery.param(attributes)),
+            url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + jQuery.param(attributes)),
             dataType: 'json',
             async: false,
             success: function (data) {

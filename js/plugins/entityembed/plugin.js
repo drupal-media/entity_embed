@@ -53,7 +53,14 @@
           if (attributes['data-entity-type'] === undefined || (attributes['data-entity-id'] === undefined && attributes['data-entity-uuid'] === undefined)) {
             return;
           }
-          element.setHtml('Set preview here.');
+          jQuery.ajax({
+            url: Drupal.url('entity-embed/preview/?' + jQuery.param(attributes)),
+            dataType: 'json',
+            async: false,
+            success: function (data) {
+              element.setHtml(data.content);
+            }
+          });
           return element;
         },
 

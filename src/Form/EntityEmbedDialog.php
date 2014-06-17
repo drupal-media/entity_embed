@@ -68,7 +68,6 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-uuid' => '',
       'data-entity-id' => '',
       'data-entity-embed-display' => 'default',
-      'data-view-mode' => 'default',
     );
 
     if (!isset($form_state['step'])) {
@@ -166,13 +165,6 @@ class EntityEmbedDialog extends FormBase {
         $form['attributes']['data-entity-embed-settings'] = $display->buildConfigurationForm($form, $form_state);
         $form['attributes']['data-entity-embed-settings']['#prefix'] = '<div id="data-entity-embed-settings-form">';
         $form['attributes']['data-entity-embed-settings']['#suffix'] = '</div>';
-        $form['attributes']['data-view-mode'] = array(
-          '#type' => 'select',
-          '#title' => $this->t('View Mode'),
-          '#options' => $this->entityManager()->getViewModeOptions($entity_element['data-entity-type']),
-          '#default_value' => $entity_element['data-view-mode'],
-          '#required' => TRUE,
-        );
         // @todo Re-add caption and alignment attributes.
         $form['actions'] = array(
           '#type' => 'actions',

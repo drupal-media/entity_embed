@@ -7,7 +7,6 @@
 
 namespace Drupal\entity_embed\Form;
 
-use Drupal\Component\Uuid\Uuid;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
@@ -68,6 +67,7 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-uuid' => '',
       'data-entity-id' => '',
       'data-entity-embed-display' => 'default',
+      'data-entity-embed-settings' => array(),
     );
 
     if (!isset($form_state['step'])) {
@@ -84,8 +84,6 @@ class EntityEmbedDialog extends FormBase {
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
     $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
-
-    $manager = $this->displayPluginManager();
 
     switch ($form_state['step']) {
       case 'select':
@@ -129,11 +127,6 @@ class EntityEmbedDialog extends FormBase {
       case 'embed':
         $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']);
 
-        $plugin_id = $entity_element['data-entity-embed-display'];
-        $display = $manager->createInstance($plugin_id);
-        $display->setContextValue('entity', $entity);
-        $display->setAttributes($entity_element);
-
         $form['entity'] = array(
           '#type' => 'item',
           '#title' => $this->t('Selected entity'),
@@ -154,17 +147,26 @@ class EntityEmbedDialog extends FormBase {
         $form['attributes']['data-entity-embed-display'] = array(
           '#type' => 'select',
           '#title' => $this->t('Display as'),
-          '#options' => $manager->getDefinitionOptionsForEntity($entity),
+          '#options' => $this->displayPluginManager()->getDefinitionOptionsForEntity($entity),
           '#default_value' => $entity_element['data-entity-embed-display'],
+          '#required' => TRUE,
           '#ajax' => array(
             'callback' => array($this, 'updatePluginConfigurationForm'),
-            'event' => 'change',
-            'wrapper' => 'data-entity-embed-settings-form',
+            'wrapper' => 'data-entity-embed-settings-wrapper',
+            'effect' => 'fade',
           ),
         );
-        $form['attributes']['data-entity-embed-settings'] = $display->buildConfigurationForm($form, $form_state);
-        $form['attributes']['data-entity-embed-settings']['#prefix'] = '<div id="data-entity-embed-settings-form">';
-        $form['attributes']['data-entity-embed-settings']['#suffix'] = '</div>';
+        $form['attributes']['data-entity-embed-settings'] = array(
+          '#type' => 'container',
+          '#prefix' => '<div id="data-entity-embed-settings-wrapper">',
+          '#suffix' => '</div>'
+        );
+        $plugin_id = $form_state['values']['attributes']['data-entity-embed-display'] ?: $form['attributes']['data-entity-embed-display']['#default_value'];
+        if (!empty($plugin_id)) {
+          $display = $this->displayPluginManager()->createInstance($plugin_id, $entity_element['data-entity-embed-settings']);
+          $display->setContextValue('entity', $entity);
+          $form['attributes']['data-entity-embed-settings'] += $display->buildConfigurationForm($form, $form_state);
+        }
         // @todo Re-add caption and alignment attributes.
         $form['actions'] = array(
           '#type' => 'actions',
@@ -260,7 +262,9 @@ class EntityEmbedDialog extends FormBase {
 
         case 'embed':
           // Serialize entity embed settings to JSON string.
-          $form_state['values']['attributes']['data-entity-embed-settings'] = JSON::encode($form_state['values']['attributes']['data-entity-embed-settings']);
+          if (!empty($form_state['values']['attributes']['data-entity-embed-settings'])) {
+            $form_state['values']['attributes']['data-entity-embed-settings'] = Json::encode($form_state['values']['attributes']['data-entity-embed-settings']);
+          }
 
           $response->addCommand(new EntityEmbedDialogSave($form_state['values']));
           $response->addCommand(new CloseModalDialogCommand());

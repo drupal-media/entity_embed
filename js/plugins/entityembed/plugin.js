@@ -68,7 +68,8 @@
         // div element will be discarded by the CKEditor.
         // Using entity_type:entity_id as placeholder.
         downcast: function (element) {
-          element.setHtml('Set placeholder here.');
+          var attributes = element.attributes;
+          element.setHtml(attributes['data-entity-type'] + ':' + attributes['data-entity-id']);
           return element;
         }
       });

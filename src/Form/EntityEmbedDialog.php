@@ -13,13 +13,35 @@ use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\entity_embed\Ajax\EntityEmbedDialogSave;
+use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Drupal\entity_embed\EntityHelperTrait;
+use Drupal\Component\Serialization\Json;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a form to embed entities by specifying data attributes.
  */
 class EntityEmbedDialog extends FormBase {
   use EntityHelperTrait;
+
+  /**
+   * Constructs a EntityEmbedDialog object.
+   *
+   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
+   *   The Module Handler.
+   */
+  public function __construct(EntityEmbedDisplayManager $plugin_manager) {
+    $this->setDisplayPluginManager($plugin_manager);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('plugin.manager.entity_embed.display')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -45,6 +67,7 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-type' => NULL,
       'data-entity-uuid' => '',
       'data-entity-id' => '',
+      'data-entity-embed-display' => 'default',
       'data-view-mode' => 'default',
     );
 
@@ -62,6 +85,8 @@ class EntityEmbedDialog extends FormBase {
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
     $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
+
+    $manager = $this->displayPluginManager();
 
     switch ($form_state['step']) {
       case 'select':
@@ -104,6 +129,12 @@ class EntityEmbedDialog extends FormBase {
 
       case 'embed':
         $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']);
+
+        $plugin_id = $entity_element['data-entity-embed-display'];
+        $display = $manager->createInstance($plugin_id);
+        $display->setContextValue('entity', $entity);
+        $display->setAttributes($entity_element);
+
         $form['entity'] = array(
           '#type' => 'item',
           '#title' => $this->t('Selected entity'),
@@ -121,6 +152,20 @@ class EntityEmbedDialog extends FormBase {
           '#type' => 'value',
           '#value' => $entity_element['data-entity-uuid'],
         );
+        $form['attributes']['data-entity-embed-display'] = array(
+          '#type' => 'select',
+          '#title' => $this->t('Display as'),
+          '#options' => $manager->getDefinitionOptionsForEntity($entity),
+          '#default_value' => $entity_element['data-entity-embed-display'],
+          '#ajax' => array(
+            'callback' => array($this, 'updatePluginConfigurationForm'),
+            'event' => 'change',
+            'wrapper' => 'data-entity-embed-settings-form',
+          ),
+        );
+        $form['attributes']['data-entity-embed-settings'] = $display->buildConfigurationForm($form, $form_state);
+        $form['attributes']['data-entity-embed-settings']['#prefix'] = '<div id="data-entity-embed-settings-form">';
+        $form['attributes']['data-entity-embed-settings']['#suffix'] = '</div>';
         $form['attributes']['data-view-mode'] = array(
           '#type' => 'select',
           '#title' => $this->t('View Mode'),
@@ -212,6 +257,9 @@ class EntityEmbedDialog extends FormBase {
           break;
 
         case 'embed':
+          // Serialize entity embed settings to JSON string.
+          $form_state['values']['attributes']['data-entity-embed-settings'] = JSON::encode($form_state['values']['attributes']['data-entity-embed-settings']);
+
           $response->addCommand(new EntityEmbedDialogSave($form_state['values']));
           $response->addCommand(new CloseModalDialogCommand());
           break;
@@ -219,6 +267,18 @@ class EntityEmbedDialog extends FormBase {
     }
 
     return $response;
+  }
+
+  /**
+   * Form submission handler to update the plugin configuration form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param array $form_state
+   *   An associative array containing the current state of the form.
+   */
+  public function updatePluginConfigurationForm(array &$form, array &$form_state) {
+    return $form['attributes']['data-entity-embed-settings'];
   }
 
 }

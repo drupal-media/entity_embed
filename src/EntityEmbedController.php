@@ -24,13 +24,23 @@ class EntityEmbedController extends ControllerBase {
    */
   public function preview() {
     $context = \Drupal::request()->query->all();
-    $entity_embed_settings = Json::decode($context['data-entity-embed-settings']);
+    $entity_embed_settings = isset($context['data-entity-embed-settings']) ? Json::decode($context['data-entity-embed-settings']) : array();
     $entity_output = 'No preview available.';
     try {
-      if ($entity = $this->loadEntity($context['data-entity-type'], $context['data-entity-id'])) {
+      $entity = Null;
+      if ($context['data-entity-uuid']) {
+        $entity = $this->loadEntity($context['data-entity-type'], $context['data-entity-uuid']);
+      }
+      elseif ($context['data-entity-id']) {
+        $entity = $this->loadEntity($context['data-entity-type'], $context['data-entity-id']);
+      }
+
+      $display_plugin = isset($context['data-entity-embed-display']) ? $context['data-entity-embed-display'] : 'default';
+
+      if ($entity) {
         $entity_output = $this->renderEntityEmbedDisplayPlugin(
           $entity,
-          $context['data-entity-embed-display'],
+          $display_plugin,
           $entity_embed_settings,
           $context
         );

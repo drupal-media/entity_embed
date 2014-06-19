@@ -47,9 +47,6 @@
         // Generate the preview of the element and render it.
         upcast: function (element) {
           var attributes = element.attributes;
-          if (element.name != 'div') {
-            return;
-          }
           if (attributes['data-entity-type'] === undefined || (attributes['data-entity-id'] === undefined && attributes['data-entity-uuid'] === undefined)) {
             return;
           }

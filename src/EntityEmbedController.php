@@ -30,8 +30,8 @@ class EntityEmbedController extends ControllerBase {
   /**
    * Constructs a EntityEmbedController object.
    *
-   * @param Symfony\Component\HttpFoundation\Request $plugin_manager
-   *   The Module Handler.
+   * @param Symfony\Component\HttpFoundation\Request $request
+   *   The request object.
    */
   public function __construct(Request $request) {
     $this->request = $request;

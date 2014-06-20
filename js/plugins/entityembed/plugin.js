@@ -50,8 +50,11 @@
           if (attributes['data-entity-type'] === undefined || (attributes['data-entity-id'] === undefined && attributes['data-entity-uuid'] === undefined)) {
             return;
           }
+          var request = {};
+          request['filter-format'] = editor.config.drupal.format;
+          request['value'] = element.getOuterHtml();
           jQuery.ajax({
-            url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + jQuery.param(attributes)),
+            url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + jQuery.param(request)),
             dataType: 'json',
             async: false,
             success: function (data) {

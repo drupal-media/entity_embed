@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @file Contains Drupal\entity_embed\EntityEmbedPostRenderCache.
+ * @file
+ * Contains Drupal\entity_embed\EntityEmbedPostRenderCache.
  */
 
 namespace Drupal\entity_embed;
@@ -22,9 +23,9 @@ class EntityEmbedPostRenderCache {
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager service.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The Module Handler.
+   *   The module handler.
    * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
-   *   The Module Handler.
+   *   The plugin manager.
    */
   public function __construct(EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler, EntityEmbedDisplayManager $plugin_manager) {
     $this->setEntityManager($entity_manager);

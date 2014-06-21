@@ -78,7 +78,7 @@ class EntityEmbedFilterTest extends WebTestBase {
     $html = $this->drupalGet('node/' . $node->id());
 
     $this->assertText($this->embedContent, 'Embedded node exists in page');
-    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder not appears in the output when embed is successful.');
+    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder does not appears in the output when embed is successful.');
   }
 
   /**
@@ -88,14 +88,14 @@ class EntityEmbedFilterTest extends WebTestBase {
     $content = '<div class="custom" data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-view-mode="teaser">This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
-    $settings['title'] = 'Test entity embed with entity-id and view-mode';
+    $settings['title'] = 'Test entity embed with entity-uuid and view-mode';
     $settings['body'] = array(array('value' => $content));
     $node = $this->drupalCreateNode($settings);
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText($this->embedContent, 'Embedded node exists in page');
-    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder not appears in the output when embed is successful.');
+    $this->assertText($this->embedContent, 'Embedded node exists in page.');
+    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder does not appears in the output when embed is successful.');
   }
 
   /**
@@ -105,13 +105,33 @@ class EntityEmbedFilterTest extends WebTestBase {
     $content = '<div class="custom" data-entity-type="node" data-entity-id="InvalidID" data-view-mode="teaser">This placeholder should be rendered since specified entity does not exists.</div>';
     $settings = array();
     $settings['type'] = 'page';
-    $settings['title'] = 'Test entity embed with entity-id and view-mode';
+    $settings['title'] = 'Test that placeholder is retained when specified entity does not exists';
     $settings['body'] = array(array('value' => $content));
     $node = $this->drupalCreateNode($settings);
 
     $html = $this->drupalGet('node/' . $node->id());
 
     $this->assertText('This placeholder should be rendered since specified entity does not exists.', 'Placeholder appears in the output when embed is unsuccessful.');
+  }
+
+  /**
+   * Tests that UUID is preferred over ID when both attributes are present.
+   */
+  public function testFilterUuidPreference() {
+    $sample_node = $this->drupalCreateNode();
+
+    $content = '<div class="custom" data-entity-type="node" data-entity-id="' . $sample_node->id() . '" data-entity-uuid="' . $this->node->uuid() . '" data-view-mode="teaser">This placeholder should not be rendered.</div>';
+    $settings = array();
+    $settings['type'] = 'page';
+    $settings['title'] = 'Test that entity-uuid is preferred over entity-id when both attributes are present';
+    $settings['body'] = array(array('value' => $content));
+    $node = $this->drupalCreateNode($settings);
+
+    $html = $this->drupalGet('node/' . $node->id());
+
+    $this->assertText($this->embedContent, 'Entity specifed with UUID exists in the page.');
+    $this->assertNoText($sample_node->body->value, 'Entity specifed with ID does not exists in the page.');
+    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder not appears in the output when embed is successful.');
   }
 
 }

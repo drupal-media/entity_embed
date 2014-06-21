@@ -51,7 +51,6 @@
             return;
           }
           var request = {};
-          request['filter-format'] = editor.config.drupal.format;
           request['value'] = element.getOuterHtml();
           jQuery.ajax({
             url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + jQuery.param(request)),

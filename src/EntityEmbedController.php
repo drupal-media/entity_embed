@@ -22,32 +22,6 @@ class EntityEmbedController extends ControllerBase {
   use EntityHelperTrait;
 
   /**
-   * The request object.
-   *
-   * @var \Symfony\Component\HttpFoundation\Request
-   */
-  protected $request;
-
-  /**
-   * Constructs a EntityEmbedController object.
-   *
-   * @param Symfony\Component\HttpFoundation\Request $request
-   *   The request object.
-   */
-  public function __construct(Request $request) {
-    $this->request = $request;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('request')
-    );
-  }
-
-  /**
    * Returns an Ajax response to generate preview of an entity.
    *
    * Expects the the HTML element as GET parameter.
@@ -60,8 +34,8 @@ class EntityEmbedController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\Response
    *   The preview of the entity specified by the data attributes.
    */
-  public function preview(FilterFormatInterface $filter_format) {
-    $text = $this->request->get('value');
+  public function preview(Request $request, FilterFormatInterface $filter_format) {
+    $text = $request->get('value');
     if ($text == '') {
       throw new NotFoundHttpException();
     }

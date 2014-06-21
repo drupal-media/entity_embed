@@ -183,7 +183,7 @@ trait EntityHelperTrait {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity object.
-   * @param string $operation
+   * @param string $op
    *   (optional) The operation to be performed. Defaults to view.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   (optional) The user for which to check access, or NULL to check access

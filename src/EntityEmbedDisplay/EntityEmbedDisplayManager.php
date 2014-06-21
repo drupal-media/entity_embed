@@ -29,8 +29,6 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
    *   keyed by the corresponding namespace to look for plugin implementations.
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
    *   Cache backend instance to use.
-   * @param \Drupal\Core\Language\LanguageManager $language_manager
-   *   The language manager.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler to invoke the alter hook with.
    */

@@ -45,6 +45,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     // doesn't load in the field type defaults. https://drupal.org/node/2116341
     $definition = $this->getFieldDefinition();
     // Ensure that the field name is unique each time this is run.
+    // @todo This probably shouldn't rely on the render cache token attribute.
     $definition->setName('_entity_embed_' . $this->getAttributeValue('token'));
 
     /* @var \Drupal\Core\Field\FieldItemListInterface $items $items */
@@ -58,7 +59,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
       $node
     );
 
-    if ($langcode = $this->getAttributeValue('langcode')) {
+    if ($langcode = $this->getAttributeValue('data-langcode')) {
       $items->setLangcode($langcode);
     }
 
@@ -102,6 +103,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     }
 
     // Ensure that the field name is unique each time this is run.
+    // @todo This probably shouldn't rely on the render cache token attribute.
     $definition->setName('_entity_embed_' . $this->getAttributeValue('token'));
 
     $display = array(

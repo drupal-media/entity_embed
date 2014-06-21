@@ -15,6 +15,7 @@ use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\entity_embed\Ajax\EntityEmbedDialogSave;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Drupal\entity_embed\EntityHelperTrait;
+use Drupal\filter\Entity\FilterFormat;
 use Drupal\Component\Serialization\Json;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -64,8 +65,11 @@ class EntityEmbedDialog extends FormBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @param \Drupal\filter\Entity\FilterFormat $filter_format
+   *   The filter format for which this dialog corresponds.
    */
-  public function buildForm(array $form, array &$form_state) {
+  public function buildForm(array $form, array &$form_state, FilterFormat $filter_format = NULL) {
     // The default values are set directly from \Drupal::request()->request,
     // provided by the editor plugin opening the dialog.
     if (!isset($form_state['entity_element'])) {

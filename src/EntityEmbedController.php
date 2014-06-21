@@ -19,12 +19,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Returns responses for EntityEmbed module routes.
  */
 class EntityEmbedController extends ControllerBase {
-  use EntityHelperTrait;
 
   /**
    * Returns an Ajax response to generate preview of an entity.
    *
    * Expects the the HTML element as GET parameter.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request object.
    *
    * @param \Drupal\filter\FilterFormatInterface $filter_format
    *   The filter format.

@@ -68,7 +68,7 @@ class EntityEmbedFilterTest extends WebTestBase {
    * Tests entity embed using entity ID and view mode.
    */
   public function testFilterIdViewMode() {
-    $content = '<div class="custom" data-entity-type="node" data-entity-id="' . $this->node->id() . '" data-view-mode="teaser">This placeholder should not be rendered.</div>';
+    $content = '<div data-entity-type="node" data-entity-id="' . $this->node->id() . '" data-view-mode="teaser">This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with entity-id and view-mode';
@@ -85,7 +85,7 @@ class EntityEmbedFilterTest extends WebTestBase {
    * Tests entity embed using entity UUID and view mode.
    */
   public function testFilterUuidViewMode() {
-    $content = '<div class="custom" data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-view-mode="teaser">This placeholder should not be rendered.</div>';
+    $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-view-mode="teaser">This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with entity-uuid and view-mode';
@@ -102,7 +102,7 @@ class EntityEmbedFilterTest extends WebTestBase {
    * Tests that placeholder must not be replaced when embed is unsuccessful.
    */
   public function testFilterInvalidEntity() {
-    $content = '<div class="custom" data-entity-type="node" data-entity-id="InvalidID" data-view-mode="teaser">This placeholder should be rendered since specified entity does not exists.</div>';
+    $content = '<div data-entity-type="node" data-entity-id="InvalidID" data-view-mode="teaser">This placeholder should be rendered since specified entity does not exists.</div>';
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test that placeholder is retained when specified entity does not exists';
@@ -120,7 +120,7 @@ class EntityEmbedFilterTest extends WebTestBase {
   public function testFilterUuidPreference() {
     $sample_node = $this->drupalCreateNode();
 
-    $content = '<div class="custom" data-entity-type="node" data-entity-id="' . $sample_node->id() . '" data-entity-uuid="' . $this->node->uuid() . '" data-view-mode="teaser">This placeholder should not be rendered.</div>';
+    $content = '<div data-entity-type="node" data-entity-id="' . $sample_node->id() . '" data-entity-uuid="' . $this->node->uuid() . '" data-view-mode="teaser">This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test that entity-uuid is preferred over entity-id when both attributes are present';
@@ -138,7 +138,7 @@ class EntityEmbedFilterTest extends WebTestBase {
    * Tests entity embed using display plugin.
    */
   public function testFilterDisplayPlugin() {
-    $content = '<div class="custom" data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
+    $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with entity-embed-display and data-entity-embed-settings';

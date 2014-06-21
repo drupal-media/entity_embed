@@ -11,9 +11,11 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\entity_embed\Ajax\EntityEmbedDialogSave;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Drupal\entity_embed\EntityHelperTrait;
+use Drupal\filter\Entity\FilterFormat;
 use Drupal\Component\Serialization\Json;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -24,13 +26,24 @@ class EntityEmbedDialog extends FormBase {
   use EntityHelperTrait;
 
   /**
+   * The form builder.
+   *
+   * @var \Drupal\Core\Form\FormBuilderInterface
+   */
+  protected $formBuilder;
+
+  /**
    * Constructs a EntityEmbedDialog object.
    *
    * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
    *   The Module Handler.
+   *
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   *   The Form Builder.
    */
-  public function __construct(EntityEmbedDisplayManager $plugin_manager) {
+  public function __construct(EntityEmbedDisplayManager $plugin_manager, FormBuilderInterface $form_builder) {
     $this->setDisplayPluginManager($plugin_manager);
+    $this->formBuilder = $form_builder;
   }
 
   /**
@@ -38,7 +51,8 @@ class EntityEmbedDialog extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.entity_embed.display')
+      $container->get('plugin.manager.entity_embed.display'),
+      $container->get('form_builder')
     );
   }
 
@@ -51,8 +65,11 @@ class EntityEmbedDialog extends FormBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @param \Drupal\filter\Entity\FilterFormat $filter_format
+   *   The filter format for which this dialog corresponds.
    */
-  public function buildForm(array $form, array &$form_state) {
+  public function buildForm(array $form, array &$form_state, FilterFormat $filter_format = NULL) {
     // The default values are set directly from \Drupal::request()->request,
     // provided by the editor plugin opening the dialog.
     if (!isset($form_state['entity_element'])) {
@@ -217,12 +234,12 @@ class EntityEmbedDialog extends FormBase {
               $this->setFormError('entity', $form_state, $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
             }
             elseif ($uuid = $entity->uuid()) {
-              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], $uuid, $form_state);
-              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], $entity->id(), $form_state);
+              $this->formBuilder->setValue($form['attributes']['data-entity-uuid'], $uuid, $form_state);
+              $this->formBuilder->setValue($form['attributes']['data-entity-id'], $entity->id(), $form_state);
             }
             else {
-              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-uuid'], '', $form_state);
-              \Drupal::formBuilder()->setValue($form['attributes']['data-entity-id'], $entity->id(), $form_state);
+              $this->formBuilder->setValue($form['attributes']['data-entity-uuid'], '', $form_state);
+              $this->formBuilder->setValue($form['attributes']['data-entity-id'], $entity->id(), $form_state);
             }
           }
           else {
@@ -240,7 +257,7 @@ class EntityEmbedDialog extends FormBase {
     $response = new AjaxResponse();
 
     // Display errors in form, if any.
-    if (\Drupal::formBuilder()->getErrors($form_state)) {
+    if ($this->formBuilder->getErrors($form_state)) {
       unset($form['#prefix'], $form['#suffix']);
       $status_messages = array('#theme' => 'status_messages');
       $output = drupal_render($form);
@@ -252,7 +269,7 @@ class EntityEmbedDialog extends FormBase {
         case 'select':
           $form_state['rebuild'] = TRUE;
           $form_state['step'] = 'embed';
-          $rebuild_form = \Drupal::formBuilder()->rebuildForm('entity_embed_dialog', $form_state, $form);
+          $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
           unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
           $status_messages = array('#theme' => 'status_messages');
           $output = drupal_render($rebuild_form);
@@ -300,7 +317,7 @@ class EntityEmbedDialog extends FormBase {
 
     $form_state['rebuild'] = TRUE;
     $form_state['step'] = 'select';
-    $rebuild_form = \Drupal::formBuilder()->rebuildForm('entity_embed_dialog', $form_state, $form);
+    $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
     unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
     $status_messages = array('#theme' => 'status_messages');
     $output = drupal_render($rebuild_form);

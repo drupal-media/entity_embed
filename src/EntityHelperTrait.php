@@ -202,7 +202,8 @@ trait EntityHelperTrait {
         // @see https://drupal.org/node/2128791
         // @see https://drupal.org/node/2148353
         // @see https://drupal.org/node/2078473
-        switch (file_uri_scheme($entity->getFileUri())) {
+        $uri = $entity->getFileUri();
+        switch (file_uri_scheme($uri)) {
           case 'public':
             return TRUE;
 

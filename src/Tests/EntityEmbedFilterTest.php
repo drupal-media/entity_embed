@@ -81,4 +81,39 @@ class EntityEmbedFilterTest extends WebTestBase {
     $this->assertNoText('This placeholder should not be rendered.', 'Placeholder not appears in the output when embed is successful.');
   }
 
+  /**
+   * Tests entity embed using entity UUID and view mode.
+   */
+  public function testFilterUuidViewMode() {
+    $content = '<div class="custom" data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-view-mode="teaser">This placeholder should not be rendered.</div>';
+    $settings = array();
+    $settings['type'] = 'page';
+    $settings['title'] = 'Test entity embed with entity-id and view-mode';
+    $settings['body'] = array(array('value' => $content));
+    $node = $this->drupalCreateNode($settings);
+
+    $html = $this->drupalGet('node/' . $node->id());
+
+    $this->assertText($this->embedContent, 'Embedded node exists in page');
+    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder not appears in the output when embed is successful.');
+  }
+
+  /**
+   * Tests entity embed using entity UUID and view mode.
+   */
+  public function testFilterInvalidEntity() {
+    $content = '<div class="custom" data-entity-type="node" data-entity-id="InvalidID" data-view-mode="teaser">This placeholder should be rendered since specified entity does not exists.</div>';
+    $settings = array();
+    $settings['type'] = 'page';
+    $settings['title'] = 'Test entity embed with entity-id and view-mode';
+    $settings['body'] = array(array('value' => $content));
+    $node = $this->drupalCreateNode($settings);
+
+    $html = $this->drupalGet('node/' . $node->id());
+
+    print_r($html);
+
+    $this->assertText('This placeholder should be rendered since specified entity does not exists.', 'Placeholder appears in the output when embed is unsuccessful.');
+  }
+
 }

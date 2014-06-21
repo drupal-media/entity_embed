@@ -99,7 +99,7 @@ class EntityEmbedFilterTest extends WebTestBase {
   }
 
   /**
-   * Tests entity embed using entity UUID and view mode.
+   * Tests that placeholder must not be replaced when embed is unsuccessful.
    */
   public function testFilterInvalidEntity() {
     $content = '<div class="custom" data-entity-type="node" data-entity-id="InvalidID" data-view-mode="teaser">This placeholder should be rendered since specified entity does not exists.</div>';
@@ -110,8 +110,6 @@ class EntityEmbedFilterTest extends WebTestBase {
     $node = $this->drupalCreateNode($settings);
 
     $html = $this->drupalGet('node/' . $node->id());
-
-    print_r($html);
 
     $this->assertText('This placeholder should be rendered since specified entity does not exists.', 'Placeholder appears in the output when embed is unsuccessful.');
   }

@@ -71,7 +71,8 @@ class EntityEmbedPostRenderCache {
 
     $entity_output = '';
     try {
-      if ($entity = $this->loadEntity($context['entity-type'], $context['entity-id'])) {
+      $id = $context['entity-uuid'] ?: $context['entity-id'];
+      if ($entity = $this->loadEntity($context['entity-type'], $id)) {
         $entity_output = $this->renderEntityEmbedDisplayPlugin(
           $entity,
           $context['entity-embed-display'],

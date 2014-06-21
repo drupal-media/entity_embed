@@ -134,4 +134,21 @@ class EntityEmbedFilterTest extends WebTestBase {
     $this->assertNoText('This placeholder should not be rendered.', 'Placeholder not appears in the output when embed is successful.');
   }
 
+  /**
+   * Tests entity embed using display plugin.
+   */
+  public function testFilterDisplayPlugin() {
+    $content = '<div class="custom" data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
+    $settings = array();
+    $settings['type'] = 'page';
+    $settings['title'] = 'Test entity embed with entity-embed-display and data-entity-embed-settings';
+    $settings['body'] = array(array('value' => $content));
+    $node = $this->drupalCreateNode($settings);
+
+    $html = $this->drupalGet('node/' . $node->id());
+
+    $this->assertText($this->embedContent, 'Embedded node exists in page.');
+    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder does not appears in the output when embed is successful.');
+  }
+
 }

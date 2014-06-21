@@ -95,12 +95,12 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             // Set the initial langcode but it can be overridden by a data
             // attribute.
             if (!empty($langcode)) {
-              $context['langcode'] = $langcode;
+              $context['data-langcode'] = $langcode;
             }
 
             // Convert the data attributes to the context array.
             foreach ($node->attributes as $attribute) {
-              $key = strtr($attribute->nodeName, array('data-' => ''));
+              $key = $attribute->nodeName;
               $context[$key] = $attribute->nodeValue;
 
               // Check for JSON-encoded attributes.
@@ -111,9 +111,9 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             }
 
             // Support the deprecated view-mode data attribute.
-            if (isset($context['view-mode']) && !isset($context['entity-embed-display']) && !isset($context['entity-embed-settings'])) {
-              $context['entity-embed-settings']['view_mode'] = $context['view-mode'];
-              unset($context['view-mode']);
+            if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-settings'])) {
+              $context['data-entity-embed-settings']['view_mode'] = $context['data-view-mode'];
+              unset($context['data-view-mode']);
             }
 
             $placeholder = $this->buildPlaceholder($entity, $result, $context);
@@ -167,11 +167,11 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   public function buildPlaceholder(EntityInterface $entity, FilterProcessResult $result, array $context = array()) {
     $callback = 'entity_embed.post_render_cache:renderEmbed';
     $context += array(
-      'entity-type' => $entity->getEntityTypeId(),
-      'entity-id' => $entity->id(),
-      'entity-embed-display' => 'default',
-      'entity-embed-settings' => array(),
-      'langcode' => NULL,
+      'data-entity-type' => $entity->getEntityTypeId(),
+      'data-entity-id' => $entity->id(),
+      'data-entity-embed-display' => 'default',
+      'data-entity-embed-settings' => array(),
+      'data-langcode' => NULL,
     );
 
     // Allow modules to alter the context.

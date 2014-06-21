@@ -51,7 +51,7 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {
     $form['view_mode'] = array(
       '#type' => 'select',
       '#title' => t('View mode'),
-      '#options' => $this->entityManager()->getViewModeOptions($this->getAttributeValue('entity-type')),
+      '#options' => $this->entityManager()->getViewModeOptions($this->getContextValue('entity')->getEntityTypeId()),
       '#default_value' => $this->getConfigurationValue('view_mode'),
       '#required' => TRUE,
     );
@@ -65,7 +65,7 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {
   public function build() {
     $entity = $this->getContextValue('entity');
     $view_mode = $this->getConfigurationValue('view_mode');
-    $langcode = $this->getAttributeValue('langcode');
+    $langcode = $this->getAttributeValue('data-langcode');
     return $this->renderEntity($entity, $view_mode, $langcode);
   }
 }

@@ -25,7 +25,6 @@ class EntityEmbedController extends ControllerBase {
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
-   *
    * @param \Drupal\filter\FilterFormatInterface $filter_format
    *   The filter format.
    *

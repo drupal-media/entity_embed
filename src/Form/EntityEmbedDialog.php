@@ -37,7 +37,6 @@ class EntityEmbedDialog extends FormBase {
    *
    * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
    *   The Module Handler.
-   *
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    *   The Form Builder.
    */

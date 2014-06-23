@@ -13,7 +13,7 @@
 
     // Register the icon used for the toolbar button. It must be the same as the
     // name of the widget.
-    icons: 'entityembed',
+    icons: 'entity_embed',
 
     // The plugin initialization logic goes inside this method.
     init: function (editor) {
@@ -37,7 +37,7 @@
       });
 
       // Register the entity embed widget.
-      editor.widgets.add('entityembed', {
+      editor.widgets.add('entity_embed', {
         // Minimum HTML which is required by this widget to work.
         requiredContent: 'div[data-entity-type,data-entity-uuid]',
 

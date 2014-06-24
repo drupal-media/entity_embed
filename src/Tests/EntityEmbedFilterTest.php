@@ -11,6 +11,8 @@ use Drupal\simpletest\WebTestBase;
 
 /**
  * Tests the entity_embed filter.
+ *
+ * @see Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter
  */
 class EntityEmbedFilterTest extends WebTestBase {
 

@@ -11,10 +11,6 @@
     // This plugin requires the Widgets System defined in the 'widget' plugin.
     requires: 'widget',
 
-    // Register the icon used for the toolbar button. It must be the same as the
-    // name of the widget.
-    icons: 'entity_embed',
-
     // The plugin initialization logic goes inside this method.
     init: function (editor) {
       // Custom dialog to specify data attributes.
@@ -39,10 +35,7 @@
       // Register the entity embed widget.
       editor.widgets.add('entity_embed', {
         // Minimum HTML which is required by this widget to work.
-        requiredContent: 'div[data-entity-type,data-entity-uuid]',
-
-        // Add entity embed button
-        button: 'Insert entity',
+        requiredContent: 'div[data-entity-type]',
 
         // Generate the preview of the element and render it.
         upcast: function (element) {

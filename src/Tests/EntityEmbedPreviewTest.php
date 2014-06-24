@@ -11,6 +11,8 @@ use Drupal\simpletest\WebTestBase;
 
 /**
  * Tests the entity_embed preview controller and route.
+ *
+ * @see Drupal\entity_embed\EntityEmbedController
  */
 class EntityEmbedPreviewTest extends WebTestBase {
 

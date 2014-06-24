@@ -36,22 +36,22 @@ class EntityEmbedFilterTest extends WebTestBase {
     $this->drupalCreateContentType(array('type' => 'page', 'name' => 'Basic page'));
 
     // Create Filtered HTML text format and enable entity_embed filter.
-    $filtered_html_format = entity_create('filter_format', array(
-      'format' => 'filtered_html',
-      'name' => 'Filtered HTML',
+    $format = entity_create('filter_format', array(
+      'format' => 'custom_format',
+      'name' => 'Custom format',
       'filters' => array(
         'entity_embed' => array(
           'status' => 1,
         ),
       ),
     ));
-    $filtered_html_format->save();
+    $format->save();
 
     // Create a user with required permissions.
     $this->webUser = $this->drupalCreateUser(array(
       'access content',
       'create page content',
-      'use text format filtered_html',
+      'use text format custom_format',
     ));
     $this->drupalLogin($this->webUser);
 

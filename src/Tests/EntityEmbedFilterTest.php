@@ -80,7 +80,7 @@ class EntityEmbedFilterTest extends WebTestBase {
     $html = $this->drupalGet('node/' . $node->id());
 
     $this->assertText($this->embedContent, 'Embedded node exists in page');
-    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder does not appears in the output when embed is successful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 
   /**
@@ -97,7 +97,7 @@ class EntityEmbedFilterTest extends WebTestBase {
     $html = $this->drupalGet('node/' . $node->id());
 
     $this->assertText($this->embedContent, 'Embedded node exists in page.');
-    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder does not appears in the output when embed is successful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 
   /**
@@ -113,7 +113,7 @@ class EntityEmbedFilterTest extends WebTestBase {
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText('This placeholder should be rendered since specified entity does not exists.', 'Placeholder appears in the output when embed is unsuccessful.');
+    $this->assertText(strip_tags($content), 'Placeholder appears in the output when embed is unsuccessful.');
   }
 
   /**
@@ -133,7 +133,7 @@ class EntityEmbedFilterTest extends WebTestBase {
 
     $this->assertText($this->embedContent, 'Entity specifed with UUID exists in the page.');
     $this->assertNoText($sample_node->body->value, 'Entity specifed with ID does not exists in the page.');
-    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder not appears in the output when embed is successful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder not appears in the output when embed is successful.');
   }
 
   /**
@@ -150,7 +150,7 @@ class EntityEmbedFilterTest extends WebTestBase {
     $html = $this->drupalGet('node/' . $node->id());
 
     $this->assertText($this->embedContent, 'Embedded node exists in page.');
-    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder does not appears in the output when embed is successful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 
   /**
@@ -167,7 +167,7 @@ class EntityEmbedFilterTest extends WebTestBase {
     $html = $this->drupalGet('node/' . $node->id());
 
     $this->assertText($this->embedContent, 'Embedded node exists in page with the view mode specified by entity-embed-settings.');
-    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder does not appears in the output when embed is successful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 
 }

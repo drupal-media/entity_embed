@@ -37,7 +37,6 @@ class EntityEmbedDialog extends FormBase {
    *
    * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
    *   The Module Handler.
-   *
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    *   The Form Builder.
    */
@@ -178,7 +177,7 @@ class EntityEmbedDialog extends FormBase {
           '#prefix' => '<div id="data-entity-embed-settings-wrapper">',
           '#suffix' => '</div>',
         );
-        $plugin_id = $form_state['values']['attributes']['data-entity-embed-display'] ?: $form['attributes']['data-entity-embed-display']['#default_value'];
+        $plugin_id = $form_state['values']['attributes']['data-entity-embed-display'] ?: $entity_element['data-entity-embed-display'];
         if (!empty($plugin_id)) {
           $display = $this->displayPluginManager()->createInstance($plugin_id, $entity_element['data-entity-embed-settings']);
           $display->setContextValue('entity', $entity);

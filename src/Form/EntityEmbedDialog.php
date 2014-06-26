@@ -175,7 +175,7 @@ class EntityEmbedDialog extends FormBase {
         $form['attributes']['data-entity-embed-settings'] = array(
           '#type' => 'container',
           '#prefix' => '<div id="data-entity-embed-settings-wrapper">',
-          '#suffix' => '</div>'
+          '#suffix' => '</div>',
         );
         $plugin_id = $form_state['values']['attributes']['data-entity-embed-display'] ?: $entity_element['data-entity-embed-display'];
         if (!empty($plugin_id)) {

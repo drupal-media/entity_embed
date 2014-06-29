@@ -65,7 +65,7 @@ class EntityEmbedPreviewTest extends WebTestBase {
     $settings['body'] = array(array('value' => $this->embedContent));
     $this->node = $this->drupalCreateNode($settings);
 
-    // Define URL that will be used to access the preview route
+    // Define URL that will be used to access the preview route.
     $this->preview_url = 'entity-embed/preview/custom_format';
   }
 

@@ -79,17 +79,18 @@ class EntityEmbedPreviewTest extends WebTestBase {
 
     $this->assertResponse(200, 'The preview route exists.');
     $this->assertText($this->embedContent, 'Embedded node exists in page');
-    $this->assertNoText('This placeholder should not be rendered.', 'Placeholder does not appears in the output when embed is successful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 
   /**
    * Tests preview route with an invalid request.
    */
   public function testPreviewControllerInvalidRequest() {
-    $html = $this->drupalGet($this->preview_url, array('query' => array('value' => 'Testing preview route without valid values')));
+    $content = 'Testing preview route without valid values';
+    $html = $this->drupalGet($this->preview_url, array('query' => array('value' => $content)));
 
     $this->assertResponse(200, 'The preview route exists.');
-    $this->assertText('Testing preview route without valid values', 'Placeholder appears in the output when embed is unsuccessful.');
+    $this->assertText($content, 'Placeholder appears in the output when embed is unsuccessful.');
   }
 
   /**

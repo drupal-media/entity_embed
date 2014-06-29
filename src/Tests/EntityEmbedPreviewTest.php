@@ -21,7 +21,7 @@ class EntityEmbedPreviewTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('entity_embed', 'filter', 'node');
+  public static $modules = array('editor', 'entity_embed', 'filter', 'node');
 
   public static function getInfo() {
     return array(

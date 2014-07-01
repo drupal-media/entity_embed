@@ -25,7 +25,7 @@ class EntityEmbedPreviewTest extends WebTestBase {
 
   public static function getInfo() {
     return array(
-      'name' => 'Entity Embed Preview Test',
+      'name' => 'Preview of embedded entity',
       'description' => 'Tests the entity_embed controller and route',
       'group' => 'Entity Embed',
     );

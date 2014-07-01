@@ -25,7 +25,7 @@ class EntityEmbedFilterTest extends WebTestBase {
 
   public static function getInfo() {
     return array(
-      'name' => 'Entity Embed Filter Test',
+      'name' => 'Entity Embed filter',
       'description' => 'Tests the entity_embed filter',
       'group' => 'Entity Embed',
     );

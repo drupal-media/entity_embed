@@ -14,14 +14,7 @@ use Drupal\simpletest\WebTestBase;
  *
  * @see Drupal\entity_embed\EntityEmbedController
  */
-class EntityEmbedPreviewTest extends WebTestBase {
-
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = array('editor', 'entity_embed', 'filter', 'node');
+class EntityEmbedPreviewTest extends EntityEmbedTestBase {
 
   public static function getInfo() {
     return array(
@@ -33,37 +26,6 @@ class EntityEmbedPreviewTest extends WebTestBase {
 
   protected function setUp() {
     parent::setUp();
-
-    // Create a page content type.
-    $this->drupalCreateContentType(array('type' => 'page', 'name' => 'Basic page'));
-
-    // Create Filtered HTML text format and enable entity_embed filter.
-    $format = entity_create('filter_format', array(
-      'format' => 'custom_format',
-      'name' => 'Custom format',
-      'filters' => array(
-        'entity_embed' => array(
-          'status' => 1,
-        ),
-      ),
-    ));
-    $format->save();
-
-    // Create a user with required permissions.
-    $this->webUser = $this->drupalCreateUser(array(
-      'access content',
-      'create page content',
-      'use text format custom_format',
-    ));
-    $this->drupalLogin($this->webUser);
-
-    // Create a sample node to be embedded.
-    $this->embedContent = 'This node is to be used for embedding in other nodes.';
-    $settings = array();
-    $settings['type'] = 'page';
-    $settings['title'] = 'Embed Test Node';
-    $settings['body'] = array(array('value' => $this->embedContent));
-    $this->node = $this->drupalCreateNode($settings);
 
     // Define URL that will be used to access the preview route.
     $this->preview_url = 'entity-embed/preview/custom_format';
@@ -78,7 +40,7 @@ class EntityEmbedPreviewTest extends WebTestBase {
     $html = $this->drupalGet($this->preview_url, array('query' => array('value' => $content)));
 
     $this->assertResponse(200, 'The preview route exists.');
-    $this->assertText($this->embedContent, 'Embedded node exists in page');
+    $this->assertText($this->node->body->value, 'Embedded node exists in page');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 

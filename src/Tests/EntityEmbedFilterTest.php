@@ -14,14 +14,7 @@ use Drupal\simpletest\WebTestBase;
  *
  * @see Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter
  */
-class EntityEmbedFilterTest extends WebTestBase {
-
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = array('entity_embed', 'filter', 'node');
+class EntityEmbedFilterTest extends EntityEmbedTestBase {
 
   public static function getInfo() {
     return array(
@@ -29,41 +22,6 @@ class EntityEmbedFilterTest extends WebTestBase {
       'description' => 'Tests the entity_embed filter',
       'group' => 'Entity Embed',
     );
-  }
-
-  protected function setUp() {
-    parent::setUp();
-
-    // Create a page content type.
-    $this->drupalCreateContentType(array('type' => 'page', 'name' => 'Basic page'));
-
-    // Create Filtered HTML text format and enable entity_embed filter.
-    $format = entity_create('filter_format', array(
-      'format' => 'custom_format',
-      'name' => 'Custom format',
-      'filters' => array(
-        'entity_embed' => array(
-          'status' => 1,
-        ),
-      ),
-    ));
-    $format->save();
-
-    // Create a user with required permissions.
-    $this->webUser = $this->drupalCreateUser(array(
-      'access content',
-      'create page content',
-      'use text format custom_format',
-    ));
-    $this->drupalLogin($this->webUser);
-
-    // Create a sample node to be embedded.
-    $this->embedContent = 'This node is to be used for embedding in other nodes.';
-    $settings = array();
-    $settings['type'] = 'page';
-    $settings['title'] = 'Embed Test Node';
-    $settings['body'] = array(array('value' => $this->embedContent));
-    $this->node = $this->drupalCreateNode($settings);
   }
 
   /**
@@ -79,7 +37,7 @@ class EntityEmbedFilterTest extends WebTestBase {
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText($this->embedContent, 'Embedded node exists in page');
+    $this->assertText($this->node->body->value, 'Embedded node exists in page');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 
@@ -96,7 +54,7 @@ class EntityEmbedFilterTest extends WebTestBase {
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText($this->embedContent, 'Embedded node exists in page.');
+    $this->assertText($this->node->body->value, 'Embedded node exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 
@@ -131,7 +89,7 @@ class EntityEmbedFilterTest extends WebTestBase {
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText($this->embedContent, 'Entity specifed with UUID exists in the page.');
+    $this->assertText($this->node->body->value, 'Entity specifed with UUID exists in the page.');
     $this->assertNoText($sample_node->body->value, 'Entity specifed with ID does not exists in the page.');
     $this->assertNoText(strip_tags($content), 'Placeholder not appears in the output when embed is successful.');
   }
@@ -149,7 +107,7 @@ class EntityEmbedFilterTest extends WebTestBase {
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText($this->embedContent, 'Embedded node exists in page.');
+    $this->assertText($this->node->body->value, 'Embedded node exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 
@@ -166,7 +124,7 @@ class EntityEmbedFilterTest extends WebTestBase {
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText($this->embedContent, 'Embedded node exists in page with the view mode specified by entity-embed-settings.');
+    $this->assertText($this->node->body->value, 'Embedded node exists in page with the view mode specified by entity-embed-settings.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 

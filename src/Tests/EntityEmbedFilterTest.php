@@ -37,7 +37,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText($this->embedContent, 'Embedded node exists in page');
+    $this->assertText($this->node->body->value, 'Embedded node exists in page');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 
@@ -54,7 +54,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText($this->embedContent, 'Embedded node exists in page.');
+    $this->assertText($this->node->body->value, 'Embedded node exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 
@@ -89,7 +89,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText($this->embedContent, 'Entity specifed with UUID exists in the page.');
+    $this->assertText($this->node->body->value, 'Entity specifed with UUID exists in the page.');
     $this->assertNoText($sample_node->body->value, 'Entity specifed with ID does not exists in the page.');
     $this->assertNoText(strip_tags($content), 'Placeholder not appears in the output when embed is successful.');
   }
@@ -107,7 +107,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText($this->embedContent, 'Embedded node exists in page.');
+    $this->assertText($this->node->body->value, 'Embedded node exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 
@@ -124,7 +124,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
 
     $html = $this->drupalGet('node/' . $node->id());
 
-    $this->assertText($this->embedContent, 'Embedded node exists in page with the view mode specified by entity-embed-settings.');
+    $this->assertText($this->node->body->value, 'Embedded node exists in page with the view mode specified by entity-embed-settings.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 

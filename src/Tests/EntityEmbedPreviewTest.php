@@ -40,7 +40,7 @@ class EntityEmbedPreviewTest extends EntityEmbedTestBase {
     $html = $this->drupalGet($this->preview_url, array('query' => array('value' => $content)));
 
     $this->assertResponse(200, 'The preview route exists.');
-    $this->assertText($this->embedContent, 'Embedded node exists in page');
+    $this->assertText($this->node->body->value, 'Embedded node exists in page');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
   }
 

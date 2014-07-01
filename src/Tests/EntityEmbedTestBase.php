@@ -22,13 +22,6 @@ class EntityEmbedTestBase extends WebTestBase {
   public static $modules = array('editor', 'entity_embed', 'filter', 'node');
 
   /**
-   * Sample content to be used as body of the node to be embedded.
-   *
-   * @var string
-   */
-  protected $embedContent = 'This node is to be used for embedding in other nodes.';
-
-  /**
    * The test user.
    *
    * @var \Drupal\user\UserInterface
@@ -72,7 +65,7 @@ class EntityEmbedTestBase extends WebTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Embed Test Node';
-    $settings['body'] = array(array('value' => $this->embedContent));
+    $settings['body'] = array(array('value' => 'This node is to be used for embedding in other nodes.'));
     $this->node = $this->drupalCreateNode($settings);
   }
 }

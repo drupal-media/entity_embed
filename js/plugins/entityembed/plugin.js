@@ -12,7 +12,7 @@
     requires: 'widget',
 
     // The plugin initialization logic goes inside this method.
-    init: function (editor) {
+    beforeInit: function (editor) {
       // Custom dialog to specify data attributes.
       editor.addCommand('entityembed_dialog', {
         modes: { wysiwyg : 1 },
@@ -74,8 +74,31 @@
           icon: this.path + '/entity.png',
         });
       }
+
+      // Register context menu option for editing widget.
+      if (editor.contextMenu) {
+        editor.addMenuGroup('entity_embed');
+        editor.addMenuItem('entity_embed', {
+          label: Drupal.t('Edit Entity'),
+          icon: this.path + 'entity.png',
+          command: 'entityembed_dialog',
+          group: 'entity_embed'
+        });
+
+        editor.contextMenu.addListener(function(element) {
+          if (isEntityWidget(editor, element)) {
+            return { entity_embed: CKEDITOR.TRISTATE_OFF };
+          }
+        });
+      }
+
     }
 
   });
+
+  function isEntityWidget (editor, element) {
+    var widget = editor.widgets.getByElement(element, true);
+    return widget && widget.name === 'entity_embed';
+  }
 
 })(jQuery, Drupal, CKEDITOR);

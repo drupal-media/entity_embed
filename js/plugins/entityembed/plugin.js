@@ -26,9 +26,18 @@
           };
 
           var existingValues = {};
-          existingValues['editor-id'] = editor.name;
+
+          var saveCallback = function (values) {
+            var element = editor.document.createElement('entity_embed');
+            var attributes = values.attributes;
+            for (var key in attributes) {
+              element.setAttribute(key, attributes[key]);
+            }
+            editor.insertHtml(element.getOuterHtml());
+          }
+
           // Open the dialog for the entity embed form.
-          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format), existingValues, null, dialogSettings);
+          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
         }
       });
 

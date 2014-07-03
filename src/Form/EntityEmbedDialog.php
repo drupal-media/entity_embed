@@ -12,7 +12,7 @@ use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormBuilderInterface;
-use Drupal\entity_embed\Ajax\EntityEmbedDialogSave;
+use Drupal\editor\Ajax\EditorDialogSave;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\filter\Entity\FilterFormat;
@@ -97,9 +97,9 @@ class EntityEmbedDialog extends FormBase {
     }
 
     $form['#tree'] = TRUE;
+    $form['#attached']['library'][] = 'editor/drupal.editor.dialog';
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
-    $form['#attached']['library'][] = 'entity_embed/entity_embed.ajax';
 
     switch ($form_state['step']) {
       case 'select':
@@ -282,7 +282,7 @@ class EntityEmbedDialog extends FormBase {
             $form_state['values']['attributes']['data-entity-embed-settings'] = Json::encode($form_state['values']['attributes']['data-entity-embed-settings']);
           }
 
-          $response->addCommand(new EntityEmbedDialogSave($form_state['values']));
+          $response->addCommand(new EditorDialogSave($form_state['values']));
           $response->addCommand(new CloseModalDialogCommand());
           break;
       }

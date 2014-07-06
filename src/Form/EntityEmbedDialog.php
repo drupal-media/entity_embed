@@ -133,11 +133,6 @@ class EntityEmbedDialog extends FormBase {
             'event' => 'click',
           ),
         );
-
-        // Set editor instance as a form state attribute.
-        $existing_values = $form_state['input']['editor_object'];
-        $editor_instance = $existing_values['editor-id'];
-        $form_state['editor_instance'] = $editor_instance;
         break;
 
       case 'embed':
@@ -206,13 +201,6 @@ class EntityEmbedDialog extends FormBase {
             'callback' => array($this, 'submitForm'),
             'event' => 'click',
           ),
-        );
-        // Set editor instance as a hidden field.
-        // @todo Fix the way we are storing editor_instance attribute.
-        $editor_instance = $form_state['editor_instance'];
-        $form['editor_instance'] = array(
-          '#type' => 'hidden',
-          '#value' => $editor_instance,
         );
         break;
     }

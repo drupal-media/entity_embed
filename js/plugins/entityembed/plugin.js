@@ -18,14 +18,14 @@
         modes: { wysiwyg : 1 },
         canUndo: true,
         exec: function (editor) {
+          var entityElement = getSelectedEntity(editor);
+
           var dialogSettings = {
-            title: 'Insert Entity',
+            title: entityElement ? editor.config.EntityEmbed_dialogTitleEdit : editor.config.EntityEmbed_dialogTitleAdd,
             dialogClass: 'entity-select-dialog',
             resizable: false,
             minWidth: 800
           };
-
-          var entityElement = getSelectedEntity(editor);
 
           var existingValues = {};
           if (entityElement && entityElement.$ && entityElement.$.firstChild) {

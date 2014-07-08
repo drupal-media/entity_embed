@@ -134,11 +134,14 @@
           }
         });
       }
-
     }
-
   });
 
+  /**
+   * Get the surrounding entity_embed widget element.
+   *
+   * @param {CKEDITOR.editor} editor
+   */
   function getSelectedEntity(editor) {
     var selection = editor.getSelection();
     var selectedElement = selection.getSelectedElement();
@@ -149,6 +152,12 @@
     return null;
   }
 
+  /**
+   * Returns whether or not the given element is a entity_embed widget.
+   *
+   * @param {CKEDITOR.editor} editor
+   * @param {CKEDITOR.htmlParser.element} element
+   */
   function isEntityWidget (editor, element) {
     var widget = editor.widgets.getByElement(element, true);
     return widget && widget.name === 'entity_embed';

@@ -36,7 +36,7 @@
             for (var key = 0; key < entityDOMElement.attributes.length; key++) {
               attribute = entityDOMElement.attributes.item(key);
               attributeName = attribute.nodeName.toLowerCase();
-              if (attributeName.substring(0, 15) === 'data-cke-saved-' || attributeName === 'data-entity-embed-settings') {
+              if (attributeName.substring(0, 15) === 'data-cke-saved-') {
                 continue;
               }
               existingValues[attributeName] = entityElement.data('cke-saved-' + attributeName) || attribute.nodeValue;

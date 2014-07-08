@@ -17,7 +17,7 @@
       editor.addCommand('entityembed_dialog', {
         modes: { wysiwyg : 1 },
         canUndo: true,
-        exec: function (editor, override) {
+        exec: function (editor) {
           var dialogSettings = {
             title: 'Insert Entity',
             dialogClass: 'entity-select-dialog',
@@ -25,15 +25,49 @@
             minWidth: 800
           };
 
+          var entityElement = getSelectedEntity(editor);
+
           var existingValues = {};
+          if (entityElement && entityElement.$) {
+            var entityDOMElement = entityElement.$;
+
+            // Populate array with the entity's current attributes.
+            var attribute = null, attributeName;
+            for (var key = 0; key < entityDOMElement.attributes.length; key++) {
+              attribute = entityDOMElement.attributes.item(key);
+              attributeName = attribute.nodeName.toLowerCase();
+              if (attributeName.substring(0, 15) === 'data-cke-saved-' || attributeName === 'data-entity-embed-settings') {
+                continue;
+              }
+              existingValues[attributeName] = entityElement.data('cke-saved-' + attributeName) || attribute.nodeValue;
+            }
+          }
 
           var saveCallback = function (values) {
-            var element = editor.document.createElement('entity_embed');
+            if (entityElement) {
+              entityElement.remove();
+            }
+
+            entityElement = editor.document.createElement('entity_embed');
             var attributes = values.attributes;
             for (var key in attributes) {
-              element.setAttribute(key, attributes[key]);
+              entityElement.setAttribute(key, attributes[key]);
             }
-            editor.insertHtml(element.getOuterHtml());
+            editor.insertHtml(entityElement.getOuterHtml());
+
+            // Re-select the newly created entity element.
+            entityElement = getSelectedEntity(editor);
+            // Update the entity properties.
+            for (var key in attributes) {
+              if (attributes.hasOwnProperty(key)) {
+                // Update the property if a value is specified.
+                if (attributes[key].length > 0) {
+                  var value = attributes[key];
+                  entityElement.data('cke-saved-' + key, value);
+                  entityElement.setAttribute(key, value);
+                }
+              }
+            }
           }
 
           // Open the dialog for the entity embed form.
@@ -52,6 +86,7 @@
           if (attributes['data-entity-type'] === undefined || (attributes['data-entity-id'] === undefined && attributes['data-entity-uuid'] === undefined)) {
             return;
           }
+
           var request = {};
           request['value'] = element.getOuterHtml();
           jQuery.ajax({
@@ -72,7 +107,7 @@
           var attributes = element.attributes;
           element.setHtml(attributes['data-entity-type'] + ':' + attributes['data-entity-id']);
           return element;
-        }
+        },
       });
 
       // Register the toolbar button.
@@ -104,6 +139,41 @@
     }
 
   });
+
+
+  function getSelectedEntity(editor) {
+    var selection = editor.getSelection();
+    var selectedElement = selection.getSelectedElement();
+    if (isEntityWidget(editor, selectedElement)) {
+      return selectedElement;
+    }
+
+    return null;
+  }
+
+  // Protected; transforms widget's data object to the format used by the
+  // \Drupal\editor\Form\EditorImageDialog dialog, keeping only the data
+  // listed in widgetDefinition._dataForDialog.
+  function _dataToDialogValues (data) {
+    var dialogValues = {};
+    var map = widgetDefinition._mapDataToDialog;
+    Object.keys(widgetDefinition._mapDataToDialog).forEach(function(key) {
+      dialogValues[map[key]] = data[key];
+    });
+    return dialogValues;
+  };
+
+  // Protected; the inverse of _dataToDialogValues.
+  function _dialogValuesToData (dialogReturnValues) {
+    var data = {};
+    var map = widgetDefinition._mapDataToDialog;
+    Object.keys(widgetDefinition._mapDataToDialog).forEach(function(key) {
+      if (dialogReturnValues.hasOwnProperty(map[key])) {
+        data[key] = dialogReturnValues[map[key]];
+      }
+    });
+    return data;
+  };
 
   function isEntityWidget (editor, element) {
     var widget = editor.widgets.getByElement(element, true);

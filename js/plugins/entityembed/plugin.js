@@ -28,9 +28,8 @@
           var entityElement = getSelectedEntity(editor);
 
           var existingValues = {};
-          if (entityElement && entityElement.$) {
-            var entityDOMElement = entityElement.$;
-
+          if (entityElement && entityElement.$ && entityElement.$.firstChild) {
+            var entityDOMElement = entityElement.$.firstChild;
             // Populate array with the entity's current attributes.
             var attribute = null, attributeName;
             for (var key = 0; key < entityDOMElement.attributes.length; key++) {
@@ -140,7 +139,6 @@
 
   });
 
-
   function getSelectedEntity(editor) {
     var selection = editor.getSelection();
     var selectedElement = selection.getSelectedElement();
@@ -150,30 +148,6 @@
 
     return null;
   }
-
-  // Protected; transforms widget's data object to the format used by the
-  // \Drupal\editor\Form\EditorImageDialog dialog, keeping only the data
-  // listed in widgetDefinition._dataForDialog.
-  function _dataToDialogValues (data) {
-    var dialogValues = {};
-    var map = widgetDefinition._mapDataToDialog;
-    Object.keys(widgetDefinition._mapDataToDialog).forEach(function(key) {
-      dialogValues[map[key]] = data[key];
-    });
-    return dialogValues;
-  };
-
-  // Protected; the inverse of _dataToDialogValues.
-  function _dialogValuesToData (dialogReturnValues) {
-    var data = {};
-    var map = widgetDefinition._mapDataToDialog;
-    Object.keys(widgetDefinition._mapDataToDialog).forEach(function(key) {
-      if (dialogReturnValues.hasOwnProperty(map[key])) {
-        data[key] = dialogReturnValues[map[key]];
-      }
-    });
-    return data;
-  };
 
   function isEntityWidget (editor, element) {
     var widget = editor.widgets.getByElement(element, true);

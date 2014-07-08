@@ -53,20 +53,6 @@
               entityElement.setAttribute(key, attributes[key]);
             }
             editor.insertHtml(entityElement.getOuterHtml());
-
-            // Re-select the newly created entity element.
-            entityElement = getSelectedEntity(editor);
-            // Update the entity properties.
-            for (var key in attributes) {
-              if (attributes.hasOwnProperty(key)) {
-                // Update the property if a value is specified.
-                if (attributes[key].length > 0) {
-                  var value = attributes[key];
-                  entityElement.data('cke-saved-' + key, value);
-                  entityElement.setAttribute(key, value);
-                }
-              }
-            }
           }
 
           // Open the dialog for the entity embed form.

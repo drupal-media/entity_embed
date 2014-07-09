@@ -120,6 +120,14 @@
           }
         });
       }
+
+      editor.on('doubleclick', function (evt) {
+        var element = getSelectedEntity(editor) || evt.data.element;
+
+        if (isEntityWidget(editor, element)) {
+          editor.execCommand('entityembed_dialog');
+        }
+      });
     }
   });
 

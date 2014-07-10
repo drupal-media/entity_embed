@@ -18,18 +18,18 @@
         modes: { wysiwyg : 1 },
         canUndo: true,
         exec: function (editor) {
-          var entityElement = getSelectedEntity(editor);
+          var existingElement = getSelectedEntity(editor);
 
           var dialogSettings = {
-            title: entityElement ? editor.config.EntityEmbed_dialogTitleEdit : editor.config.EntityEmbed_dialogTitleAdd,
+            title: existingElement ? editor.config.EntityEmbed_dialogTitleEdit : editor.config.EntityEmbed_dialogTitleAdd,
             dialogClass: 'entity-select-dialog',
             resizable: false,
             minWidth: 800
           };
 
           var existingValues = {};
-          if (entityElement && entityElement.$ && entityElement.$.firstChild) {
-            var entityDOMElement = entityElement.$.firstChild;
+          if (existingElement && existingElement.$ && existingElement.$.firstChild) {
+            var entityDOMElement = existingElement.$.firstChild;
             // Populate array with the entity's current attributes.
             var attribute = null, attributeName;
             for (var key = 0; key < entityDOMElement.attributes.length; key++) {
@@ -38,21 +38,20 @@
               if (attributeName.substring(0, 15) === 'data-cke-saved-') {
                 continue;
               }
-              existingValues[attributeName] = entityElement.data('cke-saved-' + attributeName) || attribute.nodeValue;
+              existingValues[attributeName] = existingElement.data('cke-saved-' + attributeName) || attribute.nodeValue;
             }
           }
 
           var saveCallback = function (values) {
-            if (entityElement) {
-              entityElement.remove();
-            }
-
-            entityElement = editor.document.createElement('entity_embed');
+            var entityElement = editor.document.createElement('entity_embed');
             var attributes = values.attributes;
             for (var key in attributes) {
               entityElement.setAttribute(key, attributes[key]);
             }
             editor.insertHtml(entityElement.getOuterHtml());
+            if (existingElement) {
+              existingElement.remove();
+            }
           }
 
           // Open the dialog for the entity embed form.

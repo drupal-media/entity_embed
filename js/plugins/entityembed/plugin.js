@@ -120,6 +120,7 @@
         });
       }
 
+      // Execute widget editing action on double click.
       editor.on('doubleclick', function (evt) {
         var element = getSelectedEntity(editor) || evt.data.element;
 

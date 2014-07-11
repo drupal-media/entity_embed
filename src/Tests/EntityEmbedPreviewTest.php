@@ -7,22 +7,12 @@
 
 namespace Drupal\entity_embed\Tests;
 
-use Drupal\simpletest\WebTestBase;
-
 /**
  * Tests the entity_embed preview controller and route.
  *
- * @see Drupal\entity_embed\EntityEmbedController
+ * @group entity_embed
  */
 class EntityEmbedPreviewTest extends EntityEmbedTestBase {
-
-  public static function getInfo() {
-    return array(
-      'name' => 'Preview of embedded entity',
-      'description' => 'Tests the entity_embed controller and route',
-      'group' => 'Entity Embed',
-    );
-  }
 
   protected function setUp() {
     parent::setUp();

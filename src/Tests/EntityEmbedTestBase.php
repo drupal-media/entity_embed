@@ -12,7 +12,7 @@ use Drupal\simpletest\WebTestBase;
 /**
  * Base class for all entity_embed tests.
  */
-class EntityEmbedTestBase extends WebTestBase {
+abstract class EntityEmbedTestBase extends WebTestBase {
 
   /**
    * Modules to enable.

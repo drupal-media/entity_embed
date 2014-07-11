@@ -7,22 +7,12 @@
 
 namespace Drupal\entity_embed\Tests;
 
-use Drupal\simpletest\WebTestBase;
-
 /**
  * Tests the entity_embed filter.
  *
- * @see Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter
+ * @group entity_embed
  */
 class EntityEmbedFilterTest extends EntityEmbedTestBase {
-
-  public static function getInfo() {
-    return array(
-      'name' => 'Entity Embed filter',
-      'description' => 'Tests the entity_embed filter',
-      'group' => 'Entity Embed',
-    );
-  }
 
   /**
    * Tests entity embed using entity ID and view mode.

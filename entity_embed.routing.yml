@@ -5,7 +5,6 @@ entity_embed.dialog:
     _title: 'Embed entity'
   requirements:
     _entity_access: 'filter_format.use'
-    _module_dependencies: 'editor'
 
 entity_embed.preview:
   path: '/entity-embed/preview/{filter_format}'
@@ -14,4 +13,3 @@ entity_embed.preview:
     _title: 'Preview embedded entity'
   requirements:
     _entity_access: 'filter_format.use'
-    _module_dependencies: 'editor'

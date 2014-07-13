@@ -9,7 +9,7 @@ env:
     - MODULE_NAME='entity_embed'
     - MODULE_TEST_GROUP='Entity Embed'
     - DRUPAL_REPO='git://drupalcode.org/project/drupal.git'
-    - DRUPAL_VERSION='8.0-alpha12'
+    - DRUPAL_VERSION='8.x'
     - PHPCS_VERSION='2.0.*@dev'
     - CODER_VERSION='dev-8.x-2.x'
 

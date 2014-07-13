@@ -65,12 +65,9 @@
           return element;
         },
 
-        // Downcast the element. Do not set the html to be empty, otherwise the
-        // div element will be discarded by the CKEditor.
-        // Using entity_type:entity_id as placeholder.
+        // Downcast the element. Set the inner html to be empty.
         downcast: function (element) {
-          var attributes = element.attributes;
-          element.setHtml(attributes['data-entity-type'] + ':' + attributes['data-entity-id']);
+          element.setHtml('');
           return element;
         }
       });

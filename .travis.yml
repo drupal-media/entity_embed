@@ -10,8 +10,8 @@ env:
     - MODULE_TEST_GROUP='Entity Embed'
     - DRUPAL_REPO='git://drupalcode.org/project/drupal.git'
     - DRUPAL_VERSION='8.0-alpha12'
-    - CODER_REPO='git://drupalcode.org/project/coder.git'
-    - CODER_VERSION='7.x-2.2'
+    - PHPCS_VERSION='2.0.*@dev'
+    - CODER_VERSION='dev-8.x-2.x'
 
 matrix:
   allow-failures:
@@ -31,7 +31,13 @@ before_install:
   - composer global require drush/drush:dev-master
 
   # Codesniffer.
-  - pyrus install pear/PHP_CodeSniffer
+  - composer global require squizlabs/php_codesniffer:$PHPCS_VERSION
+
+  # Coder.
+  - composer global require drupal/coder:$CODER_VERSION
+  - ln -s ~/.composer/vendor/drupal/coder/coder_sniffer/Drupal ~/.composer/vendor/squizlabs/php_codesniffer/CodeSniffer/Standard
+
+  # Ensure the PHP environment is ready.
   - phpenv rehash
 
 install:
@@ -43,9 +49,6 @@ install:
   - mv * /tmp/$MODULE_NAME/
   - git clone --branch $DRUPAL_VERSION $DRUPAL_REPO drupal
   - mv /tmp/$MODULE_NAME drupal/modules/
-
-  # Clone Coder module for later.
-  - git clone --branch $CODER_VERSION $CODER_REPO drupal/modules/coder
 
 before_script:
   # This fixes a fail when install Drupal.
@@ -62,5 +65,5 @@ before_script:
   - until netstat -an 2>/dev/null | grep '8080.*LISTEN'; do true; done
 
 script:
-  - phpcs --report=full --standard=$TRAVIS_BUILD_DIR/drupal/modules/coder/coder_sniffer/Drupal/ruleset.xml $TRAVIS_BUILD_DIR/drupal/modules/$MODULE_NAME
+  - phpcs --report=full --standard=Drupal $TRAVIS_BUILD_DIR/drupal/modules/$MODULE_NAME
   - php $TRAVIS_BUILD_DIR/drupal/core/scripts/run-tests.sh --php `which php` --concurrency 12 --url http://127.0.0.1:8080 --color "$MODULE_TEST_GROUP"

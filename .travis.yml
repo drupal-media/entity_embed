@@ -35,7 +35,7 @@ before_install:
 
   # Coder.
   - composer global require drupal/coder:$CODER_VERSION
-  - ln -s ~/.composer/vendor/drupal/coder/coder_sniffer/Drupal ~/.composer/vendor/squizlabs/php_codesniffer/CodeSniffer/Standard
+  - ln -s ~/.composer/vendor/drupal/coder/coder_sniffer/Drupal ~/.composer/vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/
 
   # Ensure the PHP environment is ready.
   - phpenv rehash

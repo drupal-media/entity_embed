@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed;
 
+use Drupal\Component\Utility\String;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityStorageException;
@@ -151,7 +152,7 @@ trait EntityHelperTrait {
     static $depth = 0;
     $depth++;
     if ($depth > 20) {
-      throw new RecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $entity->getEntityTypeId(), '@entity_id' => $entity->id())));
+      throw new RecursiveRenderingException(String::format('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $entity->getEntityTypeId(), '@entity_id' => $entity->id())));
     }
 
     // Allow modules to alter the entity prior to display rendering.

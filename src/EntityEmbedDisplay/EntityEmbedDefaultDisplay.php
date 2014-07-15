@@ -38,7 +38,7 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {
    */
   public function defaultConfiguration() {
     return array(
-      'view_mode' => 'embed',
+      'view_mode' => 'default',
     );
   }
 

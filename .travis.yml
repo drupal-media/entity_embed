@@ -7,7 +7,7 @@ php:
 env:
   global:
     - MODULE_NAME='entity_embed'
-    - MODULE_TEST_GROUP='Entity Embed'
+    - MODULE_TEST_GROUP='entity_embed'
     - DRUPAL_REPO='git://drupalcode.org/project/drupal.git'
     - DRUPAL_VERSION='8.x'
     - PHPCS_VERSION='2.0.*@dev'
@@ -56,7 +56,7 @@ before_script:
 
   # Install Drupal and enable the required modules (including this one).
   - mysql -e 'create database drupal;'
-  - cd $TRAVIS_BUILD_DIR/drupal && drush --yes site-install minimal --db-url="mysql://root@127.0.0.1/drupal"
+  - cd $TRAVIS_BUILD_DIR/drupal && drush --yes site-install testing --db-url="mysql://root@127.0.0.1/drupal"
   - cd $TRAVIS_BUILD_DIR/drupal && drush --yes en $MODULE_NAME
   - cd $TRAVIS_BUILD_DIR/drupal && drush --yes en simpletest
 

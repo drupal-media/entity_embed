@@ -54,8 +54,8 @@ class EntityEmbedPlugin extends CKEditorPluginBase {
    */
   public function getConfig(Editor $editor) {
     return array(
-      'drupalEntity_dialogTitleAdd' => t('Embed an entity'),
-      'drupalEntity_dialogTitleEdit' => t('Edit an embedded entity'),
+      'EntityEmbed_dialogTitleAdd' => t('Insert entity'),
+      'EntityEmbed_dialogTitleEdit' => t('Edit entity'),
     );
   }
 

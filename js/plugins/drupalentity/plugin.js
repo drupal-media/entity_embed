@@ -14,7 +14,7 @@
     // The plugin initialization logic goes inside this method.
     beforeInit: function (editor) {
       // Custom dialog to specify data attributes.
-      editor.addCommand('entityembed_dialog', {
+      editor.addCommand('editdrupalentity', {
         modes: { wysiwyg : 1 },
         canUndo: true,
         exec: function (editor) {
@@ -95,7 +95,7 @@
       if (editor.ui.addButton) {
         editor.ui.addButton('DrupalEntity', {
           label: Drupal.t('Entity'),
-          command: 'entityembed_dialog',
+          command: 'editdrupalentity',
           icon: this.path + '/entity.png',
         });
       }
@@ -106,7 +106,7 @@
         editor.addMenuItem('entity_embed', {
           label: Drupal.t('Edit Entity'),
           icon: this.path + 'entity.png',
-          command: 'entityembed_dialog',
+          command: 'editdrupalentity',
           group: 'entity_embed'
         });
 
@@ -122,7 +122,7 @@
         var element = getSelectedEntity(editor) || evt.data.element;
 
         if (isEntityWidget(editor, element)) {
-          editor.execCommand('entityembed_dialog');
+          editor.execCommand('editdrupalentity');
         }
       });
     }

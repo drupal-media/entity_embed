@@ -43,7 +43,7 @@
           }
 
           var saveCallback = function (values) {
-            var entityElement = editor.document.createElement('entity_embed');
+            var entityElement = editor.document.createElement('drupalentity');
             var attributes = values.attributes;
             for (var key in attributes) {
               entityElement.setAttribute(key, attributes[key]);
@@ -60,7 +60,7 @@
       });
 
       // Register the entity embed widget.
-      editor.widgets.add('entity_embed', {
+      editor.widgets.add('drupalentity', {
         // Minimum HTML which is required by this widget to work.
         requiredContent: 'div[data-entity-type]',
 
@@ -102,17 +102,17 @@
 
       // Register context menu option for editing widget.
       if (editor.contextMenu) {
-        editor.addMenuGroup('entity_embed');
-        editor.addMenuItem('entity_embed', {
+        editor.addMenuGroup('drupalentity');
+        editor.addMenuItem('drupalentity', {
           label: Drupal.t('Edit Entity'),
           icon: this.path + 'entity.png',
           command: 'editdrupalentity',
-          group: 'entity_embed'
+          group: 'drupalentity'
         });
 
         editor.contextMenu.addListener(function(element) {
           if (isEntityWidget(editor, element)) {
-            return { entity_embed: CKEDITOR.TRISTATE_OFF };
+            return { drupalentity: CKEDITOR.TRISTATE_OFF };
           }
         });
       }
@@ -129,7 +129,7 @@
   });
 
   /**
-   * Get the surrounding entity_embed widget element.
+   * Get the surrounding drupalentity widget element.
    *
    * @param {CKEDITOR.editor} editor
    */
@@ -144,14 +144,14 @@
   }
 
   /**
-   * Returns whether or not the given element is a entity_embed widget.
+   * Returns whether or not the given element is a drupalentity widget.
    *
    * @param {CKEDITOR.editor} editor
    * @param {CKEDITOR.htmlParser.element} element
    */
   function isEntityWidget (editor, element) {
     var widget = editor.widgets.getByElement(element, true);
-    return widget && widget.name === 'entity_embed';
+    return widget && widget.name === 'drupalentity';
   }
 
 })(jQuery, Drupal, CKEDITOR);

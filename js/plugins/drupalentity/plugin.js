@@ -21,7 +21,7 @@
           var existingElement = getSelectedEntity(editor);
 
           var dialogSettings = {
-            title: existingElement ? editor.config.EntityEmbed_dialogTitleEdit : editor.config.EntityEmbed_dialogTitleAdd,
+            title: existingElement ? editor.config.DrupalEntity_dialogTitleEdit : editor.config.DrupalEntity_dialogTitleAdd,
             dialogClass: 'entity-select-dialog',
             resizable: false,
             minWidth: 800

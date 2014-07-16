@@ -1,13 +1,13 @@
 /**
  * @file
- * Entity Embed CKEditor plugin.
+ * Drupal Entity plugin.
  */
 
 (function ($, Drupal, CKEDITOR) {
 
   "use strict";
 
-  CKEDITOR.plugins.add('entityembed', {
+  CKEDITOR.plugins.add('drupalentity', {
     // This plugin requires the Widgets System defined in the 'widget' plugin.
     requires: 'widget',
 
@@ -93,8 +93,8 @@
 
       // Register the toolbar button.
       if (editor.ui.addButton) {
-        editor.ui.addButton('EntityEmbed', {
-          label: Drupal.t('Entity Embed'),
+        editor.ui.addButton('DrupalEntity', {
+          label: Drupal.t('Entity'),
           command: 'entityembed_dialog',
           icon: this.path + '/entity.png',
         });

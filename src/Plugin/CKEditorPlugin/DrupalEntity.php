@@ -11,24 +11,24 @@ use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\editor\Entity\Editor;
 
 /**
- * Defines the "entityembed" plugin.
+ * Defines the "drupalentity" plugin.
  *
  * @CKEditorPlugin(
- *   id = "entityembed",
- *   label = @Translation("Entity Embed"),
+ *   id = "drupalentity",
+ *   label = @Translation("Entity"),
  *   module = "entity_embed"
  * )
  */
-class EntityEmbedPlugin extends CKEditorPluginBase {
+class DrupalEntity extends CKEditorPluginBase {
 
   /**
    * {@inheritdoc}
    */
   public function getButtons() {
     return array(
-      'EntityEmbed' => array(
-        'label' => t('Entity Embed'),
-        'image' => drupal_get_path('module', 'entity_embed') . '/js/plugins/entityembed/entity.png',
+      'DrupalEntity' => array(
+        'label' => t('Entity'),
+        'image' => drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png',
       ),
     );
   }
@@ -37,7 +37,7 @@ class EntityEmbedPlugin extends CKEditorPluginBase {
    * {@inheritdoc}
    */
   public function getFile() {
-    return drupal_get_path('module', 'entity_embed') . '/js/plugins/entityembed/plugin.js';
+    return drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/plugin.js';
   }
 
   /**

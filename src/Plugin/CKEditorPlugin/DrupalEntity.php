@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Plugin\CKEditorPlugin\EntityEmbedPlugin
+ * Contains \Drupal\entity_embed\Plugin\CKEditorPlugin\DrupalEntity.
  */
 
 namespace Drupal\entity_embed\Plugin\CKEditorPlugin;

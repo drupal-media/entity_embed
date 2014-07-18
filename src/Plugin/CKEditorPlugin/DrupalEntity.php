@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Plugin\CKEditorPlugin\EntityEmbedPlugin
+ * Contains \Drupal\entity_embed\Plugin\CKEditorPlugin\DrupalEntity.
  */
 
 namespace Drupal\entity_embed\Plugin\CKEditorPlugin;
@@ -11,24 +11,24 @@ use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\editor\Entity\Editor;
 
 /**
- * Defines the "entityembed" plugin.
+ * Defines the "drupalentity" plugin.
  *
  * @CKEditorPlugin(
- *   id = "entityembed",
- *   label = @Translation("Entity Embed"),
+ *   id = "drupalentity",
+ *   label = @Translation("Entity"),
  *   module = "entity_embed"
  * )
  */
-class EntityEmbedPlugin extends CKEditorPluginBase {
+class DrupalEntity extends CKEditorPluginBase {
 
   /**
    * {@inheritdoc}
    */
   public function getButtons() {
     return array(
-      'EntityEmbed' => array(
-        'label' => t('Entity Embed'),
-        'image' => drupal_get_path('module', 'entity_embed') . '/js/plugins/entityembed/entity.png',
+      'DrupalEntity' => array(
+        'label' => t('Entity'),
+        'image' => drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png',
       ),
     );
   }
@@ -37,7 +37,7 @@ class EntityEmbedPlugin extends CKEditorPluginBase {
    * {@inheritdoc}
    */
   public function getFile() {
-    return drupal_get_path('module', 'entity_embed') . '/js/plugins/entityembed/plugin.js';
+    return drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/plugin.js';
   }
 
   /**
@@ -54,8 +54,8 @@ class EntityEmbedPlugin extends CKEditorPluginBase {
    */
   public function getConfig(Editor $editor) {
     return array(
-      'EntityEmbed_dialogTitleAdd' => t('Insert entity'),
-      'EntityEmbed_dialogTitleEdit' => t('Edit entity'),
+      'DrupalEntity_dialogTitleAdd' => t('Insert entity'),
+      'DrupalEntity_dialogTitleEdit' => t('Edit entity'),
     );
   }
 

@@ -1,0 +1,69 @@
+language: php
+
+php:
+  - 5.4
+  - 5.5
+
+env:
+  global:
+    - MODULE_NAME='entity_embed'
+    - MODULE_TEST_GROUP='entity_embed'
+    - DRUPAL_REPO='git://drupalcode.org/project/drupal.git'
+    - DRUPAL_VERSION='8.x'
+    - PHPCS_VERSION='2.0.*@dev'
+    - CODER_VERSION='dev-8.x-2.x'
+
+matrix:
+  allow-failures:
+    - php: 5.5
+
+before_install:
+  # Ensure we have the latest sources.
+  - sudo apt-get -y update
+
+  # Composer.
+  - sed -i '1i export PATH="$HOME/.composer/vendor/bin:$PATH"' $HOME/.bashrc
+  - source $HOME/.bashrc
+  - composer self-update
+
+  # Drush.
+  - composer global require "youngj/httpserver:dev-master#41dd2b7"
+  - composer global require drush/drush:dev-master
+
+  # Codesniffer.
+  - composer global require squizlabs/php_codesniffer:$PHPCS_VERSION
+
+  # Coder.
+  - composer global require drupal/coder:$CODER_VERSION
+  - ln -s ~/.composer/vendor/drupal/coder/coder_sniffer/Drupal ~/.composer/vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/
+
+  # Ensure the PHP environment is ready.
+  - phpenv rehash
+
+install:
+  # Basic PHP packages.
+  - sudo apt-get install -y --force-yes php5-cgi php5-mysql
+
+  # Move the checked out module into the correct structure.
+  - mkdir /tmp/$MODULE_NAME
+  - mv * /tmp/$MODULE_NAME/
+  - git clone --branch $DRUPAL_VERSION $DRUPAL_REPO drupal
+  - mv /tmp/$MODULE_NAME drupal/modules/
+
+before_script:
+  # This fixes a fail when install Drupal.
+  - echo 'sendmail_path = /bin/true' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+
+  # Install Drupal and enable the required modules (including this one).
+  - mysql -e 'create database drupal;'
+  - cd $TRAVIS_BUILD_DIR/drupal && drush --yes site-install testing --db-url="mysql://root@127.0.0.1/drupal"
+  - cd $TRAVIS_BUILD_DIR/drupal && drush --yes en $MODULE_NAME
+  - cd $TRAVIS_BUILD_DIR/drupal && drush --yes en simpletest
+
+  # Start a web server.
+  - drush runserver 127.0.0.1:8080 &
+  - until netstat -an 2>/dev/null | grep '8080.*LISTEN'; do true; done
+
+script:
+  - phpcs --report=full --standard=Drupal $TRAVIS_BUILD_DIR/drupal/modules/$MODULE_NAME
+  - php $TRAVIS_BUILD_DIR/drupal/core/scripts/run-tests.sh --php `which php` --concurrency 12 --url http://127.0.0.1:8080 --color "$MODULE_TEST_GROUP"

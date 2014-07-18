@@ -83,6 +83,7 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-id' => '',
       'data-entity-embed-display' => 'default',
       'data-entity-embed-settings' => array(),
+      'data-text-align' => 'none',
     );
 
     if (!isset($form_state['step'])) {
@@ -180,7 +181,19 @@ class EntityEmbedDialog extends FormBase {
           $display->setContextValue('entity', $entity);
           $form['attributes']['data-entity-embed-settings'] += $display->buildConfigurationForm($form, $form_state);
         }
-        // @todo Re-add caption and alignment attributes.
+        $form['attributes']['data-text-align'] = array(
+          '#title' => $this->t('Align'),
+          '#type' => 'radios',
+          '#options' => array(
+            'none' => $this->t('None'),
+            'left' => $this->t('Left'),
+            'center' => $this->t('Center'),
+            'right' => $this->t('Right'),
+          ),
+          '#default_value' => $entity_element['data-text-align'],
+          '#attributes' => array('class' => array('container-inline')),
+        );
+        // @todo Add caption attribute.
         $form['actions'] = array(
           '#type' => 'actions',
         );

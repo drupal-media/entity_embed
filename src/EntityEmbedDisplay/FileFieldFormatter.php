@@ -36,7 +36,7 @@ class FileFieldFormatter extends EntityReferenceFieldFormatter {
    */
   public function getFieldValue(FieldDefinition $definition) {
     $value = parent::getFieldValue($definition);
-    $value += array_intersect_key($this->getAttributeValues(), array('description' => ''));
+    $value += array_intersect_key($this->getConfiguration(), array('description' => ''));
     return $value;
   }
 

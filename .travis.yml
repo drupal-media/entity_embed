@@ -47,7 +47,7 @@ install:
   # Move the checked out module into the correct structure.
   - mkdir /tmp/$MODULE_NAME
   - mv * /tmp/$MODULE_NAME/
-  - git clone --branch $DRUPAL_VERSION $DRUPAL_REPO drupal
+  - git clone --branch $DRUPAL_VERSION $DRUPAL_REPO drupal --depth 1
   - mv /tmp/$MODULE_NAME drupal/modules/
 
 before_script:

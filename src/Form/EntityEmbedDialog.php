@@ -171,7 +171,7 @@ class EntityEmbedDialog extends FormBase {
           '#prefix' => '<div id="data-entity-embed-settings-wrapper">',
           '#suffix' => '</div>',
         );
-        $plugin_id = $form_state['values']['attributes']['data-entity-embed-display'] ?: $entity_element['data-entity-embed-display'];
+        $plugin_id = !empty($form_state['values']['attributes']['data-entity-embed-display']) ? $form_state['values']['attributes']['data-entity-embed-display'] : $entity_element['data-entity-embed-display'];
         if (!empty($plugin_id)) {
           if (is_string($entity_element['data-entity-embed-settings'])) {
             $entity_element['data-entity-embed-settings'] = Json::decode($entity_element['data-entity-embed-settings'], true);

@@ -7,8 +7,8 @@
 
 namespace Drupal\entity_embed\Plugin\Derivative;
 
-use Drupal\Component\Plugin\Derivative\DerivativeBase;
-use Drupal\Core\Plugin\Discovery\ContainerDerivativeInterface;
+use Drupal\Component\Plugin\Derivative\DeriverBase;
+use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FormatterPluginManager;
 
@@ -17,7 +17,7 @@ use Drupal\Core\Field\FormatterPluginManager;
  *
  * @see \Drupal\entity_embed\FieldFormatterEntityEmbedDisplayBase
  */
-class FieldFormatterDeriver extends DerivativeBase implements ContainerDerivativeInterface {
+class FieldFormatterDeriver extends DeriverBase implements ContainerDeriverInterface {
 
   /**
    * The manager for formatter plugins.

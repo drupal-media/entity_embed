@@ -16,7 +16,7 @@ use Drupal\Core\Session\AccountInterface;
  * @EntityEmbedDisplay(
  *   id = "entity_reference",
  *   label = @Translation("Entity Reference"),
- *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
+ *   deriver = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "entity_reference",
  *   provider = "entity_reference"
  * )

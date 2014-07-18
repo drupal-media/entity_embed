@@ -16,7 +16,7 @@ use Drupal\Core\Field\FieldDefinition;
  *   id = "file",
  *   label = @Translation("File"),
  *   entity_types = {"file"},
- *   derivative = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
+ *   deriver = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "file",
  *   provider = "file"
  * )

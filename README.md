@@ -1,4 +1,4 @@
-# Entity Embed Module
+# Entity Embed Module [![Build Status](https://travis-ci.org/drupal-media/entity_embed.svg?branch=8.x-1.x)](https://travis-ci.org/drupal-media/entity_embed)
 
 ## Requirements
 

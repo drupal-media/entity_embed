@@ -98,4 +98,20 @@ class EntityEmbedDisplayPluginTest extends EntityEmbedTestBase {
     $this->assertIdentical($conf_form['link']['#title'], 'Link label to the referenced entity');
   }
 
+  /**
+   * Tests that 'Rendered Entity' plugin is not present for an entity not having a view controller.
+   */
+  public function testEntityWithoutViewController() {
+    // Add a new custom menu entity which does not has a view controller.
+    $menu = entity_create('menu', array(
+      'id' => 'menu_name',
+      'label' => 'Label',
+      'description' => 'Description text',
+    ));
+    $menu->save();
+
+    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($menu);
+    $this->assertFalse(array_key_exists('entity_reference:entity_reference_entity_view', $plugin_options), "The 'Rendered entity' plugin does not exists.");
+  }
+
 }

@@ -19,7 +19,7 @@ abstract class EntityEmbedTestBase extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('entity_embed', 'node');
+  public static $modules = array('entity_embed', 'entity_reference', 'node');
 
   /**
    * The test user.

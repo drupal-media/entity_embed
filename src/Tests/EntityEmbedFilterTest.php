@@ -134,7 +134,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertText($this->node->title->value, 'Title of the embedded node exists in page.');
     $this->assertNoText($this->node->body->value, 'Body of embedded node does not exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
-    $this->assertLinkByHref('node/' . $this->node->id(), 'Link to the embedded node exists.');
+    $this->assertLinkByHref('node/' . $this->node->id(), 0, 'Link to the embedded node exists.');
   }
 
   /**

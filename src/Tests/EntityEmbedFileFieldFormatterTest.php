@@ -62,7 +62,7 @@ class EntityEmbedFileFieldFormatterTest extends EntityEmbedTestBase {
   /**
    * Tests that correct form attributes are returned for the plugins.
    */
-  public function testRenderedEntityPluginConfigurationForm() {
+  public function testPluginConfigurationForm() {
     $form = array();
     $form_state = array();
     $plugins = array('file:file_table', 'file:file_rss_enclosure', 'file:file_default', 'file:file_url_plain');
@@ -80,7 +80,7 @@ class EntityEmbedFileFieldFormatterTest extends EntityEmbedTestBase {
   /**
    * Tests entity embed using 'Generic file' display plugin.
    */
-  public function testFilterLabelDisplayPlugin() {
+  public function testFilterGenericFilePlugin() {
     $description = "This is sample description";
     $content = '<div data-entity-type="file" data-entity-uuid="' . $this->file->uuid() . '" data-entity-embed-display="file:file_default" data-entity-embed-settings=\'{"description":"' . $description . '"}\'>This placeholder should not be rendered.</div>';
     $settings = array();

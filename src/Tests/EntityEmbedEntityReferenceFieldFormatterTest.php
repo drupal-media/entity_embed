@@ -132,7 +132,7 @@ class EntityEmbedEntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     $settings['body'] = array(array('value' => $content));
     $node = $this->drupalCreateNode($settings);
 
-    $html = $this->drupalGet('node/' . $node->id());
+    $this->drupalGet('node/' . $node->id());
 
     $this->assertText($this->node->title->value, 'Title of the embedded node exists in page.');
     $this->assertNoText($this->node->body->value, 'Body of embedded node does not exists in page.');
@@ -151,7 +151,7 @@ class EntityEmbedEntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     $settings['body'] = array(array('value' => $content));
     $node = $this->drupalCreateNode($settings);
 
-    $html = $this->drupalGet('node/' . $node->id());
+    $this->drupalGet('node/' . $node->id());
 
     $this->assertText($this->node->id(), 'ID of the embedded node exists in page.');
     $this->assertNoText($this->node->title->value, 'Title of the embedded node does not exists in page.');
@@ -171,7 +171,7 @@ class EntityEmbedEntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     $settings['body'] = array(array('value' => $content));
     $node = $this->drupalCreateNode($settings);
 
-    $html = $this->drupalGet('node/' . $node->id());
+    $this->drupalGet('node/' . $node->id());
 
     $this->assertText($this->node->body->value, 'Body of embedded node does not exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');

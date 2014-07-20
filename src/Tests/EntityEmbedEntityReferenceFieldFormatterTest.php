@@ -10,11 +10,11 @@ namespace Drupal\entity_embed\Tests;
 use Drupal\entity_embed\EntityHelperTrait;
 
 /**
- * Tests availability of entity reference field formatters as display plugins.
+ * Tests that entity reference field formatters are available as display plugins.
  *
  * @group entity_embed
  */
-class EntityEmbedDisplayPluginTest extends EntityEmbedTestBase {
+class EntityEmbedEntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
   use EntityHelperTrait;
 
   /**

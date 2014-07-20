@@ -31,6 +31,13 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
    */
   protected $image;
 
+  /**
+   * Created file entity.
+   *
+   * @var \Drupal\file\Entity\File
+   */
+  protected $file;
+
   protected function setUp() {
     parent::setUp();
 
@@ -39,39 +46,26 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
       'uri' => 'public://example.png',
     ));
     $this->image->save();
-  }
 
-  /**
-   * Tests that image field formatters are available as display plugins.
-   */
-  public function testDisplayPluginOptions() {
-    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->image);
-    // Test that 'image:image' plugin is available.
-    $this->assertTrue(array_key_exists('image:image', $plugin_options), "The 'Image' plugin is available.");
-  }
-
-  /**
-   * Tests that image plugin is not available to files other than images.
-   */
-  public function testDisplayPluginOptionsWithFile() {
     file_put_contents('public://example.txt', $this->randomName());
-    $file = entity_create('file', array(
+    $this->file = entity_create('file', array(
       'uri' => 'public://example.txt',
     ));
-    $file->save();
-
-    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($file);
-    // Test that 'image:image' plugin is not available.
-    $this->assertFalse(array_key_exists('image:image', $plugin_options), "The 'Image' plugin is not available for text file.");
+    $this->file->save();
   }
 
-  /**
-   * Tests that correct form attributes are returned for the plugin.
-   */
-  public function testImagePluginConfigurationForm() {
+  public function testImageFieldFormatter() {
+    // Ensure that image field formatters are available as display plugins.
+    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->image);
+    $this->assertTrue(array_key_exists('image:image', $plugin_options), "The 'Image' plugin is available.");
+
+    // Ensure that image plugin is not available to files other than images.
+    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->file);
+    $this->assertFalse(array_key_exists('image:image', $plugin_options), "The 'Image' plugin is not available for text file.");
+
+    // Ensure that correct form attributes are returned for the image plugin.
     $form = array();
     $form_state = array();
-    // Make sure that description field is available for the image plugin.
     $display = $this->displayPluginManager()->createInstance('image:image', array());
     $display->setContextValue('entity', $this->image);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
@@ -84,12 +78,8 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     $this->assertIdentical($conf_form['alt']['#title'], 'Alternate text');
     $this->assertIdentical($conf_form['title']['#type'], 'textfield');
     $this->assertIdentical($conf_form['title']['#title'], 'Title');
-  }
 
-  /**
-   * Tests entity embed using 'Image' display plugin.
-   */
-  public function testFilterLabelDisplayPlugin() {
+    // Test entity embed using 'Image' display plugin.
     $alt_text = "This is sample description";
     $title = "This is sample title";
     $content = '<div data-entity-type="file" data-entity-uuid="' . $this->image->uuid() . '" data-entity-embed-display="image:image" data-entity-embed-settings=\'{"image_link":"file", "alt":"' . $alt_text . '", "title":"' . $title . '"}\'>This placeholder should not be rendered.</div>';
@@ -98,9 +88,7 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     $settings['title'] = 'Test entity embed with image:image';
     $settings['body'] = array(array('value' => $content));
     $node = $this->drupalCreateNode($settings);
-
     $this->drupalGet('node/' . $node->id());
-
     $this->assertNoText($alt_text, 'Alternate text for the embedded image is not visible when embed is successful.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
     $this->assertLinkByHref('files/example.png', 0, 'Link to the embedded image exists.');

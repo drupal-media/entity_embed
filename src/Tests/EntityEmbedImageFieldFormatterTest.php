@@ -42,7 +42,7 @@ class EntityEmbedImageFieldFormatterTest extends EntityEmbedTestBase {
   }
 
   /**
-   * Tests that file field formatters are available as display plugins.
+   * Tests that image field formatters are available as display plugins.
    */
   public function testDisplayPluginOptions() {
     $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->image);

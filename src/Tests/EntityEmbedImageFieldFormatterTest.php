@@ -46,9 +46,23 @@ class EntityEmbedImageFieldFormatterTest extends EntityEmbedTestBase {
    */
   public function testDisplayPluginOptions() {
     $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->image);
-    print_r($plugin_options);
     // Test that 'image:image' plugin is available.
     $this->assertTrue(array_key_exists('image:image', $plugin_options), "The 'Image' plugin is available.");
+  }
+
+  /**
+   * Tests that image plugin is not available to files other than images.
+   */
+  public function testDisplayPluginOptionsWithFile() {
+    file_put_contents('public://example.txt', $this->randomName());
+    $file = entity_create('file', array(
+      'uri' => 'public://example.txt',
+    ));
+    $file->save();
+
+    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($file);
+    // Test that 'image:image' plugin is not available.
+    $this->assertFalse(array_key_exists('image:image', $plugin_options), "The 'Image' plugin is not available for text file.");
   }
 
   /**
@@ -61,7 +75,6 @@ class EntityEmbedImageFieldFormatterTest extends EntityEmbedTestBase {
     $display = $this->displayPluginManager()->createInstance('image:image', array());
     $display->setContextValue('entity', $this->image);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
-    print_r($conf_form);
     $this->assertIdentical(array_keys($conf_form), array('image_style', 'image_link', 'alt', 'title'));
     $this->assertIdentical($conf_form['image_style']['#type'], 'select');
     $this->assertIdentical($conf_form['image_style']['#title'], 'Image style');

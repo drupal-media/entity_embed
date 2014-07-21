@@ -27,7 +27,7 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
   /**
    * Tests hook_entity_embed_display_plugins_alter().
    */
-  function testDisplayPluginAlterHooks() {
+  public function testDisplayPluginAlterHooks() {
     // Enable entity_embed_test.module's
     // hook_entity_embed_display_plugins_alter() implementation and ensure it is
     // working as designed.

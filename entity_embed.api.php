@@ -58,7 +58,7 @@ function hook_entity_preembed(\Drupal\Core\Entity\EntityInterface $entity, array
  * @param \Drupal\entity_embed\EntityEmbedDisplayInterface $display
  *   The entity embed display plugin instance.
  */
-function hook_entity_embed_alter(array &$build, \Drupal\entity_embed\EntityEmbedDisplayInterface $display) {
+function hook_entity_embed_alter(array &$build, \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayInterface $display) {
   // Remove the contextual links on all entites that provide them.
   if (isset($build['#contextual_links'])) {
     unset($build['#contextual_links']);

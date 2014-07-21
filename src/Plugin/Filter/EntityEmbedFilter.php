@@ -87,6 +87,15 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             if (!$node->getAttribute('data-entity-uuid') && $uuid = $entity->uuid()) {
               $node->setAttribute('data-entity-uuid', $uuid);
             }
+
+            $align = $node->getAttribute('data-text-align');
+            // If one of the allowed alignments, add the corresponding class.
+            if (in_array($align, array('left', 'center', 'right'))) {
+              $classes = $node->getAttribute('class');
+              $classes = (strlen($classes) > 0) ? explode(' ', $classes) : array();
+              $classes[] = 'text-align-' . $align;
+              $node->setAttribute('class', implode(' ', $classes));
+            }
           }
 
           if ($entity) {

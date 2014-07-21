@@ -43,7 +43,7 @@
           }
 
           var saveCallback = function (values) {
-            var entityElement = editor.document.createElement('drupalentity');
+            var entityElement = editor.document.createElement('div');
             var attributes = values.attributes;
             for (var key in attributes) {
               entityElement.setAttribute(key, attributes[key]);

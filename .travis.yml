@@ -10,8 +10,8 @@ env:
     - MODULE_TEST_GROUP='entity_embed'
     - DRUPAL_REPO='git://drupalcode.org/project/drupal.git'
     - DRUPAL_VERSION='8.x'
-    - PHPCS_VERSION='2.0.*@dev' 
-    - CODER_VERSION='8.2.0-alpha1'
+    - PHPCS_VERSION='2.0.*@dev'
+    - CODER_VERSION='8.2.0-alpha2'
 
 matrix:
   allow-failures:

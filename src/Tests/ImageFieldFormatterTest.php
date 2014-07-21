@@ -54,6 +54,9 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     $this->file->save();
   }
 
+  /**
+   * Tests image field formatter display plugin.
+   */
   public function testImageFieldFormatter() {
     // Ensure that image field formatters are available as display plugins.
     $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->image);

@@ -6,7 +6,7 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\entity_embed\EntityEmbedDisplayInterface;
+use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayInterface;
 
 /**
  * Implements hook_entity_embed_context_alter().

@@ -10,8 +10,8 @@ env:
     - MODULE_TEST_GROUP='entity_embed'
     - DRUPAL_REPO='git://drupalcode.org/project/drupal.git'
     - DRUPAL_VERSION='8.x'
-    - PHPCS_VERSION='2.0.*@dev'
-    - CODER_VERSION='dev-8.x-2.x'
+    - PHPCS_VERSION='2.0.*@dev' 
+    - CODER_VERSION='8.2.0-alpha1'
 
 matrix:
   allow-failures:
@@ -24,7 +24,7 @@ before_install:
   # Composer.
   - sed -i '1i export PATH="$HOME/.composer/vendor/bin:$PATH"' $HOME/.bashrc
   - source $HOME/.bashrc
-  - composer self-update
+  # - composer self-update
 
   # Drush.
   - composer global require "youngj/httpserver:dev-master#41dd2b7"

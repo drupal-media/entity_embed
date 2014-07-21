@@ -2,7 +2,7 @@
 
 /**
  * @file
- * contains \Drupal\entity_embed\Tests\EntityEmbedTestBase.
+ * Contains \Drupal\entity_embed\Tests\EntityEmbedTestBase.
  */
 
 namespace Drupal\entity_embed\Tests;

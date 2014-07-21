@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Tests\EntityEmbedFileFieldFormatterTest.
+ * Contains \Drupal\entity_embed\Tests\FileFieldFormatterTest.
  */
 
 namespace Drupal\entity_embed\Tests;
@@ -14,7 +14,7 @@ use Drupal\entity_embed\EntityHelperTrait;
  *
  * @group entity_embed
  */
-class EntityEmbedFileFieldFormatterTest extends EntityEmbedTestBase {
+class FileFieldFormatterTest extends EntityEmbedTestBase {
   use EntityHelperTrait;
 
   /**

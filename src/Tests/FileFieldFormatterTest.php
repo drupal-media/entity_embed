@@ -41,6 +41,9 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
     $this->file->save();
   }
 
+  /**
+   * Tests file field formatter display plugins.
+   */
   public function testFileFieldFormatter() {
     // Ensure that file field formatters are available as plugins.
     $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->file);

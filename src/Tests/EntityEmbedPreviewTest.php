@@ -14,6 +14,13 @@ namespace Drupal\entity_embed\Tests;
  */
 class EntityEmbedPreviewTest extends EntityEmbedTestBase {
 
+  /**
+   * URL of the preview route.
+   *
+   * @var string
+   */
+  protected $preview_url;
+
   protected function setUp() {
     parent::setUp();
 
@@ -22,35 +29,24 @@ class EntityEmbedPreviewTest extends EntityEmbedTestBase {
   }
 
   /**
-   * Tests preview route with a valid request.
+   * Tests the route used for generating preview of embedding entities.
    */
-  public function testPreviewController() {
+  public function testPreviewRoute() {
+    // Test preview route with a valid request.
     $content = '<div data-entity-type="node" data-entity-id="' . $this->node->id() . '" data-view-mode="teaser">This placeholder should not be rendered.</div>';
-
     $this->drupalGet($this->preview_url, array('query' => array('value' => $content)));
-
     $this->assertResponse(200, 'The preview route exists.');
     $this->assertText($this->node->body->value, 'Embedded node exists in page');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
-  }
 
-  /**
-   * Tests preview route with an invalid request.
-   */
-  public function testPreviewControllerInvalidRequest() {
+    // Test preview route with an invalid request.
     $content = 'Testing preview route without valid values';
     $this->drupalGet($this->preview_url, array('query' => array('value' => $content)));
-
     $this->assertResponse(200, 'The preview route exists.');
     $this->assertText($content, 'Placeholder appears in the output when embed is unsuccessful.');
-  }
 
-  /**
-   * Tests preview route with an empty request.
-   */
-  public function testPreviewControllerEmptyRequest() {
+    // Test preview route with an empty request.
     $this->drupalGet($this->preview_url);
-
     $this->assertResponse(404, "The preview returns 'Page not found' when GET parameters are not provided.");
   }
 

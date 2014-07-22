@@ -69,7 +69,7 @@ script:
   - phpcs --report=full --standard=Drupal $TRAVIS_BUILD_DIR/drupal/modules/$MODULE_NAME
 
   # Run the tests
-  - php $TRAVIS_BUILD_DIR/drupal/core/scripts/run-tests.sh --verbose --color --concurrency 4 --php `which php` --url http://127.0.0.1:8080 "$MODULE_TEST_GROUP" | tee /tmp/test.txt
+  - php $TRAVIS_BUILD_DIR/drupal/core/scripts/run-tests.sh --verbose --color --php `which php` --url http://127.0.0.1:8080 "$MODULE_TEST_GROUP" | tee /tmp/test.txt
   - TEST_EXIT=${PIPESTATUS[0]}
   - echo $TEST_EXIT
   # Check if we had fails in the run-tests.sh script

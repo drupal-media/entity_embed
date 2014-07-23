@@ -43,7 +43,12 @@
           }
 
           var saveCallback = function (values) {
-            var entityElement = editor.document.createElement('div');
+            var entityElement = editor.document.createElement('drupal-entity');
+            // Set the element display style to 'block' to support alignment,
+            // since text alignment will only work on block elements.
+            entityElement.setStyles({
+              display: 'block'
+            });
             var attributes = values.attributes;
             for (var key in attributes) {
               entityElement.setAttribute(key, attributes[key]);

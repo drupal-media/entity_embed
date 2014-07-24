@@ -50,7 +50,6 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     // Enable entity_embed_test.module's hook_entity_preembed() implementation
     // and ensure it is working as designed.
     \Drupal::state()->set('entity_embed_test_entity_preembed', TRUE);
-    $description = "This is sample description";
     $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
@@ -68,7 +67,6 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     // Enable entity_embed_test.module's hook_entity_embed_alter()
     // implementation and ensure it is working as designed.
     \Drupal::state()->set('entity_embed_test_entity_embed_alter', TRUE);
-    $description = "This is sample description";
     $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
@@ -86,7 +84,6 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     // Enable entity_embed_test.module's hook_entity_embed_context_alter()
     // implementation and ensure it is working as designed.
     \Drupal::state()->set('entity_embed_test_entity_embed_context_alter', TRUE);
-    $description = "This is sample description";
     $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';

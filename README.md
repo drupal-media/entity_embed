@@ -15,6 +15,8 @@ Allows any entity to be embedded using a WYSIWYG and text format.
 
 ## Technical details
 
+Users should be embedding entities using the CKEditor WYSIWYG button as described above. This section is more techincal about the HTML markup that is used to embed the actual entity.
+
 ### Embed by UUID (recommended):
 ```html
 <div data-entity-type="node" data-entity-uuid="07bf3a2e-1941-4a44-9b02-2d1d7a41ec0e" data-view-mode="teaser" />

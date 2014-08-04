@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Framework for allowing entities to be embedded.
+ */
+
+/**
+ * Implements hook_permission().
+ */
+function entity_embed_permission() {
+  return array(
+    'administer entity embed settings' => array(
+      'title' => t('Administer entity embed settings'),
+    ),
+  );
+}
+

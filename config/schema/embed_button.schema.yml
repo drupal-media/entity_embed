@@ -1,0 +1,18 @@
+entity_embed.embed_button.*:
+  type: config_entity
+  label: 'Entity button config'
+  mapping:
+    label:
+      type: label
+      label: 'Name'
+    id:
+      type: string
+      label: 'Machine name'
+    label:
+      type: string
+      label: 'Button label'
+    entity_types:
+      type: sequence
+      label: 'Entities for which this button is to be enabled'
+      sequence:
+        - type: string

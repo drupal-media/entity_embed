@@ -77,27 +77,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
         $entity_type = $node->getAttribute('data-entity-type');
         $entity = NULL;
 
-        watchdog('old', $node->tagName);
         try {
-          // Rename tag of container elemet to 'div' if it was 'drupal-entity'.
-          if ($node->tagName == 'drupal-entity') {
-            $new_node = $node->ownerDocument->createElement('div');
-            // Copy all attributes of original node to new node.
-            if ($node->attributes->length) {
-              foreach ($node->attributes as $attribute) {
-                $new_node->setAttribute($attribute->nodeName, $attribute->nodeValue);
-              }
-            }
-            // Copy all the childern of original node to new node.
-            while ($node->firstChild) {
-              $new_node->appendChild($node->firstChild);
-            }
-            $node->parentNode->replaceChild($new_node, $node);
-
-            // Rename new node's variable to be used later as $node.
-            $node = $new_node;
-          }
-
           // Load the entity either by UUID (preferred) or ID.
           $id = $node->getAttribute('data-entity-uuid') ?: $node->getAttribute('data-entity-id');
           $entity = $this->loadEntity($entity_type, $id);
@@ -231,6 +211,22 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     // Remove all children of the DOMNode.
     while ($node->hasChildNodes()) {
       $node->removeChild($node->firstChild);
+    }
+
+    // Rename tag of container elemet to 'div' if it was 'drupal-entity'.
+    if ($node->tagName == 'drupal-entity') {
+      $new_node = $node->ownerDocument->createElement('div');
+
+      // Copy all attributes of original node to new node.
+      if ($node->attributes->length) {
+        foreach ($node->attributes as $attribute) {
+          $new_node->setAttribute($attribute->nodeName, $attribute->nodeValue);
+        }
+      }
+
+      $node->parentNode->replaceChild($new_node, $node);
+
+      $node = $new_node;
     }
 
     // Finally, append the contents to the DOMNode.

@@ -1,5 +1,7 @@
 # Entity Embed Module [![Build Status](https://travis-ci.org/drupal-media/entity_embed.svg?branch=8.x-1.x)](https://travis-ci.org/drupal-media/entity_embed)
 
+Allows any entity to be embedded using a WYSIWYG and text format.
+
 ## Requirements
 
 * Latest dev release of Drupal 8.x as this module will not work with the last
@@ -11,9 +13,9 @@
 * Enable the entity-embed filter 'Display embedded entities' for the desired text formats from the configuration page: '/admin/config/content/formats'.
 * To enable the WYSIWYG plugin, move the entity-embed 'E' button into the Active toolbar for the desired text formats from the configuration page: '/admin/config/content/formats'.
 
-## Usage
+## Technical details
 
-Allows any entity to be embedded using a WYSIWYG and text format.
+Users should be embedding entities using the CKEditor WYSIWYG button as described above. This section is more techincal about the HTML markup that is used to embed the actual entity.
 
 ### Embed by UUID (recommended):
 ```html

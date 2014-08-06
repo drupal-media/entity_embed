@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\Tests;
 
+use Drupal\Core\Form\FormState;
 use Drupal\entity_embed\EntityHelperTrait;
 
 /**
@@ -68,7 +69,7 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
 
     // Ensure that correct form attributes are returned for the image plugin.
     $form = array();
-    $form_state = array();
+    $form_state = new FormState();
     $display = $this->displayPluginManager()->createInstance('image:image', array());
     $display->setContextValue('entity', $this->image);
     $conf_form = $display->buildConfigurationForm($form, $form_state);

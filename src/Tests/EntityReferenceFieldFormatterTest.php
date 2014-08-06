@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\Tests;
 
+use Drupal\Core\Form\FormState;
 use Drupal\entity_embed\EntityHelperTrait;
 
 /**
@@ -79,7 +80,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     // Ensure that correct form attributes are returned for
     // 'entity_reference:entity_reference_entity_id' plugin.
     $form = array();
-    $form_state = array();
+    $form_state = new FormState();
     $display = $this->displayPluginManager()->createInstance('entity_reference:entity_reference_entity_id', array());
     $display->setContextValue('entity', $this->entity);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
@@ -88,7 +89,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     // Ensure that correct form attributes are returned for
     // 'entity_reference:entity_reference_entity_view' plugin.
     $form = array();
-    $form_state = array();
+    $form_state = new FormState();
     $display = $this->displayPluginManager()->createInstance('entity_reference:entity_reference_entity_view', array());
     $display->setContextValue('entity', $this->entity);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
@@ -101,7 +102,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     // Ensure that correct form attributes are returned for
     // 'entity_reference:entity_reference_label' plugin.
     $form = array();
-    $form_state = array();
+    $form_state = new FormState();
     $display = $this->displayPluginManager()->createInstance('entity_reference:entity_reference_label', array());
     $display->setContextValue('entity', $this->entity);
     $conf_form = $display->buildConfigurationForm($form, $form_state);

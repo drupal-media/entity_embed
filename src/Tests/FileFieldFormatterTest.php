@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\Tests;
 
+use Drupal\Core\Form\FormState;
 use Drupal\entity_embed\EntityHelperTrait;
 
 /**
@@ -62,7 +63,7 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
     // Ensure that correct form attributes are returned for the file field
     // formatter plugins.
     $form = array();
-    $form_state = array();
+    $form_state = new FormState();
     $plugins = array('file:file_table', 'file:file_rss_enclosure', 'file:file_default', 'file:file_url_plain');
     // Ensure that description field is available for all the 'file' plugins.
     foreach ($plugins as $plugin) {

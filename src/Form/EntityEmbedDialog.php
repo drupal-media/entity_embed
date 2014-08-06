@@ -12,6 +12,7 @@ use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\editor\Ajax\EditorDialogSave;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Drupal\entity_embed\EntityHelperTrait;
@@ -68,7 +69,7 @@ class EntityEmbedDialog extends FormBase {
    * @param \Drupal\filter\Entity\FilterFormat $filter_format
    *   The filter format for which this dialog corresponds.
    */
-  public function buildForm(array $form, array &$form_state, FilterFormat $filter_format = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, FilterFormat $filter_format = NULL) {
     // Initialize entity element with form attributes, if present.
     $entity_element = empty($form_state['values']['attributes']) ? array() : $form_state['values']['attributes'];
     // The default values are set directly from \Drupal::request()->request,
@@ -86,13 +87,13 @@ class EntityEmbedDialog extends FormBase {
       'data-text-align' => 'none',
     );
 
-    if (!isset($form_state['step'])) {
+    if (!$form_state->get('step')) {
       // If an entity has been selected, then always skip to the embed options.
       if (!empty($entity_element['data-entity-type']) && (!empty($entity_element['data-entity-uuid']) || !empty($entity_element['data-entity-id']))) {
-        $form_state['step'] = 'embed';
+        $form_state->set('step', 'embed');
       }
       else {
-        $form_state['step'] = 'select';
+        $form_state->set('step', 'select');
       }
     }
 
@@ -101,7 +102,7 @@ class EntityEmbedDialog extends FormBase {
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
 
-    switch ($form_state['step']) {
+    switch ($form_state->get('step')) {
       case 'select':
         $form['attributes']['data-entity-type'] = array(
           '#type' => 'select',
@@ -226,26 +227,28 @@ class EntityEmbedDialog extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, array &$form_state) {
-    switch ($form_state['step']) {
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+
+    switch ($form_state->get('step')) {
       case 'select':
         if ($entity_type = $form_state['values']['attributes']['data-entity-type']) {
           $id = trim($form_state['values']['attributes']['data-entity-id']);
           if ($entity = $this->loadEntity($entity_type, $id)) {
             if (!$this->accessEntity($entity, 'view')) {
-              $this->setFormError('entity', $form_state, $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
+              $form_state->setError($form['attributes']['data-entity-id'], $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
             }
             elseif ($uuid = $entity->uuid()) {
-              $this->formBuilder->setValue($form['attributes']['data-entity-uuid'], $uuid, $form_state);
-              $this->formBuilder->setValue($form['attributes']['data-entity-id'], $entity->id(), $form_state);
+              $form_state->setValueForElement($form['attributes']['data-entity-uuid'], $uuid);
+              $form_state->setValueForElement($form['attributes']['data-entity-id'], $entity->id());
             }
             else {
-              $this->formBuilder->setValue($form['attributes']['data-entity-uuid'], '', $form_state);
-              $this->formBuilder->setValue($form['attributes']['data-entity-id'], $entity->id(), $form_state);
+              $form_state->setValueForElement($form['attributes']['data-entity-uuid'], '');
+              $form_state->setValueForElement($form['attributes']['data-entity-id'], $entity->id());
             }
           }
           else {
-            $this->setFormError('entity', $form_state, $this->t('Unable to load @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
+            $form_state->setError($form['attributes']['data-entity-id'], $this->t('Unable to load @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
           }
         }
         break;
@@ -255,11 +258,11 @@ class EntityEmbedDialog extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, array &$form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
     // Display errors in form, if any.
-    if ($this->formBuilder->getErrors($form_state)) {
+    if ($form_state->getErrors()) {
       unset($form['#prefix'], $form['#suffix']);
       $status_messages = array('#theme' => 'status_messages');
       $output = drupal_render($form);
@@ -267,10 +270,10 @@ class EntityEmbedDialog extends FormBase {
       $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
     }
     else {
-      switch ($form_state['step']) {
+      switch ($form_state->get('step')) {
         case 'select':
-          $form_state['rebuild'] = TRUE;
-          $form_state['step'] = 'embed';
+          $form_state->set('rebuild', TRUE);
+          $form_state->set('step', 'embed');
           $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
           unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
           $status_messages = array('#theme' => 'status_messages');
@@ -299,10 +302,10 @@ class EntityEmbedDialog extends FormBase {
    *
    * @param array $form
    *   An associative array containing the structure of the form.
-   * @param array $form_state
+   * @param FormStateInterface $form_state
    *   An associative array containing the current state of the form.
    */
-  public function updatePluginConfigurationForm(array &$form, array &$form_state) {
+  public function updatePluginConfigurationForm(array &$form, FormStateInterface $form_state) {
     return $form['attributes']['data-entity-embed-settings'];
   }
 
@@ -311,14 +314,14 @@ class EntityEmbedDialog extends FormBase {
    *
    * @param array $form
    *   An associative array containing the structure of the form.
-   * @param array $form_state
+   * @param FormStateInterface $form_state
    *   An associative array containing the current state of the form.
    */
-  public function goBack(array &$form, array &$form_state) {
+  public function goBack(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
-    $form_state['rebuild'] = TRUE;
-    $form_state['step'] = 'select';
+    $form_state->set('rebuild', TRUE);
+    $form_state->set('step', 'select');
     $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
     unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
     $status_messages = array('#theme' => 'status_messages');

@@ -8,6 +8,7 @@
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Embed entity displays for file field formatters.
@@ -53,7 +54,7 @@ class FileFieldFormatter extends EntityReferenceFieldFormatter {
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, array &$form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
 
     // Description is stored in the configuration since it doesn't map to an

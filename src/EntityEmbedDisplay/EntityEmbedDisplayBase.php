@@ -9,6 +9,7 @@ namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Session\AccountInterface;
@@ -141,22 +142,22 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, array &$form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     return array();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function validateConfigurationForm(array &$form, array &$form_state) {
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     // Do nothing.
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, array &$form_state) {
-    if (!form_get_errors($form_state)) {
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    if (!$form_state->getErrors()) {
       $this->configuration = array_intersect_key($form_state['values'], $this->defaultConfiguration());
     }
   }

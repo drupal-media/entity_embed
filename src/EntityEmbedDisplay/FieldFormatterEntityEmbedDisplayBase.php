@@ -8,6 +8,7 @@
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 
 abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBase {
@@ -84,7 +85,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, array &$form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     return $this->getFormatter()->settingsForm($form, $form_state);
   }
 

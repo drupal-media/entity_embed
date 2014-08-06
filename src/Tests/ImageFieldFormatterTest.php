@@ -47,7 +47,7 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     ));
     $this->image->save();
 
-    file_put_contents('public://example.txt', $this->randomName());
+    file_put_contents('public://example.txt', $this->randomMachineName());
     $this->file = entity_create('file', array(
       'uri' => 'public://example.txt',
     ));

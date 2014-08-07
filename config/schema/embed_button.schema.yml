@@ -8,11 +8,9 @@ entity_embed.embed_button.*:
     id:
       type: string
       label: 'Machine name'
-    label:
+    button_label:
       type: string
       label: 'Button label'
-    entity_types:
-      type: sequence
-      label: 'Entities for which this button is to be enabled'
-      sequence:
-        - type: string
+    entity_type:
+      type: string
+      label: 'Entity type'

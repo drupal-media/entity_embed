@@ -15,7 +15,7 @@ entity_embed.preview:
     _entity_access: 'filter_format.use'
 
 embed_button.list:
-  path: '/admin/config/config/embed-button'
+  path: '/admin/config/content/embed-button'
   defaults:
     _entity_list: 'embed_button'
     _title: 'Embed Buttons'

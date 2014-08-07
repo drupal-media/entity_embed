@@ -10,15 +10,24 @@ namespace Drupal\entity_embed;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 
 /**
- * Provides an interface defining embed button entity.
+ * Provides an interface defining a embed button entity.
  */
 interface EmbedButtonInterface extends ConfigEntityInterface {
 
-  // public function setButtonConfig($instance_id, array $configuration);
+  /**
+   * Returns the entity type for which this button is enabled.
+   *
+   * @return string
+   *   Machine name of the entity type.
+   */
+  public function getSelectedEntityType();
 
-  public function getEntityTypes();
-
+  /**
+   * Returns the label for the button to be shown in CKEditor toolbar.
+   *
+   * @return string
+   *   Label for the button.
+   */
   public function getButtonLabel();
 
 }
-

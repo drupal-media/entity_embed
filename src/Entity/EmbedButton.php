@@ -44,6 +44,7 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    * @var string
    */
   public $id;
+
   /**
    * The EmbedButton label.
    *
@@ -51,17 +52,22 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    */
   public $label;
 
-  protected $button_label;
+  public $button_label;
 
-  protected $entity_types = array();
+  public $entity_type;
 
-  public function getEntityTypes() {
-    return $this->entity_types;
+  /**
+   * {@inheritdoc}
+   */
+  public function getSelectedEntityType() {
+    return $this->entity_type;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getButtonLabel() {
     return $this->button_label;
   }
 
 }
-

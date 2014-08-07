@@ -20,7 +20,8 @@ class EmbedButtonListBuilder extends ConfigEntityListBuilder {
    */
   public function buildHeader() {
     $header['label'] = $this->t('Embed button');
-    $header['id'] = $this->t('Machine name');
+    $header['entity_type'] = $this->t('Entity Type');
+    $header['button_label'] = $this->t('Button Label');
     return $header + parent::buildHeader();
   }
 
@@ -29,10 +30,9 @@ class EmbedButtonListBuilder extends ConfigEntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $this->getLabel($entity);
-    $row['id'] = $entity->id();
-    // You probably want a few more properties here...
+    $row['entity_type'] = $entity->entity_type;
+    $row['button_label'] = $entity->button_label;
     return $row + parent::buildRow($entity);
   }
 
 }
-

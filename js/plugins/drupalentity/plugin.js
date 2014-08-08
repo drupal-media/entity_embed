@@ -13,7 +13,45 @@
 
     // The plugin initialization logic goes inside this method.
     beforeInit: function (editor) {
-      // Custom dialog to specify data attributes.
+
+      // Add a unique create command for each of the EmbedButton config entities.
+      for (var key in editor.config.DrupalEntity_buttons) {
+        var button = editor.config.DrupalEntity_buttons[key];
+        editor.addCommand('createdrupalentity_' + button.id, {
+          modes: { wysiwyg : 1 },
+          canUndo: true,
+          exec: function (editor) {
+            var dialogSettings = {
+              title: editor.config.DrupalEntity_dialogTitleAdd,
+              dialogClass: 'entity-select-dialog',
+              resizable: false,
+              minWidth: 800
+            };
+
+            var existingValues = {};
+            existingValues['data-entity-type'] = button.entity_type;
+
+            var saveCallback = function (values) {
+              var entityElement = editor.document.createElement('drupal-entity');
+              // Set the element display style to 'block' to support alignment,
+              // since text alignment will only work on block elements.
+              entityElement.setStyles({
+                display: 'block'
+              });
+              var attributes = values.attributes;
+              for (var key in attributes) {
+                entityElement.setAttribute(key, attributes[key]);
+              }
+              editor.insertHtml(entityElement.getOuterHtml());
+            }
+
+            // Open the dialog for the entity embed form.
+            Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
+          }
+        });
+      }
+
+      // Generic edit command for editing entities of all types.
       editor.addCommand('editdrupalentity', {
         modes: { wysiwyg : 1 },
         canUndo: true,
@@ -96,13 +134,16 @@
         },
       });
 
-      // Register the toolbar button.
+      // Register the toolbar buttons.
       if (editor.ui.addButton) {
-        editor.ui.addButton('DrupalEntity', {
-          label: Drupal.t('Entity'),
-          command: 'editdrupalentity',
-          icon: this.path + '/entity.png',
-        });
+        for (var key in editor.config.DrupalEntity_buttons) {
+          var button = editor.config.DrupalEntity_buttons[key];
+          editor.ui.addButton(button.name, {
+            label: button.label,
+            command: 'createdrupalentity_' + button.id,
+            icon: button.image,
+          });
+        }
       }
 
       // Register context menu option for editing widget.

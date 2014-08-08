@@ -9,6 +9,7 @@ namespace Drupal\entity_embed\Plugin\CKEditorPlugin;
 
 use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\editor\Entity\Editor;
+use Drupal\entity_embed\Entity\EmbedButton;
 
 /**
  * Defines the "drupalentity" plugin.
@@ -22,15 +23,37 @@ use Drupal\editor\Entity\Editor;
 class DrupalEntity extends CKEditorPluginBase {
 
   /**
+   * Constructs a Drupal\entity_embed\Plugin\CKEditorPlugin\DrupalEntity object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->embed_buttons = \Drupal::entityQuery('embed_button')->execute();
+  }
+
+
+  /**
    * {@inheritdoc}
    */
   public function getButtons() {
-    return array(
-      'DrupalEntity' => array(
-        'label' => t('Entity'),
+    $buttons = array();
+
+    foreach ($this->embed_buttons as $embed_button) {
+      $button = EmbedButton::load('node');
+      $buttons[$button->label()] = array(
+        'label' => $button->getButtonLabel(),
         'image' => drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png',
-      ),
-    );
+      );
+    }
+
+    return $buttons;
   }
 
   /**
@@ -53,9 +76,23 @@ class DrupalEntity extends CKEditorPluginBase {
    * {@inheritdoc}
    */
   public function getConfig(Editor $editor) {
+    $buttons = array();
+
+    foreach ($this->embed_buttons as $embed_button) {
+      $button = EmbedButton::load($embed_button);
+      $buttons[$button->label()] = array(
+        'id' => $button->id(),
+        'name' => $button->label(),
+        'label' => $button->getButtonLabel(),
+        'entity_type' => $button->getEntityTypeLabel(),
+        'image' => url(drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png'),
+      );
+    }
+
     return array(
       'DrupalEntity_dialogTitleAdd' => t('Insert entity'),
       'DrupalEntity_dialogTitleEdit' => t('Edit entity'),
+      'DrupalEntity_buttons' => $buttons,
     );
   }
 

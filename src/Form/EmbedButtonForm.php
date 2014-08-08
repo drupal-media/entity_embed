@@ -9,22 +9,32 @@ namespace Drupal\entity_embed\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\entity_embed\EntityHelperTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmbedButtonForm extends EntityForm {
-  use EntityHelperTrait;
+
+  /**
+   * The entity manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityManagerInterface
+   */
+  protected $entityManager;
 
   /**
    * Constructs a new EmbedButtonForm.
    *
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query
    *   The entity query.
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   *   The entity manager service.
    */
-  public function __construct(QueryFactory $entity_query) {
+  public function __construct(QueryFactory $entity_query, EntityManagerInterface $entity_manager) {
     $this->entityQuery = $entity_query;
+    $this->entityManager = $entity_manager;
   }
 
   /**
@@ -32,7 +42,8 @@ class EmbedButtonForm extends EntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.query')
+      $container->get('entity.query'),
+      $container->get('entity.manager')
     );
   }
 
@@ -61,7 +72,7 @@ class EmbedButtonForm extends EntityForm {
     $form['entity_type'] = array(
       '#type' => 'select',
       '#title' => $this->t('Entity type'),
-      '#options' => $this->entityManager()->getEntityTypeLabels(TRUE),
+      '#options' => $this->entityManager->getEntityTypeLabels(TRUE),
       '#default_value' => $embed_button->entity_type,
       '#description' => $this->t("Entity type for which this button is to enabled."),
       '#required' => TRUE,

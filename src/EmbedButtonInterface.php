@@ -20,7 +20,15 @@ interface EmbedButtonInterface extends ConfigEntityInterface {
    * @return string
    *   Machine name of the entity type.
    */
-  public function getSelectedEntityType();
+  public function getEntityTypeMachineName();
+
+  /**
+   * Returns the label of the entity type for which this button is enabled.
+   *
+   * @return string
+   *   Human readable label of the entity type.
+   */
+  public function getEntityTypeLabel();
 
   /**
    * Returns the label for the button to be shown in CKEditor toolbar.

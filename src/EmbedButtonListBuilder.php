@@ -30,8 +30,8 @@ class EmbedButtonListBuilder extends ConfigEntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $this->getLabel($entity);
-    $row['entity_type'] = $entity->entity_type;
-    $row['button_label'] = $entity->button_label;
+    $row['entity_type'] = $entity->getEntityTypeLabel();
+    $row['button_label'] = $entity->getButtonLabel();
     return $row + parent::buildRow($entity);
   }
 

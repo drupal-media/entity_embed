@@ -9,6 +9,7 @@ namespace Drupal\entity_embed\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\entity_embed\EmbedButtonInterface;
+use Drupal\entity_embed\EntityHelperTrait;
 
 /**
  * Defines the EmbedButton entity.
@@ -37,6 +38,7 @@ use Drupal\entity_embed\EmbedButtonInterface;
  * )
  */
 class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
+  use EntityHelperTrait;
 
   /**
    * The EmbedButton ID.
@@ -46,22 +48,56 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
   public $id;
 
   /**
-   * The EmbedButton label.
+   * Label of EmbedButton.
    *
    * @var string
    */
   public $label;
 
+  /**
+   * Label of the button shown in CKEditor toolbar.
+   *
+   * @var string
+   */
   public $button_label;
 
+  /**
+   * Selected entity type.
+   *
+   * @var string
+   */
   public $entity_type;
+
+  /**
+   * Associative array of labels all entity types keyed by their machine name.
+   *
+   * @var array
+   */
+  public $entity_types;
+
+  /**
+   * Overrides ConfigEntityBase::__construct().
+   */
+  public function __construct(array $values, $entity_type) {
+    parent::__construct($values, $entity_type);
+
+    $this->entity_types = $this->entityManager()->getEntityTypeLabels();
+  }
 
   /**
    * {@inheritdoc}
    */
-  public function getSelectedEntityType() {
+  public function getEntityTypeMachineName() {
     return $this->entity_type;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityTypeLabel() {
+    return $this->entity_types[$this->entity_type];
+  }
+
 
   /**
    * {@inheritdoc}

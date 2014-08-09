@@ -46,7 +46,7 @@ class DrupalEntity extends CKEditorPluginBase {
     $buttons = array();
 
     foreach ($this->embed_buttons as $embed_button) {
-      $button = EmbedButton::load('node');
+      $button = EmbedButton::load($embed_button);
       $buttons[$button->label()] = array(
         'label' => $button->getButtonLabel(),
         'image' => drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png',
@@ -84,7 +84,7 @@ class DrupalEntity extends CKEditorPluginBase {
         'id' => $button->id(),
         'name' => $button->label(),
         'label' => $button->getButtonLabel(),
-        'entity_type' => $button->getEntityTypeLabel(),
+        'entity_type' => $button->getEntityTypeMachineName(),
         'image' => url(drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png'),
       );
     }

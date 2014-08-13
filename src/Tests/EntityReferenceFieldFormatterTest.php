@@ -69,7 +69,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
 
     // Ensure that correct form attributes are returned for 'default' plugin.
     $form = array();
-    $form_state = array();
+    $form_state = new FormState();
     $display = $this->displayPluginManager()->createInstance('default', array());
     $display->setContextValue('entity', $this->entity);
     $conf_form = $display->buildConfigurationForm($form, $form_state);

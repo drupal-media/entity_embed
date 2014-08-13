@@ -86,13 +86,13 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-embed-settings' => array(),
     );
 
-    if (!$form_state->get('step')) {
+    if (empty($form_state['storage']['step'])) {
       // If an entity has been selected, then always skip to the embed options.
       if (!empty($entity_element['data-entity-type']) && (!empty($entity_element['data-entity-uuid']) || !empty($entity_element['data-entity-id']))) {
-        $form_state->set('step', 'embed');
+        $form_state['storage']['step'] = 'embed';
       }
       else {
-        $form_state->set('step', 'select');
+        $form_state['storage']['step'] = 'select';
       }
     }
 
@@ -101,7 +101,7 @@ class EntityEmbedDialog extends FormBase {
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
 
-    switch ($form_state->get('step')) {
+    switch ($form_state['storage']['step']) {
       case 'select':
         $form['attributes']['data-entity-type'] = array(
           '#type' => 'select',
@@ -129,7 +129,7 @@ class EntityEmbedDialog extends FormBase {
           // No regular submit-handler. This form only works via JavaScript.
           '#submit' => array(),
           '#ajax' => array(
-            'callback' => array($this, 'selectEntity'),
+            'callback' => array($this, 'submitSelectForm'),
             'event' => 'click',
           ),
         );
@@ -201,7 +201,7 @@ class EntityEmbedDialog extends FormBase {
           // No regular submit-handler. This form only works via JavaScript.
           '#submit' => array(),
           '#ajax' => array(
-            'callback' => array($this, 'embedEntity'),
+            'callback' => array($this, 'submitEmbedForm'),
             'event' => 'click',
           ),
         );
@@ -217,7 +217,7 @@ class EntityEmbedDialog extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
 
-    switch ($form_state->get('step')) {
+    switch ($form_state['storage']['step']) {
       case 'select':
         if ($entity_type = $form_state['values']['attributes']['data-entity-type']) {
           $id = trim($form_state['values']['attributes']['data-entity-id']);
@@ -270,8 +270,8 @@ class EntityEmbedDialog extends FormBase {
   public function goBack(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
-    $form_state->set('rebuild', TRUE);
-    $form_state->set('step', 'select');
+    $form_state['storage']['step'] = 'select';
+    $form_state['rebuild'] = TRUE;
     $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
     unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
     $status_messages = array('#theme' => 'status_messages');
@@ -290,11 +290,11 @@ class EntityEmbedDialog extends FormBase {
    * @param FormStateInterface $form_state
    *   An associative array containing the current state of the form.
    */
-  public function selectEntity(array &$form, FormStateInterface $form_state) {
+  public function submitSelectForm(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
     // Display errors in form, if any.
-    if ($form_state->getErrors()) {
+    if ($form_state->hasAnyErrors()) {
       unset($form['#prefix'], $form['#suffix']);
       $status_messages = array('#theme' => 'status_messages');
       $output = drupal_render($form);
@@ -302,8 +302,8 @@ class EntityEmbedDialog extends FormBase {
       $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
     }
     else {
-      $form_state->set('rebuild', TRUE);
-      $form_state->set('step', 'embed');
+      $form_state['storage']['step'] = 'embed';
+      $form_state['rebuild'] = TRUE;
       $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
       unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
       $status_messages = array('#theme' => 'status_messages');
@@ -323,11 +323,11 @@ class EntityEmbedDialog extends FormBase {
    * @param FormStateInterface $form_state
    *   An associative array containing the current state of the form.
    */
-  public function embedEntity(array &$form, FormStateInterface $form_state) {
+  public function submitEmbedForm(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
     // Display errors in form, if any.
-    if ($form_state->getErrors()) {
+    if ($form_state->hasAnyErrors()) {
       unset($form['#prefix'], $form['#suffix']);
       $status_messages = array('#theme' => 'status_messages');
       $output = drupal_render($form);

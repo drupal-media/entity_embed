@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\Tests;
 
+use Drupal\Core\Form\FormState;
 use Drupal\entity_embed\EntityHelperTrait;
 
 /**
@@ -47,7 +48,7 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     ));
     $this->image->save();
 
-    file_put_contents('public://example.txt', $this->randomName());
+    file_put_contents('public://example.txt', $this->randomMachineName());
     $this->file = entity_create('file', array(
       'uri' => 'public://example.txt',
     ));
@@ -68,7 +69,7 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
 
     // Ensure that correct form attributes are returned for the image plugin.
     $form = array();
-    $form_state = array();
+    $form_state = new FormState();
     $display = $this->displayPluginManager()->createInstance('image:image', array());
     $display->setContextValue('entity', $this->image);
     $conf_form = $display->buildConfigurationForm($form, $form_state);

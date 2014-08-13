@@ -38,4 +38,12 @@ interface EmbedButtonInterface extends ConfigEntityInterface {
    */
   public function getButtonLabel();
 
+  /**
+   * Returns the URL of the button's icon.
+   *
+   * @return string
+   *   URL for the button'icon.
+   */
+  public function getButtonImage();
+
 }

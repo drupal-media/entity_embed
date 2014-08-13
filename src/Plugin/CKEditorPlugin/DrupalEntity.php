@@ -85,7 +85,7 @@ class DrupalEntity extends CKEditorPluginBase {
         'name' => $button->label(),
         'label' => $button->getButtonLabel(),
         'entity_type' => $button->getEntityTypeMachineName(),
-        'image' => url(drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png'),
+        'image' => $button->getButtonImage(),
       );
     }
 

@@ -106,4 +106,10 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
     return $this->button_label;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getButtonImage() {
+    return url(drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png');
+  }
 }

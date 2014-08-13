@@ -7,7 +7,7 @@
 
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
-use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -28,14 +28,14 @@ class FileFieldFormatter extends EntityReferenceFieldFormatter {
    * {@inheritdoc}
    */
   public function getFieldDefinition() {
-    $field = FieldDefinition::create('file');
+    $field = BaseFieldDefinition::create('file');
     return $field;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFieldValue(FieldDefinition $definition) {
+  public function getFieldValue(BaseFieldDefinition $definition) {
     $value = parent::getFieldValue($definition);
     $value += array_intersect_key($this->getConfiguration(), array('description' => ''));
     return $value;

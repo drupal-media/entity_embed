@@ -7,7 +7,7 @@
 
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
-use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -29,14 +29,14 @@ class ImageFieldFormatter extends FileFieldFormatter {
    * {@inheritdoc}
    */
   public function getFieldDefinition() {
-    $field = FieldDefinition::create('image');
+    $field = BaseFieldDefinition::create('image');
     return $field;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFieldValue(FieldDefinition $definition) {
+  public function getFieldValue(BaseFieldDefinition $definition) {
     $value = parent::getFieldValue($definition);
     // File field support descriptions, but images do not.
     unset($value['description']);

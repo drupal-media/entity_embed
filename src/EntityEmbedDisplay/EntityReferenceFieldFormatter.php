@@ -7,7 +7,7 @@
 
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
-use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -27,7 +27,7 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
    * {@inheritdoc}
    */
   public function getFieldDefinition() {
-    $field = FieldDefinition::create('entity_reference');
+    $field = BaseFieldDefinition::create('entity_reference');
     $field->setSetting('target_type', $this->getContextValue('entity')->getEntityTypeId());
     return $field;
   }
@@ -35,7 +35,7 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
   /**
    * {@inheritdoc}
    */
-  public function getFieldValue(FieldDefinition $definition) {
+  public function getFieldValue(BaseFieldDefinition $definition) {
     return array('target_id' => $this->getContextValue('entity')->id());
   }
 

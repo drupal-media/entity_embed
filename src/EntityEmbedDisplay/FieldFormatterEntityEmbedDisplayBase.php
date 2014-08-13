@@ -7,7 +7,7 @@
 
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
-use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 
@@ -16,7 +16,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   /**
    * Get the FieldDefinition object required to render this field's formatter.
    *
-   * @return \Drupal\Core\Field\FieldDefinition
+   * @return \Drupal\Core\Field\BaseFieldDefinition
    *   The field definition.
    *
    * @see \Drupal\entity_embed\FieldFormatterEntityEmbedDisplayBase::build()
@@ -26,13 +26,13 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   /**
    * Get the field value required to pass into the field formatter.
    *
-   * @param \Drupal\Core\Field\FieldDefinition $definition
+   * @param \Drupal\Core\Field\BaseFieldDefinition $definition
    *   The field definition.
    *
    * @return mixed
    *   The field value.
    */
-  abstract public function getFieldValue(FieldDefinition $definition);
+  abstract public function getFieldValue(BaseFieldDefinition $definition);
 
   /**
    * {@inheritdoc}
@@ -92,13 +92,13 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   /**
    * Constructs a \Drupal\Core\Field\FormatterInterface object.
    *
-   * @param \Drupal\Core\Field\FieldDefinition $definition
+   * @param \Drupal\Core\Field\BaseFieldDefinition $definition
    *   The field definition.
    *
    * @return \Drupal\Core\Field\FormatterInterface
    *   The formatter object.
    */
-  protected function getFormatter(FieldDefinition $definition = NULL) {
+  protected function getFormatter(BaseFieldDefinition $definition = NULL) {
     if (!isset($definition)) {
       $definition = $this->getFieldDefinition();
     }

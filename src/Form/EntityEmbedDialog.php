@@ -129,7 +129,7 @@ class EntityEmbedDialog extends FormBase {
           // No regular submit-handler. This form only works via JavaScript.
           '#submit' => array(),
           '#ajax' => array(
-            'callback' => array($this, 'submitForm'),
+            'callback' => array($this, 'selectEntity'),
             'event' => 'click',
           ),
         );
@@ -201,7 +201,7 @@ class EntityEmbedDialog extends FormBase {
           // No regular submit-handler. This form only works via JavaScript.
           '#submit' => array(),
           '#ajax' => array(
-            'callback' => array($this, 'submitForm'),
+            'callback' => array($this, 'embedEntity'),
             'event' => 'click',
           ),
         );
@@ -245,44 +245,7 @@ class EntityEmbedDialog extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    $response = new AjaxResponse();
-
-    // Display errors in form, if any.
-    if ($form_state->getErrors()) {
-      unset($form['#prefix'], $form['#suffix']);
-      $status_messages = array('#theme' => 'status_messages');
-      $output = drupal_render($form);
-      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
-      $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
-    }
-    else {
-      switch ($form_state->get('step')) {
-        case 'select':
-          $form_state->set('rebuild', TRUE);
-          $form_state->set('step', 'embed');
-          $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
-          unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
-          $status_messages = array('#theme' => 'status_messages');
-          $output = drupal_render($rebuild_form);
-          $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
-          $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
-          break;
-
-        case 'embed':
-          // Serialize entity embed settings to JSON string.
-          if (!empty($form_state['values']['attributes']['data-entity-embed-settings'])) {
-            $form_state['values']['attributes']['data-entity-embed-settings'] = Json::encode($form_state['values']['attributes']['data-entity-embed-settings']);
-          }
-
-          $response->addCommand(new EditorDialogSave($form_state['values']));
-          $response->addCommand(new CloseModalDialogCommand());
-          break;
-      }
-    }
-
-    return $response;
-  }
+  public function submitForm(array &$form, FormStateInterface $form_state) {}
 
   /**
    * Form submission handler to update the plugin configuration form.
@@ -319,4 +282,68 @@ class EntityEmbedDialog extends FormBase {
     return $response;
   }
 
+  /**
+   * Form submission handler that selects an entity and display embed settings.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param FormStateInterface $form_state
+   *   An associative array containing the current state of the form.
+   */
+  public function selectEntity(array &$form, FormStateInterface $form_state) {
+    $response = new AjaxResponse();
+
+    // Display errors in form, if any.
+    if ($form_state->getErrors()) {
+      unset($form['#prefix'], $form['#suffix']);
+      $status_messages = array('#theme' => 'status_messages');
+      $output = drupal_render($form);
+      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
+      $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
+    }
+    else {
+      $form_state->set('rebuild', TRUE);
+      $form_state->set('step', 'embed');
+      $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
+      unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+      $status_messages = array('#theme' => 'status_messages');
+      $output = drupal_render($rebuild_form);
+      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
+      $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
+    }
+
+    return $response;
+  }
+
+  /**
+   * Form submission handler embeds selected entity in WYSIWYG.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param FormStateInterface $form_state
+   *   An associative array containing the current state of the form.
+   */
+  public function embedEntity(array &$form, FormStateInterface $form_state) {
+    $response = new AjaxResponse();
+
+    // Display errors in form, if any.
+    if ($form_state->getErrors()) {
+      unset($form['#prefix'], $form['#suffix']);
+      $status_messages = array('#theme' => 'status_messages');
+      $output = drupal_render($form);
+      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
+      $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
+    }
+    else {
+      // Serialize entity embed settings to JSON string.
+      if (!empty($form_state['values']['attributes']['data-entity-embed-settings'])) {
+        $form_state['values']['attributes']['data-entity-embed-settings'] = Json::encode($form_state['values']['attributes']['data-entity-embed-settings']);
+      }
+
+      $response->addCommand(new EditorDialogSave($form_state['values']));
+      $response->addCommand(new CloseModalDialogCommand());
+    }
+
+    return $response;
+  }
 }

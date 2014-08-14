@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\Plugin\CKEditorPlugin;
 
+use Drupal\Component\Utility\String;
 use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\editor\Entity\Editor;
 use Drupal\entity_embed\Entity\EmbedButton;
@@ -48,7 +49,7 @@ class DrupalEntity extends CKEditorPluginBase {
     foreach ($this->embed_buttons as $embed_button) {
       $button = EmbedButton::load($embed_button);
       $buttons[$button->label()] = array(
-        'label' => $button->getButtonLabel(),
+        'label' => String::checkPlain($button->getButtonLabel()),
         'image' => drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png',
       );
     }
@@ -81,11 +82,11 @@ class DrupalEntity extends CKEditorPluginBase {
     foreach ($this->embed_buttons as $embed_button) {
       $button = EmbedButton::load($embed_button);
       $buttons[$button->label()] = array(
-        'id' => $button->id(),
-        'name' => $button->label(),
-        'label' => $button->getButtonLabel(),
-        'entity_type' => $button->getEntityTypeMachineName(),
-        'image' => $button->getButtonImage(),
+        'id' => String::checkPlain($button->id()),
+        'name' => String::checkPlain($button->label()),
+        'label' => String::checkPlain($button->getButtonLabel()),
+        'entity_type' => String::checkPlain($button->getEntityTypeMachineName()),
+        'image' => String::checkPlain($button->getButtonImage()),
       );
     }
 

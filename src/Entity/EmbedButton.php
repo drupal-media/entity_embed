@@ -69,13 +69,6 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
   public $entity_type;
 
   /**
-   * Associative array of labels all entity types keyed by their machine name.
-   *
-   * @var array
-   */
-  public $entity_types;
-
-  /**
    * Overrides ConfigEntityBase::__construct().
    */
   public function __construct(array $values, $entity_type) {
@@ -95,7 +88,7 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    * {@inheritdoc}
    */
   public function getEntityTypeLabel() {
-    return $this->entity_types[$this->entity_type];
+    return $this->entityManager()->getDefinition($this->entity_type)->getLabel();
   }
 
 
@@ -110,6 +103,6 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    * {@inheritdoc}
    */
   public function getButtonImage() {
-    return url(drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png');
+    return file_create_url(drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png');
   }
 }

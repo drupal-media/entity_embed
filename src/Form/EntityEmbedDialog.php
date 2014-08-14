@@ -16,6 +16,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\editor\Ajax\EditorDialogSave;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Drupal\entity_embed\EntityHelperTrait;
+use Drupal\entity_embed\EmbedButtonInterface;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\Component\Serialization\Json;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -67,9 +68,11 @@ class EntityEmbedDialog extends FormBase {
    * {@inheritdoc}
    *
    * @param \Drupal\filter\Entity\FilterFormat $filter_format
-   *   The filter format for which this dialog corresponds.
+   *   The filter format to which this dialog corresponds.
+   * @param \Drupal\entity_embed\Entity\EmbedButton $embed_button
+   *   The embed button to which this dialog corresponds.
    */
-  public function buildForm(array $form, FormStateInterface $form_state, FilterFormat $filter_format = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, FilterFormat $filter_format = NULL, EmbedButtonInterface $embed_button = NULL) {
     // Initialize entity element with form attributes, if present.
     $entity_element = empty($form_state['values']['attributes']) ? array() : $form_state['values']['attributes'];
     // The default values are set directly from \Drupal::request()->request,
@@ -79,7 +82,7 @@ class EntityEmbedDialog extends FormBase {
     }
     $entity_element += $form_state['entity_element'];
     $entity_element += array(
-      'data-entity-type' => NULL,
+      'data-entity-type' => $embed_button->getEntityTypeMachineName(),
       'data-entity-uuid' => '',
       'data-entity-id' => '',
       'data-entity-embed-display' => 'default',
@@ -104,11 +107,8 @@ class EntityEmbedDialog extends FormBase {
     switch ($form_state['storage']['step']) {
       case 'select':
         $form['attributes']['data-entity-type'] = array(
-          '#type' => 'select',
-          '#title' => $this->t('Entity type'),
-          '#default_value' => $entity_element['data-entity-type'],
-          '#options' => $this->entityManager()->getEntityTypeLabels(TRUE),
-          '#required' => TRUE,
+          '#type' => 'value',
+          '#value' => $entity_element['data-entity-type'],
         );
         $form['attributes']['data-entity-id'] = array(
           '#type' => 'textfield',

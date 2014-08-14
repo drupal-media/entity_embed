@@ -23,13 +23,6 @@
 
           var existingElement = getSelectedEntity(editor);
 
-          var dialogSettings = {
-            title: existingElement ? editor.config.DrupalEntity_dialogTitleEdit : editor.config.DrupalEntity_dialogTitleAdd,
-            dialogClass: 'entity-select-dialog',
-            resizable: false,
-            minWidth: 800
-          };
-
           var existingValues = {};
           if (existingElement && existingElement.$ && existingElement.$.firstChild) {
             var entityDOMElement = existingElement.$.firstChild;
@@ -45,9 +38,15 @@
             }
           }
 
-          if ('entity_type' in data) {
-            existingValues['data-entity-type'] = data['entity_type'];
-          }
+          var entity_label = data.label ? data.label : existingValues['data-entity-label'];
+          var button_entity = data.id ? data.id : existingValues['data-button-entity'];
+
+          var dialogSettings = {
+            title: existingElement ? 'Edit ' + entity_label : 'Insert ' + entity_label,
+            dialogClass: 'entity-select-dialog',
+            resizable: false,
+            minWidth: 800
+          };
 
           var saveCallback = function (values) {
             var entityElement = editor.document.createElement('drupal-entity');
@@ -61,8 +60,8 @@
             }
           }
 
-          // Open the dialog for the entity embed form.
-          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
+          // Open the entity embed dialog for corresponding EmbedButton.
+          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format + '/' + button_entity), existingValues, saveCallback, dialogSettings);
         }
       });
 

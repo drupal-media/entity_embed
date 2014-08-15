@@ -26,7 +26,7 @@ use Drupal\entity_embed\EntityHelperTrait;
  *     }
  *   },
  *   config_prefix = "embed_button",
- *   admin_permission = "administer entity embed settings",
+ *   admin_permission = "administer embed buttons",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",

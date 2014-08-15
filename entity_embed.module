@@ -23,7 +23,7 @@ function entity_embed_help($route_name, RouteMatchInterface $route_match) {
  */
 function entity_embed_permission() {
   return array(
-    'administer entity embed settings' => array(
+    'administer embed buttons' => array(
       'title' => t('Administer entity embed settings'),
     ),
   );

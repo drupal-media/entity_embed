@@ -172,7 +172,7 @@ class EntityEmbedDialog extends FormBase {
           '#prefix' => '<div id="data-entity-embed-settings-wrapper">',
           '#suffix' => '</div>',
         );
-        $form['attributes']['data-button-entity'] = array(
+        $form['attributes']['data-embed-button'] = array(
           '#type' => 'value',
           '#value' => $embed_button->id(),
         );

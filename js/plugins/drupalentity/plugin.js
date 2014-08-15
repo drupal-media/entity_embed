@@ -39,7 +39,7 @@
           }
 
           var entity_label = data.label ? data.label : existingValues['data-entity-label'];
-          var button_entity = data.id ? data.id : existingValues['data-button-entity'];
+          var embed_button_id = data.id ? data.id : existingValues['data-embed-button'];
 
           var dialogSettings = {
             title: existingElement ? 'Edit ' + entity_label : 'Insert ' + entity_label,
@@ -61,7 +61,7 @@
           }
 
           // Open the entity embed dialog for corresponding EmbedButton.
-          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format + '/' + button_entity), existingValues, saveCallback, dialogSettings);
+          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format + '/' + embed_button_id), existingValues, saveCallback, dialogSettings);
         }
       });
 

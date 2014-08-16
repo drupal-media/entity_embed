@@ -25,6 +25,13 @@ class EmbedButtonForm extends EntityForm {
   protected $entityManager;
 
   /**
+   * The entity query factory service.
+   *
+   * @var \Drupal\Core\Entity\Query\QueryFactory
+   */
+  protected $entityQuery;
+
+  /**
    * Constructs a new EmbedButtonForm.
    *
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query

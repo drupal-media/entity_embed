@@ -28,4 +28,3 @@ function entity_embed_permission() {
     ),
   );
 }
-

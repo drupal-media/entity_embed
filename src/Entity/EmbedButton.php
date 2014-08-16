@@ -69,15 +69,6 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
   public $entity_type;
 
   /**
-   * Overrides ConfigEntityBase::__construct().
-   */
-  public function __construct(array $values, $entity_type) {
-    parent::__construct($values, $entity_type);
-
-    $this->entity_types = $this->entityManager()->getEntityTypeLabels();
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function getEntityTypeMachineName() {

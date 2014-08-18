@@ -36,7 +36,7 @@ class EmbedButtonAdminTest extends EntityEmbedTestBase {
       'access content',
       'create page content',
       'use text format custom_format',
-      'administer entity embed settings',
+      'administer embed buttons',
     ));
   }
 

@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Framework for allowing entities to be embedded using CKEditor plugin and text
+ * format.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function entity_embed_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'embed_button.list':
+      return '<p>' . t("Embed buttons define the buttons that can be added to CKEditor's toolbar. All buttons correspond to the selcted entity type, although a particular entity type can have more than one buttons. After you've created the desired buttons, go to <a href='@filterformats'>Text formats and editors configuration</a> page to add them to CKEditor's toolbar.", array('@filterformats' => url('admin/config/content/formats'))) . '</p>';
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function entity_embed_permission() {
+  return array(
+    'administer embed buttons' => array(
+      'title' => t('Administer entity embed settings'),
+    ),
+  );
+}

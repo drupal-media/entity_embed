@@ -1,0 +1,4 @@
+label: 'Node'
+id: 'node'
+button_label: 'Content'
+entity_type: 'node'

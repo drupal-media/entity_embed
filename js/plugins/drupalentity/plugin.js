@@ -13,19 +13,15 @@
 
     // The plugin initialization logic goes inside this method.
     beforeInit: function (editor) {
-      // Custom dialog to specify data attributes.
+
+      // Generic command for adding/editing entities of all types.
       editor.addCommand('editdrupalentity', {
         modes: { wysiwyg : 1 },
         canUndo: true,
-        exec: function (editor) {
-          var existingElement = getSelectedEntity(editor);
+        exec: function (editor, data) {
+          data = data || {};
 
-          var dialogSettings = {
-            title: existingElement ? editor.config.DrupalEntity_dialogTitleEdit : editor.config.DrupalEntity_dialogTitleAdd,
-            dialogClass: 'entity-select-dialog',
-            resizable: false,
-            minWidth: 800
-          };
+          var existingElement = getSelectedEntity(editor);
 
           var existingValues = {};
           if (existingElement && existingElement.$ && existingElement.$.firstChild) {
@@ -42,6 +38,16 @@
             }
           }
 
+          var entity_label = data.label ? data.label : existingValues['data-entity-label'];
+          var embed_button_id = data.id ? data.id : existingValues['data-embed-button'];
+
+          var dialogSettings = {
+            title: existingElement ? 'Edit ' + entity_label : 'Insert ' + entity_label,
+            dialogClass: 'entity-select-dialog',
+            resizable: false,
+            minWidth: 800
+          };
+
           var saveCallback = function (values) {
             var entityElement = editor.document.createElement('drupal-entity');
             var attributes = values.attributes;
@@ -54,8 +60,8 @@
             }
           }
 
-          // Open the dialog for the entity embed form.
-          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format), existingValues, saveCallback, dialogSettings);
+          // Open the entity embed dialog for corresponding EmbedButton.
+          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format + '/' + embed_button_id), existingValues, saveCallback, dialogSettings);
         }
       });
 
@@ -91,13 +97,19 @@
         },
       });
 
-      // Register the toolbar button.
+      // Register the toolbar buttons.
       if (editor.ui.addButton) {
-        editor.ui.addButton('DrupalEntity', {
-          label: Drupal.t('Entity'),
-          command: 'editdrupalentity',
-          icon: this.path + '/entity.png',
-        });
+        for (var key in editor.config.DrupalEntity_buttons) {
+          var button = editor.config.DrupalEntity_buttons[key];
+          editor.ui.addButton(button.name, {
+            label: button.label,
+            data: button,
+            click: function(editor) {
+              editor.execCommand('editdrupalentity', this.data);
+            },
+            icon: button.image,
+          });
+        }
       }
 
       // Register context menu option for editing widget.

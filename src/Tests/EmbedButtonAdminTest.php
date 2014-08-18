@@ -28,7 +28,7 @@ class EmbedButtonAdminTest extends EntityEmbedTestBase {
    */
   protected $adminUser;
 
-  function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Create a user with admin permissions.

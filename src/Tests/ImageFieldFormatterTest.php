@@ -73,7 +73,12 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     $display = $this->displayPluginManager()->createInstance('image:image', array());
     $display->setContextValue('entity', $this->image);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
-    $this->assertIdentical(array_keys($conf_form), array('image_style', 'image_link', 'alt', 'title'));
+    $this->assertIdentical(array_keys($conf_form), array(
+      'image_style',
+      'image_link',
+      'alt',
+      'title',
+    ));
     $this->assertIdentical($conf_form['image_style']['#type'], 'select');
     $this->assertIdentical($conf_form['image_style']['#title'], 'Image style');
     $this->assertIdentical($conf_form['image_link']['#type'], 'select');

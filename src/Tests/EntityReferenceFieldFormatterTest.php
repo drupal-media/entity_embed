@@ -112,7 +112,6 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
 
     // Ensure that 'Rendered Entity' plugin is not available for an entity not
     // having a view controller.
-
     $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->menu);
     $this->assertFalse(array_key_exists('entity_reference:entity_reference_entity_view', $plugin_options), "The 'Rendered entity' plugin is not available.");
   }

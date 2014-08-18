@@ -49,6 +49,8 @@ class FieldFormatterDeriver extends DeriverBase implements ContainerDeriverInter
    * {@inheritdoc}
    *
    * @throws \LogicException
+   *   Throws an exception if field type is not defined in the annotation of the
+   *   display plugin.
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
     // The field type must be defined in the annotation of the display plugin.

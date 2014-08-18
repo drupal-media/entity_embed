@@ -75,6 +75,7 @@ trait EntityHelperTrait {
    *   An array of entity objects indexed by their ids.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
+   *   Throws an exception if the entity type does not supports UUIDs.
    */
   protected function loadMultipleEntities($entity_type, array $ids) {
     $entities = array();
@@ -146,6 +147,8 @@ trait EntityHelperTrait {
    *   The HTML of the entity rendered with the display plugin.
    *
    * @throws \Drupal\entity_embed\RecursiveRenderingException;
+   *   Throws an exception when the post_render_cache callback goes into a
+   *   potentially infinite loop.
    */
   protected function renderEntityEmbedDisplayPlugin(EntityInterface $entity, $plugin_id, array $plugin_configuration = array(), array $context = array()) {
     // Protect ourselves from recursive rendering.

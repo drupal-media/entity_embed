@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\EntityEmbedController
+ * Contains \Drupal\entity_embed\EntityEmbedController.
  */
 
 namespace Drupal\entity_embed;
@@ -29,6 +29,7 @@ class EntityEmbedController extends ControllerBase {
    *   The filter format.
    *
    * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+   *   Throws an exception if 'text' parameter is not found in the request.
    *
    * @return \Symfony\Component\HttpFoundation\Response
    *   The preview of the entity specified by the data attributes.

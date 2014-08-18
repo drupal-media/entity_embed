@@ -22,7 +22,12 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
    *
    * @var array
    */
-  public static $modules = array('entity_reference', 'entity_embed', 'entity_embed_test', 'node');
+  public static $modules = array(
+    'entity_reference',
+    'entity_embed',
+    'entity_embed_test',
+    'node',
+  );
 
   /**
    * Tests hook_entity_embed_display_plugins_alter().

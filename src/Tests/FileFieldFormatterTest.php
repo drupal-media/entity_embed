@@ -23,7 +23,12 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
    *
    * @var array
    */
-  public static $modules = array('entity_reference', 'entity_embed', 'file', 'node');
+  public static $modules = array(
+    'entity_reference',
+    'entity_embed',
+    'file',
+    'node',
+  );
 
   /**
    * Created file entity.
@@ -64,7 +69,12 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
     // formatter plugins.
     $form = array();
     $form_state = new FormState();
-    $plugins = array('file:file_table', 'file:file_rss_enclosure', 'file:file_default', 'file:file_url_plain');
+    $plugins = array(
+      'file:file_table',
+      'file:file_rss_enclosure',
+      'file:file_default',
+      'file:file_url_plain',
+    );
     // Ensure that description field is available for all the 'file' plugins.
     foreach ($plugins as $plugin) {
       $display = $this->displayPluginManager()->createInstance($plugin, array());

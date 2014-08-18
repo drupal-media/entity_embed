@@ -1,9 +1,5 @@
 entity_embed.dialog:
   path: '/entity-embed/dialog/entity-embed/{filter_format}/{embed_button}'
-  options:
-    parameters:
-      embed_button:
-        type: entity:embed_button
   defaults:
     _form: '\Drupal\entity_embed\Form\EntityEmbedDialog'
     _title: 'Embed entity'

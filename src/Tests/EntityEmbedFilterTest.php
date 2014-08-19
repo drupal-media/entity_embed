@@ -95,7 +95,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings['type'] = 'page';
     $settings['title'] = 'test entity embed with entity-id and view-mode';
     $settings['body'] = array(array('value' => $content));
-    $node = $this->drupalcreatenode($settings);
+    $node = $this->drupalCreateNode($settings);
     $this->drupalget('node/' . $node->id());
     $this->asserttext($this->node->body->value, 'embedded node exists in page');
     $this->assertNoRaw('</drupal-entity>');
@@ -107,7 +107,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings['type'] = 'page';
     $settings['title'] = 'test entity embed with entity-id and view-mode';
     $settings['body'] = array(array('value' => $content));
-    $node = $this->drupalcreatenode($settings);
+    $node = $this->drupalCreateNode($settings);
     $this->drupalget('node/' . $node->id());
     $this->asserttext($this->node->body->value, 'embedded node exists in page');
     $this->assertRaw('</not-drupal-entity>');

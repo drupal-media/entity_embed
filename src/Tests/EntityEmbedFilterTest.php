@@ -88,6 +88,29 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Embedded node exists in page with the view mode specified by entity-embed-settings.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
+
+    // Test that tag of container element is replaced when it's 'drupal-entity'.
+    $content = '<drupal-entity data-entity-type="node" data-entity-id="' . $this->node->id() . '" data-view-mode="teaser">this placeholder should not be rendered.</drupal-entity>';
+    $settings = array();
+    $settings['type'] = 'page';
+    $settings['title'] = 'test entity embed with entity-id and view-mode';
+    $settings['body'] = array(array('value' => $content));
+    $node = $this->drupalCreateNode($settings);
+    $this->drupalget('node/' . $node->id());
+    $this->asserttext($this->node->body->value, 'embedded node exists in page');
+    $this->assertNoRaw('</drupal-entity>');
+
+    // Test that tag of container element is not replaced when it's not
+    // 'drupal-entity'.
+    $content = '<not-drupal-entity data-entity-type="node" data-entity-id="' . $this->node->id() . '" data-view-mode="teaser">this placeholder should not be rendered.</not-drupal-entity>';
+    $settings = array();
+    $settings['type'] = 'page';
+    $settings['title'] = 'test entity embed with entity-id and view-mode';
+    $settings['body'] = array(array('value' => $content));
+    $node = $this->drupalCreateNode($settings);
+    $this->drupalget('node/' . $node->id());
+    $this->asserttext($this->node->body->value, 'embedded node exists in page');
+    $this->assertRaw('</not-drupal-entity>');
   }
 
 }

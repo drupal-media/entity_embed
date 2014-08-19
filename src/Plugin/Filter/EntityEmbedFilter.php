@@ -213,6 +213,22 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       $node->removeChild($node->firstChild);
     }
 
+    // Rename tag of container elemet to 'div' if it was 'drupal-entity'.
+    if ($node->tagName == 'drupal-entity') {
+      $new_node = $node->ownerDocument->createElement('div');
+
+      // Copy all attributes of original node to new node.
+      if ($node->attributes->length) {
+        foreach ($node->attributes as $attribute) {
+          $new_node->setAttribute($attribute->nodeName, $attribute->nodeValue);
+        }
+      }
+
+      $node->parentNode->replaceChild($new_node, $node);
+
+      $node = $new_node;
+    }
+
     // Finally, append the contents to the DOMNode.
     $node->appendChild($replacement_node);
   }

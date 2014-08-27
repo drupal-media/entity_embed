@@ -69,6 +69,13 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
   public $entity_type;
 
   /**
+   * File id of the button's icon.
+   *
+   * @var string
+   */
+  public $icon_fid;
+
+  /**
    * {@inheritdoc}
    */
   public function getEntityTypeMachineName() {
@@ -94,6 +101,12 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    * {@inheritdoc}
    */
   public function getButtonImage() {
-    return file_create_url(drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png');
+    if ($this->icon_fid) {
+      $image = file_load($this->icon_fid);
+      return $image->url();
+    }
+    else {
+      return drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png';
+    }
   }
 }

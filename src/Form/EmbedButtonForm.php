@@ -59,7 +59,9 @@ class EmbedButtonForm extends EntityForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
+
     $embed_button = $this->entity;
+
     $form['label'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Label'),
@@ -92,6 +94,18 @@ class EmbedButtonForm extends EntityForm {
       '#description' => $this->t("Label for the button to be shown in CKEditor toolbar."),
       '#required' => TRUE,
     );
+    $form['icon_fid'] = array(
+      '#title' => $this->t('Button image'),
+      '#type' => 'managed_file',
+      '#description' => $this->t("Image for the button to be shown in CKEditor toolbar. Leave empty to use the default Entity icon."),
+      '#upload_location' => 'public://embed_buttons/',
+      '#default_value' => array($embed_button->icon_fid),
+      '#upload_validators' => array(
+        'file_validate_extensions' => array('gif png jpg jpeg'),
+        'file_validate_image_resolution' => array('16x16'),
+      ),
+    );
+
     return $form;
   }
 
@@ -100,6 +114,9 @@ class EmbedButtonForm extends EntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $embed_button = $this->entity;
+
+    $embed_button->icon_fid = count($embed_button->icon_fid) ? $embed_button->icon_fid[0] : NULL;
+
     $status = $embed_button->save();
     if ($status) {
       drupal_set_message($this->t('Saved the %label Embed Button.', array(

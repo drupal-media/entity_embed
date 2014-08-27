@@ -108,7 +108,7 @@ trait EntityHelperTrait {
    */
   protected function canRenderEntity(EntityInterface $entity) {
     $entity_type = $entity->getEntityTypeId();
-    return $this->entityManager()->hasController($entity_type, 'view_builder');
+    return $this->entityManager()->hasHandler($entity_type, 'view_builder');
   }
 
   /**

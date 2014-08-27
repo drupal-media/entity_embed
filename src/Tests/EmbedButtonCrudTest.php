@@ -23,7 +23,7 @@ class EmbedButtonCrudTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = array('entity_embed', 'node');
+  public static $modules = array('entity_embed');
 
   /**
    * The embed button storage.

@@ -61,6 +61,7 @@ class EmbedButtonForm extends EntityForm {
     $form = parent::form($form, $form_state);
 
     $embed_button = $this->entity;
+    $button_image = $embed_button->icon_fid ? array($embed_button->icon_fid) : array();
 
     $form['label'] = array(
       '#type' => 'textfield',
@@ -99,7 +100,7 @@ class EmbedButtonForm extends EntityForm {
       '#type' => 'managed_file',
       '#description' => $this->t("Image for the button to be shown in CKEditor toolbar. Leave empty to use the default Entity icon."),
       '#upload_location' => 'public://embed_buttons/',
-      '#default_value' => array($embed_button->icon_fid),
+      '#default_value' => $button_image,
       '#upload_validators' => array(
         'file_validate_extensions' => array('gif png jpg jpeg'),
         'file_validate_image_resolution' => array('16x16'),

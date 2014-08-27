@@ -17,7 +17,7 @@ use Drupal\entity_embed\EntityHelperTrait;
  * @ConfigEntityType(
  *   id = "embed_button",
  *   label = @Translation("Embed Button"),
- *   controllers = {
+ *   handlers = {
  *     "list_builder" = "Drupal\entity_embed\EmbedButtonListBuilder",
  *     "form" = {
  *       "add" = "Drupal\entity_embed\Form\EmbedButtonForm",

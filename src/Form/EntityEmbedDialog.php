@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\Form\EntityEmbedDialog
+ * Contains \Drupal\entity_embed\Form\EntityEmbedDialog.
  */
 
 namespace Drupal\entity_embed\Form;

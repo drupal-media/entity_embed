@@ -62,6 +62,8 @@ class EmbedButtonForm extends EntityForm {
 
     $embed_button = $this->entity;
     $button_image = $embed_button->icon_fid ? array($embed_button->icon_fid) : array();
+    $upload_directory = \Drupal::config('entity_embed.settings')->get('upload_directory');
+    $upload_location = file_default_scheme() . '://' . $upload_directory . '/';
 
     $form['label'] = array(
       '#type' => 'textfield',
@@ -99,7 +101,7 @@ class EmbedButtonForm extends EntityForm {
       '#title' => $this->t('Button image'),
       '#type' => 'managed_file',
       '#description' => $this->t("Image for the button to be shown in CKEditor toolbar. Leave empty to use the default Entity icon."),
-      '#upload_location' => 'public://embed_buttons/',
+      '#upload_location' => $upload_location,
       '#default_value' => $button_image,
       '#upload_validators' => array(
         'file_validate_extensions' => array('gif png jpg jpeg'),

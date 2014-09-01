@@ -73,7 +73,7 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    *
    * @var string
    */
-  public $icon_fid;
+  public $button_icon_fid;
 
   /**
    * {@inheritdoc}
@@ -101,8 +101,8 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    * {@inheritdoc}
    */
   public function getButtonImage() {
-    if ($this->icon_fid) {
-      $image = file_load($this->icon_fid);
+    if ($this->button_icon_fid) {
+      $image = file_load($this->button_icon_fid);
       return $image->url();
     }
     else {

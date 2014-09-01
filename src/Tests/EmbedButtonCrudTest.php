@@ -59,7 +59,7 @@ class EmbedButtonCrudTest extends KernelTestBase {
       'label' => 'Testing embed button instance',
       'button_label' => 'Test',
       'entity_type' => 'node',
-      'icon_fid' => 42,
+      'button_icon_fid' => 42,
     );
 
     // Create an embed_button with required values.
@@ -82,7 +82,7 @@ class EmbedButtonCrudTest extends KernelTestBase {
       'id' => 'test_button',
       'button_label' => 'Test',
       'entity_type' => 'node',
-      'icon_fid' => 42,
+      'button_icon_fid' => 42,
     );
 
     $this->assertIdentical($actual_properties, $expected_properties, 'Actual config properties are structured as expected.');

@@ -62,8 +62,9 @@ class EmbedButtonForm extends EntityForm {
 
     $embed_button = $this->entity;
     $button_image = $embed_button->button_icon_fid ? array($embed_button->button_icon_fid) : array();
+    $file_scheme = \Drupal::config('entity_embed.settings')->get('file_scheme');
     $upload_directory = \Drupal::config('entity_embed.settings')->get('upload_directory');
-    $upload_location = file_default_scheme() . '://' . $upload_directory . '/';
+    $upload_location = $file_scheme . '://' . $upload_directory . '/';
 
     $form['label'] = array(
       '#type' => 'textfield',

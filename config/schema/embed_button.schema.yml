@@ -2,6 +2,9 @@ entity_embed.settings:
   type: mapping
   label: 'Entity embed settings'
   mapping:
+    file_scheme:
+      type: string
+      label: 'File scheme for buton images'
     upload_directory:
       type: string
       label: 'Upload directory for buton images'

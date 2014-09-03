@@ -1,6 +1,17 @@
+entity_embed.settings:
+  type: mapping
+  label: 'Entity embed settings'
+  mapping:
+    file_scheme:
+      type: string
+      label: 'File scheme for buton images'
+    upload_directory:
+      type: string
+      label: 'Upload directory for buton images'
+
 entity_embed.embed_button.*:
   type: config_entity
-  label: 'Entity button config'
+  label: 'Embed button config'
   mapping:
     label:
       type: label
@@ -14,3 +25,6 @@ entity_embed.embed_button.*:
     entity_type:
       type: string
       label: 'Entity type'
+    button_icon_fid:
+      type: integer
+      label: 'Button image'

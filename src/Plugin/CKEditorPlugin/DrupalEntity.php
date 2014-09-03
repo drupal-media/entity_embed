@@ -58,7 +58,7 @@ class DrupalEntity extends CKEditorPluginBase {
       $button = EmbedButton::load($embed_button);
       $buttons[$button->label()] = array(
         'label' => String::checkPlain($button->getButtonLabel()),
-        'image' => drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png',
+        'image' => $button->getButtonImage(),
       );
     }
 

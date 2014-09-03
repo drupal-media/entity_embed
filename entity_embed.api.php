@@ -10,8 +10,13 @@
  * @{
  */
 
-// @todo Document
-function hook_entity_embed_display_plugins_alter(&$info) {
+/**
+ * Alter the display plugin definitions.
+ *
+ * @param array &$info
+ *   An associative array containing the plugin definitions keyed by plugin ID.
+ */
+function hook_entity_embed_display_plugins_alter(array &$info) {
 
 }
 

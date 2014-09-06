@@ -93,11 +93,8 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     $display = $this->displayPluginManager()->createInstance('entity_reference:entity_reference_entity_view', array());
     $display->setContextValue('entity', $this->entity);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
-    $this->assertIdentical(array_keys($conf_form), array('view_mode', 'links'));
     $this->assertIdentical($conf_form['view_mode']['#type'], 'select');
     $this->assertIdentical($conf_form['view_mode']['#title'], 'View mode');
-    $this->assertIdentical($conf_form['links']['#type'], 'checkbox');
-    $this->assertIdentical($conf_form['links']['#title'], 'Show links');
 
     // Ensure that correct form attributes are returned for
     // 'entity_reference:entity_reference_label' plugin.

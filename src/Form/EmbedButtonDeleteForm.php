@@ -40,10 +40,9 @@ class EmbedButtonDeleteForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submit(array $form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->entity->delete();
     drupal_set_message($this->t('Button %label has been deleted.', array('%label' => $this->entity->label())));
-
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
 

@@ -73,14 +73,16 @@ class EntityEmbedDialog extends FormBase {
    *   The embed button to which this dialog corresponds.
    */
   public function buildForm(array $form, FormStateInterface $form_state, FilterFormat $filter_format = NULL, EmbedButtonInterface $embed_button = NULL) {
+    $values = $form_state->getValues();
+    $input = $form_state->getUserInput();
     // Initialize entity element with form attributes, if present.
-    $entity_element = empty($form_state['values']['attributes']) ? array() : $form_state['values']['attributes'];
+    $entity_element = empty($values['attributes']) ? array() : $values['attributes'];
     // The default values are set directly from \Drupal::request()->request,
     // provided by the editor plugin opening the dialog.
-    if (!isset($form_state['entity_element'])) {
-      $form_state['entity_element'] = isset($form_state['input']['editor_object']) ? $form_state['input']['editor_object'] : array();
+    if (!$form_state->get('entity_element')) {
+      $form_state->set('entity_element', isset($input['editor_object']) ? $input['editor_object'] : array());
     }
-    $entity_element += $form_state['entity_element'];
+    $entity_element += $form_state->get('entity_element');
     $entity_element += array(
       'data-entity-type' => $embed_button->getEntityTypeMachineName(),
       'data-entity-uuid' => '',
@@ -89,13 +91,13 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-embed-settings' => array(),
     );
 
-    if (empty($form_state['storage']['step'])) {
+    if (empty($form_state->getStorage()['step'])) {
       // If an entity has been selected, then always skip to the embed options.
       if (!empty($entity_element['data-entity-type']) && (!empty($entity_element['data-entity-uuid']) || !empty($entity_element['data-entity-id']))) {
-        $form_state['storage']['step'] = 'embed';
+        $form_state->setStorage(array('step' => 'embed'));
       }
       else {
-        $form_state['storage']['step'] = 'select';
+        $form_state->setStorage(array('step' => 'select'));
       }
     }
 
@@ -104,7 +106,7 @@ class EntityEmbedDialog extends FormBase {
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
 
-    switch ($form_state['storage']['step']) {
+    switch ($form_state->getStorage()['step']) {
       case 'select':
         $form['attributes']['data-entity-type'] = array(
           '#type' => 'value',
@@ -180,7 +182,7 @@ class EntityEmbedDialog extends FormBase {
           '#type' => 'value',
           '#value' => $embed_button->getButtonLabel(),
         );
-        $plugin_id = !empty($form_state['values']['attributes']['data-entity-embed-display']) ? $form_state['values']['attributes']['data-entity-embed-display'] : $entity_element['data-entity-embed-display'];
+        $plugin_id = !empty($values['attributes']['data-entity-embed-display']) ? $values['attributes']['data-entity-embed-display'] : $entity_element['data-entity-embed-display'];
         if (!empty($plugin_id)) {
           if (is_string($entity_element['data-entity-embed-settings'])) {
             $entity_element['data-entity-embed-settings'] = Json::decode($entity_element['data-entity-embed-settings'], TRUE);
@@ -225,10 +227,12 @@ class EntityEmbedDialog extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
 
-    switch ($form_state['storage']['step']) {
+    $values = $form_state->getValues();
+
+    switch ($form_state->getStorage()['step']) {
       case 'select':
-        if ($entity_type = $form_state['values']['attributes']['data-entity-type']) {
-          $id = trim($form_state['values']['attributes']['data-entity-id']);
+        if ($entity_type = $values['attributes']['data-entity-type']) {
+          $id = trim($values['attributes']['data-entity-id']);
           if ($entity = $this->loadEntity($entity_type, $id)) {
             if (!$this->accessEntity($entity, 'view')) {
               $form_state->setError($form['attributes']['data-entity-id'], $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
@@ -278,8 +282,8 @@ class EntityEmbedDialog extends FormBase {
   public function goBack(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
-    $form_state['storage']['step'] = 'select';
-    $form_state['rebuild'] = TRUE;
+    $form_state->setStorage(array('step' => 'select'));
+    $form_state->setRebuild(TRUE);
     $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
     unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
     $status_messages = array('#theme' => 'status_messages');
@@ -310,8 +314,8 @@ class EntityEmbedDialog extends FormBase {
       $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
     }
     else {
-      $form_state['storage']['step'] = 'embed';
-      $form_state['rebuild'] = TRUE;
+      $form_state->setStorage(array('step' => 'embed'));
+      $form_state->setRebuild(TRUE);
       $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
       unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
       $status_messages = array('#theme' => 'status_messages');
@@ -334,6 +338,8 @@ class EntityEmbedDialog extends FormBase {
   public function submitEmbedForm(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
+    $values = $form_state->getValues();
+
     // Display errors in form, if any.
     if ($form_state->hasAnyErrors()) {
       unset($form['#prefix'], $form['#suffix']);
@@ -344,11 +350,11 @@ class EntityEmbedDialog extends FormBase {
     }
     else {
       // Serialize entity embed settings to JSON string.
-      if (!empty($form_state['values']['attributes']['data-entity-embed-settings'])) {
-        $form_state['values']['attributes']['data-entity-embed-settings'] = Json::encode($form_state['values']['attributes']['data-entity-embed-settings']);
+      if (!empty($values['attributes']['data-entity-embed-settings'])) {
+        $values['attributes']['data-entity-embed-settings'] = Json::encode($values['attributes']['data-entity-embed-settings']);
       }
 
-      $response->addCommand(new EditorDialogSave($form_state['values']));
+      $response->addCommand(new EditorDialogSave($values));
       $response->addCommand(new CloseModalDialogCommand());
     }
 

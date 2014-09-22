@@ -158,7 +158,7 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     if (!$form_state->getErrors()) {
-      $this->configuration = array_intersect_key($form_state['values'], $this->defaultConfiguration());
+      $this->configuration = array_intersect_key($form_state->getValues(), $this->defaultConfiguration());
     }
   }
 

@@ -320,6 +320,7 @@ class EntityEmbedDialog extends FormBase {
       unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
       $status_messages = array('#theme' => 'status_messages');
       $output = drupal_render($rebuild_form);
+      drupal_process_attached($rebuild_form);
       $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
       $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
     }

@@ -319,8 +319,9 @@ class EntityEmbedDialog extends FormBase {
       $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
       unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
       $status_messages = array('#theme' => 'status_messages');
-      $output = drupal_render($rebuild_form);
-      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
+      $output          = drupal_render($rebuild_form);
+      drupal_process_attached($rebuild_form);
+      $output          = '<div>' . drupal_render($status_messages) . $output . '</div>';
       $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
     }
 

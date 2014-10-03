@@ -57,7 +57,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
       $definition,
       $this->getFieldValue($definition),
       $definition->getName(),
-      $node
+      $node->getTypedData()
     );
 
     if ($langcode = $this->getAttributeValue('data-langcode')) {

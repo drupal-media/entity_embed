@@ -45,3 +45,11 @@ embed_button.delete:
     _title: 'Delete Embed button'
   requirements:
     _permission: 'administer embed buttons'
+
+entity_embed.autocomplete_entity:
+  path: '/entity-embed/autocomplete/{entity_type_id}'
+  defaults:
+    _controller: '\Drupal\entity_embed\Controller\AutocompleteController::autocompleteEntity'
+  requirements:
+    # @todo What to do here?
+    _permission: 'TRUE'

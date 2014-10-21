@@ -91,13 +91,13 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-embed-settings' => array(),
     );
 
-    if (empty($form_state->getStorage()['step'])) {
+    if (!$form_state->get('step')) {
       // If an entity has been selected, then always skip to the embed options.
       if (!empty($entity_element['data-entity-type']) && (!empty($entity_element['data-entity-uuid']) || !empty($entity_element['data-entity-id']))) {
-        $form_state->setStorage(array('step' => 'embed'));
+        $form_state->set('step', 'embed');
       }
       else {
-        $form_state->setStorage(array('step' => 'select'));
+        $form_state->set('step', 'select');
       }
     }
 
@@ -106,7 +106,7 @@ class EntityEmbedDialog extends FormBase {
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
 
-    switch ($form_state->getStorage()['step']) {
+    switch ($form_state->get('step')) {
       case 'select':
         $form['attributes']['data-entity-type'] = array(
           '#type' => 'value',
@@ -116,6 +116,10 @@ class EntityEmbedDialog extends FormBase {
           '#type' => 'textfield',
           '#title' => $this->t('Entity ID or UUID'),
           '#default_value' => $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id'],
+          '#autocomplete_route_name' => 'entity_embed.autocomplete_entity',
+          '#autocomplete_route_parameters' => array(
+            'entity_type_id' => $entity_element['data-entity-type'],
+          ),
           '#required' => TRUE,
         );
         $form['attributes']['data-entity-uuid'] = array(

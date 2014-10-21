@@ -182,7 +182,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     $result->addPostRenderCacheCallback($callback, $context);
 
     // Add cache tags.
-    if ($tags = $entity->getCacheTag()) {
+    if ($tags = $entity->getCacheTags()) {
       $result->addCacheTags($tags);
     }
 

@@ -2,13 +2,14 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\EntityEmbedDisplay\EntityReferenceFieldFormatter.
+ * Contains \Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay\EntityReferenceFieldFormatter.
  */
 
-namespace Drupal\entity_embed\EntityEmbedDisplay;
+namespace Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\entity_embed\EntityEmbedDisplay\FieldFormatterEntityEmbedDisplayBase;
 
 /**
  * Embed entity displays for entity_reference field formatters.

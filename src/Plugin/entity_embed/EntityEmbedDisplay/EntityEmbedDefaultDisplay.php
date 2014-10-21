@@ -2,13 +2,14 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDefaultDisplay.
+ * Contains \Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay\EntityEmbedDefaultDisplay.
  */
 
-namespace Drupal\entity_embed\EntityEmbedDisplay;
+namespace Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayBase;
 
 /**
  * Default embed display, which renders the entity using entity_view().

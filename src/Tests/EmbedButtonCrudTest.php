@@ -75,7 +75,7 @@ class EmbedButtonCrudTest extends KernelTestBase {
     unset($actual_properties['uuid']);
 
     $expected_properties = array(
-      'langcode' => $this->container->get('language_manager')->getDefaultLanguage()->id,
+      'langcode' => $this->container->get('language_manager')->getDefaultLanguage()->getId(),
       'status' => TRUE,
       'dependencies' => array(),
       'label' => 'Testing embed button instance',

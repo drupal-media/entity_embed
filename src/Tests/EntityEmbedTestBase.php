@@ -65,7 +65,7 @@ abstract class EntityEmbedTestBase extends WebTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Embed Test Node';
-    $settings['body'] = array(array('value' => 'This node is to be used for embedding in other nodes.'));
+    $settings['body'] = array('value' => 'This node is to be used for embedding in other nodes.', 'format' => 'custom_format');
     $this->node = $this->drupalCreateNode($settings);
   }
 }

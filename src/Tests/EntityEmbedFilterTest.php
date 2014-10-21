@@ -26,7 +26,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with entity-id and view-mode';
-    $settings['body'] = array(array('value' => $content));
+    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Embedded node exists in page');
@@ -37,7 +37,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with entity-uuid and view-mode';
-    $settings['body'] = array(array('value' => $content));
+    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Embedded node exists in page.');
@@ -48,7 +48,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test that placeholder is retained when specified entity does not exists';
-    $settings['body'] = array(array('value' => $content));
+    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertText(strip_tags($content), 'Placeholder appears in the output when embed is unsuccessful.');
@@ -59,7 +59,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test that entity-uuid is preferred over entity-id when both attributes are present';
-    $settings['body'] = array(array('value' => $content));
+    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Entity specifed with UUID exists in the page.');
@@ -71,7 +71,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with entity-embed-display and data-entity-embed-settings';
-    $settings['body'] = array(array('value' => $content));
+    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Embedded node exists in page.');
@@ -83,7 +83,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with entity-embed-display and data-entity-embed-settings';
-    $settings['body'] = array(array('value' => $content));
+    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Embedded node exists in page with the view mode specified by entity-embed-settings.');
@@ -94,7 +94,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'test entity embed with entity-id and view-mode';
-    $settings['body'] = array(array('value' => $content));
+    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalget('node/' . $node->id());
     $this->asserttext($this->node->body->value, 'embedded node exists in page');
@@ -106,7 +106,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'test entity embed with entity-id and view-mode';
-    $settings['body'] = array(array('value' => $content));
+    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalget('node/' . $node->id());
     $this->asserttext($this->node->body->value, 'embedded node exists in page');

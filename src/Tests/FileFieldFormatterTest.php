@@ -91,7 +91,7 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with file:file_default';
-    $settings['body'] = array(array('value' => $content));
+    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertText($description, 'Description of the embedded file exists in page.');

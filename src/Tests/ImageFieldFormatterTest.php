@@ -95,7 +95,7 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with image:image';
-    $settings['body'] = array(array('value' => $content));
+    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertNoText($alt_text, 'Alternate text for the embedded image is not visible when embed is successful.');

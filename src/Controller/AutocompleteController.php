@@ -9,6 +9,8 @@ namespace Drupal\entity_embed\Controller;
 
 use Drupal\Component\Utility\String;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\entity_embed\EmbedButtonInterface;
+use Drupal\filter\Entity\FilterFormat;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -20,10 +22,11 @@ class AutocompleteController extends ControllerBase {
   /**
    * Autocomplete callback for entities.
    */
-  public function autocompleteEntity(Request $request, $entity_type_id) {
+  public function autocompleteEntity(Request $request, FilterFormat $filter_format, EmbedButtonInterface $embed_button) {
     $string = $request->query->get('q');
     $matches = array();
 
+    $entity_type_id = $embed_button->getEntityTypeMachineName();
     $entity_type = \Drupal::entityManager()->getDefinition($entity_type_id);
 
     // Prevent errors if the entity type has no label key.

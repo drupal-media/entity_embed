@@ -3,7 +3,7 @@
  * Drupal Entity plugin.
  */
 
-(function ($, Drupal, CKEDITOR) {
+(function ($, Drupal, drupalSettings, CKEDITOR) {
 
   "use strict";
 
@@ -56,6 +56,9 @@
             }
             editor.insertHtml(entityElement.getOuterHtml());
             if (existingElement) {
+              // Detach the behaviors that were attached when the entity content
+              // was inserted.
+              Drupal.detachBehaviors(existingElement.$, drupalSettings);
               existingElement.remove();
             }
           }
@@ -70,24 +73,41 @@
         // Minimum HTML which is required by this widget to work.
         requiredContent: 'div[data-entity-type]',
 
-        // Generate the preview of the element and render it.
+        // Simply recognize the element as our own. The inner markup if fetched
+        // and inserted the init() callback, since it requires the actual DOM
+        // element.
         upcast: function (element) {
           var attributes = element.attributes;
           if (attributes['data-entity-type'] === undefined || (attributes['data-entity-id'] === undefined && attributes['data-entity-uuid'] === undefined)) {
             return;
           }
-
-          var request = {};
-          request['value'] = element.getOuterHtml();
-          jQuery.ajax({
-            url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + jQuery.param(request)),
-            dataType: 'json',
-            async: false,
-            success: function (data) {
-              element.setHtml(data.content);
-            }
-          });
           return element;
+        },
+
+        // Fetch the rendered entity.
+        init: function () {
+          var element = this.element;
+          // Use a throwaway Drupal.ajax object to fetch the HTML, so that we
+          // can retrieve out-of-band assets (JS, CSS...) and attach behaviors.
+          // This requires attaching to an element with a known HTML ID, though.
+          // For now, sticking on the admin_toolbar.
+          // @todo Can we use something else ? Generate an ID on the fly and
+          // assign it to the element itself ?
+          var ajax = new Drupal.ajax('toolbar-administration', $('#toolbar-administration'), {
+            url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + $.param({
+              value: element.getOuterHtml()
+            })),
+            progress: {type: 'none'},
+            // The call is triggered programmatically, this event is not used.
+            event: 'entity_embed_dummy_event',
+            // Add the target directly as a custom property.
+            entity_embed_target: element.$
+          });
+          // Trigger the call manually, and unbind the event to avoid multiple
+          // calls. The actual HTML is inserted in our 'entity_embed_insert'
+          // Ajax command on success.
+          $(ajax.element).trigger('entity_embed_dummy_event');
+          $(ajax.element).unbind('entity_embed_dummy_event');
         },
 
         // Downcast the element. Set the inner html to be empty.
@@ -166,4 +186,18 @@
     return widget && widget.name === 'drupalentity';
   }
 
-})(jQuery, Drupal, CKEDITOR);
+  /**
+   * Ajax 'entity_embed_insert' command: insert the rendered entity.
+   *
+   * The regular Drupal.ajax.commands.insert() command cannot target elements
+   * within iframes. This is a skimmed down equivalent that works whether the
+   * CKEditor is in iframe or divarea mode.
+   */
+  Drupal.AjaxCommands.prototype.entity_embed_insert = function(ajax, response, status) {
+    var target = ajax.entity_embed_target;
+    // No need to detach behaviors, the widget is created fresh each time.
+    $(target).html(response.html);
+    Drupal.attachBehaviors(target, response.settings || ajax.settings || drupalSettings);
+  };
+
+})(jQuery, Drupal, drupalSettings, CKEDITOR);

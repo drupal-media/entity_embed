@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed\EntityEmbedInsertCommand.
+ * Contains \Drupal\entity_embed\Ajax\EntityEmbedInsertCommand.
  */
 
-namespace Drupal\entity_embed;
+namespace Drupal\entity_embed\Ajax;
 
 use Drupal\Core\Ajax\CommandInterface;
 

@@ -9,8 +9,9 @@ namespace Drupal\entity_embed;
 
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Controller\ControllerBase;
-use Symfony\Component\HttpFoundation\Request;
+use Drupal\entity_embed\Ajax\EntityEmbedInsertCommand;
 use Drupal\filter\FilterFormatInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**

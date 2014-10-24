@@ -87,32 +87,31 @@
         // Fetch the rendered entity.
         init: function () {
           var element = this.element;
-          // Use a throwaway Drupal.ajax object to fetch the HTML, so that we
-          // can retrieve out-of-band assets (JS, CSS...) and attach behaviors.
-          // This requires attaching to an element with a known HTML ID, though.
-          // For now, sticking on the admin_toolbar.
-          // @todo Can we use something else ? Generate an ID on the fly and
-          // assign it to the element itself ?
-          var ajax = new Drupal.ajax('toolbar-administration', $('#toolbar-administration'), {
+          var $element = $(element.$);
+          // Use the Ajax framework to fetch the HTML, so that we can retrieve
+          // out-of-band assets (JS, CSS...). This requires the element to have
+          // an ID.
+          var id = generateEmbedId();
+          element.setAttribute('id', id);
+          new Drupal.ajax(id, $element, {
             url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + $.param({
               value: element.getOuterHtml()
             })),
             progress: {type: 'none'},
-            // The call is triggered programmatically, this event is not used.
-            event: 'entity_embed_dummy_event',
-            // Add the target directly as a custom property.
-            entity_embed_target: element.$
+            // Use a custom event to trigger the call.
+            event: 'entity_embed_dummy_event'
           });
-          // Trigger the call manually, and unbind the event to avoid multiple
-          // calls. The actual HTML is inserted in our 'entity_embed_insert'
-          // Ajax command on success.
-          $(ajax.element).trigger('entity_embed_dummy_event');
-          $(ajax.element).unbind('entity_embed_dummy_event');
+          // Trigger the call manually. The actual HTML is inserted in our
+          // 'entity_embed_insert' Ajax command on success.
+          $element.trigger('entity_embed_dummy_event');
         },
 
-        // Downcast the element. Set the inner html to be empty.
+        // Downcast the element.
         downcast: function (element) {
+          // Only keep the wrapping element.
           element.setHtml('');
+          // Remove the auto-generated ID.
+          element.removeAttribute('id');
           return element;
         },
       });
@@ -187,6 +186,18 @@
   }
 
   /**
+   * Generates unique HTML IDs for the widgets.
+   *
+   * @returns {string}
+   */
+  function generateEmbedId() {
+    if (typeof generateEmbedId.counter == 'undefined') {
+      generateEmbedId.counter = 0;
+    }
+    return 'entity-embed-' + generateEmbedId.counter++;
+  }
+
+  /**
    * Ajax 'entity_embed_insert' command: insert the rendered entity.
    *
    * The regular Drupal.ajax.commands.insert() command cannot target elements
@@ -194,10 +205,10 @@
    * CKEditor is in iframe or divarea mode.
    */
   Drupal.AjaxCommands.prototype.entity_embed_insert = function(ajax, response, status) {
-    var target = ajax.entity_embed_target;
+    var $target = ajax.element;
     // No need to detach behaviors, the widget is created fresh each time.
-    $(target).html(response.html);
-    Drupal.attachBehaviors(target, response.settings || ajax.settings || drupalSettings);
+    $target.html(response.html);
+    Drupal.attachBehaviors($target.get(0), response.settings || ajax.settings || drupalSettings);
   };
 
 })(jQuery, Drupal, drupalSettings, CKEDITOR);

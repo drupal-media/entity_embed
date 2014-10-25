@@ -111,7 +111,7 @@
           // Only keep the wrapping element.
           element.setHtml('');
           // Remove the auto-generated ID.
-          element.removeAttribute('id');
+          delete element.attributes.id;
           return element;
         },
       });

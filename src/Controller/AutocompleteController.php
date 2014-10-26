@@ -33,10 +33,10 @@ class AutocompleteController extends ControllerBase {
    * Constructs an AutocompleteController.
    *
    * @param \Drupal\Core\Entity\Query\QueryFactory $query_factory
-   *
+   *   Entity query factory.
    */
   public function __construct(QueryFactory $query_factory) {
-    $this->queryFactory =$query_factory;
+    $this->queryFactory = $query_factory;
   }
 
   /**

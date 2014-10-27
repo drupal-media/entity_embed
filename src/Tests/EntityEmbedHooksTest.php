@@ -82,7 +82,7 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     $this->assertText($this->node->body->value, 'Embedded node exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
     // Ensure that embedded node's title has been replaced.
-    $this->assertText('Title set by hook_entity_embed_alter', 'Title of the embedded node is replaced by hook_entity_embed_alter()');
+    $this->assertText('Title set by hook_entity_preembed', 'Title of the embedded node is replaced by hook_entity_embed_alter()');
     $this->assertNoText($this->node->title->value, 'Original title of the embedded node is not visible.');
     \Drupal::state()->set('entity_embed_test_entity_embed_alter', FALSE);
 

@@ -81,6 +81,9 @@
           if (attributes['data-entity-type'] === undefined || (attributes['data-entity-id'] === undefined && attributes['data-entity-uuid'] === undefined)) {
             return;
           }
+          // Generate an ID for the element, so that we can use the Ajax
+          // framework.
+          element.attributes.id = generateEmbedId();
           return element;
         },
 
@@ -89,11 +92,8 @@
           var element = this.element;
           var $element = $(element.$);
           // Use the Ajax framework to fetch the HTML, so that we can retrieve
-          // out-of-band assets (JS, CSS...). This requires the element to have
-          // an ID.
-          var id = generateEmbedId();
-          element.setAttribute('id', id);
-          new Drupal.ajax(id, $element, {
+          // out-of-band assets (JS, CSS...).
+          new Drupal.ajax($element.attr('id'), $element, {
             url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + $.param({
               value: element.getOuterHtml()
             })),

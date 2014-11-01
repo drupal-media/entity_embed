@@ -7,10 +7,11 @@
 
 namespace Drupal\entity_embed;
 
+use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Controller\ControllerBase;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Drupal\entity_embed\Ajax\EntityEmbedInsertCommand;
 use Drupal\filter\FilterFormatInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -41,9 +42,10 @@ class EntityEmbedController extends ControllerBase {
     }
 
     $entity_output = check_markup($text, $filter_format->id());
-    return new JsonResponse(array(
-      'content' => $entity_output,
-    ));
+
+    $response = new AjaxResponse();
+    $response->addCommand(new EntityEmbedInsertCommand($entity_output));
+    return $response;
   }
 
 }

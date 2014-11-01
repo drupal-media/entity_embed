@@ -56,6 +56,9 @@
             }
             editor.insertHtml(entityElement.getOuterHtml());
             if (existingElement) {
+              // Detach the behaviors that were attached when the entity content
+              // was inserted.
+              runEmbedBehaviors('detach', existingElement.$);
               existingElement.remove();
             }
           }
@@ -70,29 +73,45 @@
         // Minimum HTML which is required by this widget to work.
         requiredContent: 'div[data-entity-type]',
 
-        // Generate the preview of the element and render it.
+        // Simply recognize the element as our own. The inner markup if fetched
+        // and inserted the init() callback, since it requires the actual DOM
+        // element.
         upcast: function (element) {
           var attributes = element.attributes;
           if (attributes['data-entity-type'] === undefined || (attributes['data-entity-id'] === undefined && attributes['data-entity-uuid'] === undefined)) {
             return;
           }
-
-          var request = {};
-          request['value'] = element.getOuterHtml();
-          jQuery.ajax({
-            url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + jQuery.param(request)),
-            dataType: 'json',
-            async: false,
-            success: function (data) {
-              element.setHtml(data.content);
-            }
-          });
+          // Generate an ID for the element, so that we can use the Ajax
+          // framework.
+          element.attributes.id = generateEmbedId();
           return element;
         },
 
-        // Downcast the element. Set the inner html to be empty.
+        // Fetch the rendered entity.
+        init: function () {
+          var element = this.element;
+          var $element = $(element.$);
+          // Use the Ajax framework to fetch the HTML, so that we can retrieve
+          // out-of-band assets (JS, CSS...).
+          new Drupal.ajax($element.attr('id'), $element, {
+            url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + $.param({
+              value: element.getOuterHtml()
+            })),
+            progress: {type: 'none'},
+            // Use a custom event to trigger the call.
+            event: 'entity_embed_dummy_event'
+          });
+          // Trigger the call manually. The actual HTML is inserted in our
+          // 'entity_embed_insert' Ajax command on success.
+          $element.trigger('entity_embed_dummy_event');
+        },
+
+        // Downcast the element.
         downcast: function (element) {
+          // Only keep the wrapping element.
           element.setHtml('');
+          // Remove the auto-generated ID.
+          delete element.attributes.id;
           return element;
         },
       });
@@ -165,5 +184,56 @@
     var widget = editor.widgets.getByElement(element, true);
     return widget && widget.name === 'drupalentity';
   }
+
+  /**
+   * Generates unique HTML IDs for the widgets.
+   *
+   * @returns {string}
+   */
+  function generateEmbedId() {
+    if (typeof generateEmbedId.counter == 'undefined') {
+      generateEmbedId.counter = 0;
+    }
+    return 'entity-embed-' + generateEmbedId.counter++;
+  }
+
+  /**
+   * Attaches or detaches behaviors, except the ones we do not want.
+   *
+   * @param {string} action
+   *   Either 'attach' or 'detach'.
+   * @param context
+   *   The context argument for Drupal.attachBehaviors()/detachBehaviors().
+   * @param settings
+   *   The settings argument for Drupal.attachBehaviors()/detachBehaviors().
+   */
+  function runEmbedBehaviors(action, context, settings) {
+    // Do not run the following behaviors:
+    // - Drupal.behaviors.editor, to avoid CK inception.
+    // - Drupal.behaviors.contextual, to keep contextual links hidden.
+    var stashed = {};
+    $.each(['editor', 'contextual'], function (i, behavior) {
+      stashed[behavior] = Drupal.behaviors[behavior];
+      delete Drupal.behaviors[behavior];
+    });
+    // Run the remaining behaviors.
+    (action == 'attach' ? Drupal.attachBehaviors : Drupal.detachBehaviors)(context, settings);
+    // Put the stashed behaviors back in.
+    $.extend(Drupal.behaviors, stashed);
+  }
+
+  /**
+   * Ajax 'entity_embed_insert' command: insert the rendered entity.
+   *
+   * The regular Drupal.ajax.commands.insert() command cannot target elements
+   * within iframes. This is a skimmed down equivalent that works whether the
+   * CKEditor is in iframe or divarea mode.
+   */
+  Drupal.AjaxCommands.prototype.entity_embed_insert = function(ajax, response, status) {
+    var $target = ajax.element;
+    // No need to detach behaviors here, the widget is created fresh each time.
+    $target.html(response.html);
+    runEmbedBehaviors('attach', $target.get(0), response.settings || ajax.settings);
+  };
 
 })(jQuery, Drupal, CKEDITOR);

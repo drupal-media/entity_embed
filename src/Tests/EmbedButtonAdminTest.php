@@ -7,6 +7,8 @@
 
 namespace Drupal\entity_embed\Tests;
 
+Use \Drupal\Component\Utility\Unicode;
+
 /**
  * Tests the administrative UI.
  *
@@ -57,7 +59,7 @@ class EmbedButtonAdminTest extends EntityEmbedTestBase {
 
     // Add embed button.
     $this->clickLink('Add Embed Button');
-    $button_id = drupal_strtolower($this->randomMachineName());
+    $button_id = Unicode::strtolower($this->randomMachineName());
     $name = $this->randomMachineName();
     $edit = array(
       'id' => $button_id,

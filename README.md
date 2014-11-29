@@ -11,6 +11,7 @@ Allows any entity to be embedded using a WYSIWYG and text format.
 
 * Install and enable the module.
 * Enable the entity-embed filter 'Display embedded entities' for the desired text formats from the configuration page: '/admin/config/content/formats'.
+* Add ```<drupal-entity>``` to the 'Allowed HTML tags'
 * To enable the WYSIWYG plugin, move the entity-embed 'E' button into the Active toolbar for the desired text formats from the configuration page: '/admin/config/content/formats'.
 
 ## Technical details

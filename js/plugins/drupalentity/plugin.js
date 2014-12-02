@@ -61,7 +61,7 @@
               runEmbedBehaviors('detach', existingElement.$);
               existingElement.remove();
             }
-          }
+          };
 
           // Open the entity embed dialog for corresponding EmbedButton.
           Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format + '/' + embed_button_id), existingValues, saveCallback, dialogSettings);
@@ -113,7 +113,7 @@
           // Remove the auto-generated ID.
           delete element.attributes.id;
           return element;
-        },
+        }
       });
 
       // Register the toolbar buttons.
@@ -126,7 +126,7 @@
             click: function(editor) {
               editor.execCommand('editdrupalentity', this.data);
             },
-            icon: button.image,
+            icon: button.image
           });
         }
       }

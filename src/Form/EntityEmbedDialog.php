@@ -17,7 +17,7 @@ use Drupal\editor\Ajax\EditorDialogSave;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\entity_embed\EmbedButtonInterface;
-use Drupal\filter\Entity\FilterFormat;
+use Drupal\filter\FilterFormatInterface;
 use Drupal\Component\Serialization\Json;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -67,12 +67,12 @@ class EntityEmbedDialog extends FormBase {
   /**
    * {@inheritdoc}
    *
-   * @param \Drupal\filter\Entity\FilterFormat $filter_format
+   * @param \Drupal\filter\Entity\FilterFormatInterface $filter_format
    *   The filter format to which this dialog corresponds.
-   * @param \Drupal\entity_embed\Entity\EmbedButton $embed_button
+   * @param \Drupal\entity_embed\Entity\EmbedButtonInterface $embed_button
    *   The embed button to which this dialog corresponds.
    */
-  public function buildForm(array $form, FormStateInterface $form_state, FilterFormat $filter_format = NULL, EmbedButtonInterface $embed_button = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, FilterFormatInterface $filter_format = NULL, EmbedButtonInterface $embed_button = NULL) {
     $values = $form_state->getValues();
     $input = $form_state->getUserInput();
     // Initialize entity element with form attributes, if present.
@@ -134,7 +134,7 @@ class EntityEmbedDialog extends FormBase {
             'embed_button' => $embed_button->id(),
           ),
           '#required' => TRUE,
-          '#description' => $this->t('Type label and pick the right one from suggestions. Note that the unique ID will be saved.')
+          '#description' => $this->t('Type label and pick the right one from suggestions. Note that the unique ID will be saved.'),
         );
         $form['attributes']['data-entity-uuid'] = array(
           '#type' => 'value',

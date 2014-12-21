@@ -79,3 +79,7 @@ script:
   - TEST_OUTPUT=$(! egrep -i "([0-9]+ fails)|(PHP Fatal error)|([0-9]+ exceptions)" /tmp/test.txt > /dev/null)$?; echo $TEST_OUTPUT
   # Exit the build
   - if [ $TEST_EXIT -eq 0 ] && [ $TEST_OUTPUT -eq 0 ]; then exit 0; else exit 1; fi
+
+notifications:
+  # Notify on Drupal Media IRC channel.
+  irc: "irc.freenode.net#drupal-media"

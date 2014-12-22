@@ -24,6 +24,8 @@ use Drupal\entity_embed\Entity\EmbedButton;
 class DrupalEntity extends CKEditorPluginBase {
 
   /**
+   * All embed button configuration entities.
+   *
    * An associative array that stores the description of all embed button
    * configuration entities keyed by the button id.
    *

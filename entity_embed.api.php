@@ -30,7 +30,7 @@ function hook_entity_embed_display_plugins_alter(array &$info) {
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The entity being rendered.
  */
-function hook_entity_embed_context_alter(array &$context, &$callback, \Drupal\Core\Entity\EntityInterface $entity) {
+function hook_entity_embed_context_alter(array &$context, callable &$callback, \Drupal\Core\Entity\EntityInterface $entity) {
 
 }
 

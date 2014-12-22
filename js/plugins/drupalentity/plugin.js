@@ -64,7 +64,7 @@
           };
 
           // Open the entity embed dialog for corresponding EmbedButton.
-          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format + '/' + embed_button_id), existingValues, saveCallback, dialogSettings);
+          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + embed_button_id), existingValues, saveCallback, dialogSettings);
         }
       });
 

@@ -208,11 +208,9 @@
    *   The settings argument for Drupal.attachBehaviors()/detachBehaviors().
    */
   function runEmbedBehaviors(action, context, settings) {
-    // Do not run the following behaviors:
-    // - Drupal.behaviors.editor, to avoid CK inception.
-    // - Drupal.behaviors.contextual, to keep contextual links hidden.
+    // Do not run the excluded behaviors.
     var stashed = {};
-    $.each(['editor', 'contextual'], function (i, behavior) {
+    $.each(Drupal.entityEmbed.excludedBehaviors, function (i, behavior) {
       stashed[behavior] = Drupal.behaviors[behavior];
       delete Drupal.behaviors[behavior];
     });
@@ -235,5 +233,14 @@
     $target.html(response.html);
     runEmbedBehaviors('attach', $target.get(0), response.settings || ajax.settings);
   };
+
+  /**
+   * A list of behaviors which are to be excluded while attaching/detaching.
+   *
+   * - Drupal.behaviors.editor, to avoid CK inception.
+   * - Drupal.behaviors.contextual, to keep contextual links hidden.
+   */
+  Drupal.entityEmbed = function () {};
+  Drupal.entityEmbed.excludedBehaviors = ['editor', 'contextual'];
 
 })(jQuery, Drupal, CKEDITOR);

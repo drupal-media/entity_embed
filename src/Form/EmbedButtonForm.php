@@ -61,7 +61,7 @@ class EmbedButtonForm extends EntityForm {
     $form = parent::form($form, $form_state);
 
     $embed_button = $this->entity;
-    $button_image = $embed_button->button_icon_fid ? array($embed_button->button_icon_fid) : array();
+    $button_image = $embed_button->button_icon_uuid ? array($embed_button->button_icon_uuid) : array();
     $file_scheme = \Drupal::config('entity_embed.settings')->get('file_scheme');
     $upload_directory = \Drupal::config('entity_embed.settings')->get('upload_directory');
     $upload_location = $file_scheme . '://' . $upload_directory . '/';
@@ -98,7 +98,7 @@ class EmbedButtonForm extends EntityForm {
       '#description' => $this->t("Label for the button to be shown in CKEditor toolbar."),
       '#required' => TRUE,
     );
-    $form['button_icon_fid'] = array(
+    $form['button_icon_uuid'] = array(
       '#title' => $this->t('Button image'),
       '#type' => 'managed_file',
       '#description' => $this->t("Image for the button to be shown in CKEditor toolbar. Leave empty to use the default Entity icon."),
@@ -119,7 +119,13 @@ class EmbedButtonForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $embed_button = $this->entity;
 
-    $embed_button->button_icon_fid = count($embed_button->button_icon_fid) ? $embed_button->button_icon_fid[0] : NULL;
+    // $embed_button->button_icon_uuid = count($embed_button->button_icon_uuid) ? $embed_button->button_icon_uuid[0] : NULL;
+    if (count($embed_button->button_icon_uuid) && $file = entity_load('file', $embed_button->button_icon_uuid[0])) {
+      $embed_button->button_icon_uuid = $file->uuid();
+    }
+    else {
+      $embed_button->button_icon_uuid = NULL;
+    }
 
     $status = $embed_button->save();
     if ($status) {

@@ -12,7 +12,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\entity_embed\EntityHelperTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmbedButtonForm extends EntityForm {
@@ -66,7 +65,8 @@ class EmbedButtonForm extends EntityForm {
     // to be used as default in the form.
     $button_icon = array();
     if ($embed_button->button_icon_uuid) {
-      $file = entity_load_by_uuid('file', $embed_button->button_icon_uuid);
+      $files = $this->entityManager->getStorage('file')->loadByProperties(array('uuid' => $embed_button->button_icon_uuid));
+      $file = reset($files);
       $button_icon = array($file->id());
     }
 
@@ -151,7 +151,7 @@ class EmbedButtonForm extends EntityForm {
     $button_icon_uuid = NULL;
     // If a file was uploaded to be used as the icon, get its UUID to be stored
     // in the config entity.
-    if ($button_icons && $file = entity_load('file', $button_icons[0])) {
+    if ($button_icons && $file = $this->entityManager->getStorage('file')->load($button_icons[0])) {
       $button_icon_uuid = $file->uuid();
     }
 

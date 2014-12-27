@@ -235,12 +235,16 @@
   };
 
   /**
-   * A list of behaviors which are to be excluded while attaching/detaching.
-   *
-   * - Drupal.behaviors.editor, to avoid CK inception.
-   * - Drupal.behaviors.contextual, to keep contextual links hidden.
+   * Stores settings specific to Entity Embed module.
    */
-  Drupal.entityEmbed = function () {};
-  Drupal.entityEmbed.excludedBehaviors = ['editor', 'contextual'];
+  Drupal.entityEmbed = {
+    /**
+     * A list of behaviors which are to be excluded while attaching/detaching.
+     *
+     * - Drupal.behaviors.editor, to avoid CK inception.
+     * - Drupal.behaviors.contextual, to keep contextual links hidden.
+     */
+    excludedBehaviors: ['editor', 'contextual']
+  };
 
 })(jQuery, Drupal, CKEDITOR);

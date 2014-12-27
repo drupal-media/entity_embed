@@ -161,7 +161,7 @@ class EntityEmbedDialog extends FormBase {
         $form['entity'] = array(
           '#type' => 'item',
           '#title' => $this->t('Selected entity'),
-          '#markup' => $entity->label(),
+          '#markup' => $entity->link(),
         );
         $form['attributes']['data-entity-type'] = array(
           '#type' => 'value',

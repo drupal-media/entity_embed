@@ -109,4 +109,19 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
       return file_create_url(drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png');
     }
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateDependencies() {
+    parent::calculateDependencies();
+
+    // Add the file icon entity as dependency if an UUID was specified.
+    if ($file_icon = entity_load_by_uuid('file', $this->button_icon_uuid)) {
+      $this->addDependency($file_icon->getConfigDependencyKey(), $file_icon->getConfigDependencyName());
+    }
+
+    return $this->dependencies;
+  }
+
 }

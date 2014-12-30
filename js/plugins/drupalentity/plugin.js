@@ -208,11 +208,9 @@
    *   The settings argument for Drupal.attachBehaviors()/detachBehaviors().
    */
   function runEmbedBehaviors(action, context, settings) {
-    // Do not run the following behaviors:
-    // - Drupal.behaviors.editor, to avoid CK inception.
-    // - Drupal.behaviors.contextual, to keep contextual links hidden.
+    // Do not run the excluded behaviors.
     var stashed = {};
-    $.each(['editor', 'contextual'], function (i, behavior) {
+    $.each(Drupal.entityEmbed.excludedBehaviors, function (i, behavior) {
       stashed[behavior] = Drupal.behaviors[behavior];
       delete Drupal.behaviors[behavior];
     });
@@ -234,6 +232,19 @@
     // No need to detach behaviors here, the widget is created fresh each time.
     $target.html(response.html);
     runEmbedBehaviors('attach', $target.get(0), response.settings || ajax.settings);
+  };
+
+  /**
+   * Stores settings specific to Entity Embed module.
+   */
+  Drupal.entityEmbed = {
+    /**
+     * A list of behaviors which are to be excluded while attaching/detaching.
+     *
+     * - Drupal.behaviors.editor, to avoid CK inception.
+     * - Drupal.behaviors.contextual, to keep contextual links hidden.
+     */
+    excludedBehaviors: ['editor', 'contextual']
   };
 
 })(jQuery, Drupal, CKEDITOR);

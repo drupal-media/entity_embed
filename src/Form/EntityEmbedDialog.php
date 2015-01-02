@@ -207,6 +207,7 @@ class EntityEmbedDialog extends FormBase {
           }
           $display = $this->displayPluginManager()->createInstance($plugin_id, $entity_element['data-entity-embed-settings']);
           $display->setContextValue('entity', $entity);
+          $display->setAttributes($entity_element);
           $form['attributes']['data-entity-embed-settings'] += $display->buildConfigurationForm($form, $form_state);
         }
         // @todo Re-add caption and alignment attributes.

@@ -86,6 +86,7 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-id' => '',
       'data-entity-embed-display' => 'default',
       'data-entity-embed-settings' => array(),
+      'data-align' => '',
     );
 
     if (!$form_state->get('step')) {
@@ -206,7 +207,27 @@ class EntityEmbedDialog extends FormBase {
           $display->setAttributes($entity_element);
           $form['attributes']['data-entity-embed-settings'] += $display->buildConfigurationForm($form, $form_state);
         }
-        // @todo Re-add caption and alignment attributes.
+
+        // When Drupal core's filter_align is being used, the text editor may
+        // offer the ability to change the alignment.
+        if (isset($entity_element['data-align']) && $filter_format->filters('filter_align')->status) {
+          $form['attributes']['data-align'] = array(
+            '#title' => $this->t('Align'),
+            '#type' => 'radios',
+            '#options' => array(
+              'none' => $this->t('None'),
+              'left' => $this->t('Left'),
+              'center' => $this->t('Center'),
+              'right' => $this->t('Right'),
+            ),
+            '#default_value' => $entity_element['data-align'] === '' ? 'none' : $entity_element['data-align'],
+            '#wrapper_attributes' => array('class' => array('container-inline')),
+            '#attributes' => array('class' => array('container-inline')),
+            '#parents' => array('attributes', 'data-align'),
+          );
+        }
+
+        // @todo Re-add caption attribute.
         $form['actions'] = array(
           '#type' => 'actions',
         );

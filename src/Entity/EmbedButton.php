@@ -70,11 +70,11 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
   public $entity_type;
 
   /**
-   * File id of the button's icon.
+   * UUID of the button's icon file.
    *
    * @var string
    */
-  public $button_icon_fid;
+  public $button_icon_uuid;
 
   /**
    * {@inheritdoc}
@@ -102,14 +102,29 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    * {@inheritdoc}
    */
   public function getButtonImage() {
-    if ($this->button_icon_fid) {
-      $image = file_load($this->button_icon_fid);
+    if ($this->button_icon_uuid) {
+      $image = $this->entityManager()->loadEntityByUuid('file', $this->button_icon_uuid);
       return $image->url();
     }
     else {
       return file_create_url(drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png');
     }
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateDependencies() {
+    parent::calculateDependencies();
+
+    // Add the file icon entity as dependency if an UUID was specified.
+    if ($this->button_icon_uuid && $file_icon = $this->entityManager()->loadEntityByUuid('file', $this->button_icon_uuid)) {
+      $this->addDependency($file_icon->getConfigDependencyKey(), $file_icon->getConfigDependencyName());
+    }
+
+    return $this->dependencies;
+  }
+
 
   /**
    * {@inheritdoc}

@@ -25,6 +25,6 @@ entity_embed.embed_button.*:
     entity_type:
       type: string
       label: 'Entity type'
-    button_icon_fid:
-      type: integer
+    button_icon_uuid:
+      type: string
       label: 'Button image'

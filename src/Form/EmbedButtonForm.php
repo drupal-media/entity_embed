@@ -12,7 +12,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\entity_embed\EntityHelperTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmbedButtonForm extends EntityForm {
@@ -61,7 +60,16 @@ class EmbedButtonForm extends EntityForm {
     $form = parent::form($form, $form_state);
 
     $embed_button = $this->entity;
-    $button_image = $embed_button->button_icon_fid ? array($embed_button->button_icon_fid) : array();
+
+    // Get default for button image. If its uuid is set, get the id of the file
+    // to be used as default in the form.
+    $button_icon = array();
+    if ($embed_button->button_icon_uuid) {
+      $files = $this->entityManager->getStorage('file')->loadByProperties(array('uuid' => $embed_button->button_icon_uuid));
+      $file = reset($files);
+      $button_icon = array($file->id());
+    }
+
     $file_scheme = \Drupal::config('entity_embed.settings')->get('file_scheme');
     $upload_directory = \Drupal::config('entity_embed.settings')->get('upload_directory');
     $upload_location = $file_scheme . '://' . $upload_directory . '/';
@@ -98,12 +106,12 @@ class EmbedButtonForm extends EntityForm {
       '#description' => $this->t("Label for the button to be shown in CKEditor toolbar."),
       '#required' => TRUE,
     );
-    $form['button_icon_fid'] = array(
+    $form['button_icon'] = array(
       '#title' => $this->t('Button image'),
       '#type' => 'managed_file',
       '#description' => $this->t("Image for the button to be shown in CKEditor toolbar. Leave empty to use the default Entity icon."),
       '#upload_location' => $upload_location,
-      '#default_value' => $button_image,
+      '#default_value' => $button_icon,
       '#upload_validators' => array(
         'file_validate_extensions' => array('gif png jpg jpeg'),
         'file_validate_image_resolution' => array('16x16'),
@@ -119,8 +127,6 @@ class EmbedButtonForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $embed_button = $this->entity;
 
-    $embed_button->button_icon_fid = count($embed_button->button_icon_fid) ? $embed_button->button_icon_fid[0] : NULL;
-
     $status = $embed_button->save();
     if ($status) {
       drupal_set_message($this->t('Saved the %label Embed Button.', array(
@@ -133,6 +139,33 @@ class EmbedButtonForm extends EntityForm {
         '%label' => $embed_button->label(),
       )), 'error');
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    $button_icons = $values['button_icon'];
+
+    $button_icon_uuid = NULL;
+    // If a file was uploaded to be used as the icon, get its UUID to be stored
+    // in the config entity.
+    if ($button_icons && $file = $this->entityManager->getStorage('file')->load($button_icons[0])) {
+      $button_icon_uuid = $file->uuid();
+    }
+
+    // Set all form values in the entity except the button icon since it is a
+    // managed file element in the form but we want its UUID instead, which
+    // will be separately set later.
+    foreach ($values as $key => $value) {
+      if ($key != 'button_icon') {
+        $entity->set($key, $value);
+      }
+    }
+
+    // Set the UUID of the button icon.
+    $entity->set('button_icon_uuid', $button_icon_uuid);
   }
 
   /**

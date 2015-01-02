@@ -59,7 +59,6 @@ class FileFieldFormatter extends EntityReferenceFieldFormatter {
 
     // Description is stored in the configuration since it doesn't map to an
     // actual HTML attribute.
-    // @todo Ensure these fields work properly and map to the attributes.
     $form['description'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Description'),

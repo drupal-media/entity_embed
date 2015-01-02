@@ -19,6 +19,7 @@ use Drupal\entity_embed\EntityHelperTrait;
  *   label = @Translation("Embed Button"),
  *   handlers = {
  *     "list_builder" = "Drupal\entity_embed\EmbedButtonListBuilder",
+ *     "access" = "Drupal\entity_embed\EmbedButtonAccessControlHandler",
  *     "form" = {
  *       "add" = "Drupal\entity_embed\Form\EmbedButtonForm",
  *       "edit" = "Drupal\entity_embed\Form\EmbedButtonForm",
@@ -124,4 +125,11 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
     return $this->dependencies;
   }
 
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPermissionName() {
+    return 'use entity embed button ' . $this->id();
+  }
 }

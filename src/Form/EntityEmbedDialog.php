@@ -17,7 +17,6 @@ use Drupal\editor\Ajax\EditorDialogSave;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\entity_embed\EmbedButtonInterface;
-use Drupal\filter\FilterFormatInterface;
 use Drupal\Component\Serialization\Json;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -67,12 +66,10 @@ class EntityEmbedDialog extends FormBase {
   /**
    * {@inheritdoc}
    *
-   * @param \Drupal\filter\Entity\FilterFormatInterface $filter_format
-   *   The filter format to which this dialog corresponds.
    * @param \Drupal\entity_embed\Entity\EmbedButtonInterface $embed_button
    *   The embed button to which this dialog corresponds.
    */
-  public function buildForm(array $form, FormStateInterface $form_state, FilterFormatInterface $filter_format = NULL, EmbedButtonInterface $embed_button = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, EmbedButtonInterface $embed_button = NULL) {
     $values = $form_state->getValues();
     $input = $form_state->getUserInput();
     // Initialize entity element with form attributes, if present.
@@ -89,6 +86,7 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-id' => '',
       'data-entity-embed-display' => 'default',
       'data-entity-embed-settings' => array(),
+      'data-align' => '',
     );
 
     if (!$form_state->get('step')) {
@@ -130,7 +128,6 @@ class EntityEmbedDialog extends FormBase {
           '#default_value' => $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id'],
           '#autocomplete_route_name' => 'entity_embed.autocomplete_entity',
           '#autocomplete_route_parameters' => array(
-            'filter_format' => $filter_format->id(),
             'embed_button' => $embed_button->id(),
           ),
           '#required' => TRUE,
@@ -161,7 +158,7 @@ class EntityEmbedDialog extends FormBase {
         $form['entity'] = array(
           '#type' => 'item',
           '#title' => $this->t('Selected entity'),
-          '#markup' => $entity->label(),
+          '#markup' => $entity->link(),
         );
         $form['attributes']['data-entity-type'] = array(
           '#type' => 'value',
@@ -207,9 +204,30 @@ class EntityEmbedDialog extends FormBase {
           }
           $display = $this->displayPluginManager()->createInstance($plugin_id, $entity_element['data-entity-embed-settings']);
           $display->setContextValue('entity', $entity);
+          $display->setAttributes($entity_element);
           $form['attributes']['data-entity-embed-settings'] += $display->buildConfigurationForm($form, $form_state);
         }
-        // @todo Re-add caption and alignment attributes.
+
+        // When Drupal core's filter_align is being used, the text editor may
+        // offer the ability to change the alignment.
+        if (isset($entity_element['data-align']) && $filter_format->filters('filter_align')->status) {
+          $form['attributes']['data-align'] = array(
+            '#title' => $this->t('Align'),
+            '#type' => 'radios',
+            '#options' => array(
+              'none' => $this->t('None'),
+              'left' => $this->t('Left'),
+              'center' => $this->t('Center'),
+              'right' => $this->t('Right'),
+            ),
+            '#default_value' => $entity_element['data-align'] === '' ? 'none' : $entity_element['data-align'],
+            '#wrapper_attributes' => array('class' => array('container-inline')),
+            '#attributes' => array('class' => array('container-inline')),
+            '#parents' => array('attributes', 'data-align'),
+          );
+        }
+
+        // @todo Re-add caption attribute.
         $form['actions'] = array(
           '#type' => 'actions',
         );

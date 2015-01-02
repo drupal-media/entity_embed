@@ -115,6 +115,6 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    * {@inheritdoc}
    */
   public function getPermissionName() {
-    return 'use embed button ' . $this->id();
+    return 'use entity embed button ' . $this->id();
   }
 }

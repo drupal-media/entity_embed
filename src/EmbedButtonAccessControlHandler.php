@@ -26,9 +26,7 @@ class EmbedButtonAccessControlHandler extends EntityAccessControlHandler {
     if ($operation == 'use') {
       return AccessResult::allowedIfHasPermission($account, $embed_button->getPermissionName());
     }
-
-    // No opinion.
-    return AccessResult::neutral();
+    return parent::checkAccess($embed_button, $operation, $langcode, $account);
   }
 
 }

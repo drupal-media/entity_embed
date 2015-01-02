@@ -46,4 +46,12 @@ interface EmbedButtonInterface extends ConfigEntityInterface {
    */
   public function getButtonImage();
 
+  /**
+   * Returns the machine-readable permission name for the embed button.
+   *
+   * @return string
+   *   The machine-readable permission name.
+   */
+  public function getPermissionName();
+
 }

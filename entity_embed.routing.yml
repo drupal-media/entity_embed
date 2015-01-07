@@ -5,6 +5,7 @@ entity_embed.dialog:
     _title: 'Embed entity'
   requirements:
     _entity_access: 'filter_format.use'
+    _custom_access: '\Drupal\entity_embed\Form\EntityEmbedDialog::buttonIsEnabled'
 
 entity_embed.preview:
   path: '/entity-embed/preview/{filter_format}'
@@ -52,3 +53,4 @@ entity_embed.autocomplete_entity:
     _controller: '\Drupal\entity_embed\Controller\AutocompleteController::autocompleteEntity'
   requirements:
     _entity_access: 'filter_format.use'
+    _custom_access: '\Drupal\entity_embed\Form\EntityEmbedDialog::buttonIsEnabled'

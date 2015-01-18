@@ -30,7 +30,7 @@ embed_button.add:
   requirements:
     _permission: 'administer embed buttons'
 
-embed_button.edit:
+entity.embed_button.edit_form:
   path: '/admin/config/content/embed-button/{embed_button}'
   defaults:
     _entity_form: 'embed_button.edit'
@@ -38,7 +38,7 @@ embed_button.edit:
   requirements:
     _permission: 'administer embed buttons'
 
-embed_button.delete:
+entity.embed_button.delete_form:
   path: '/admin/config/content/embed-button/{embed_button}/delete'
   defaults:
     _entity_form: 'embed_button.delete'

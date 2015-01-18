@@ -33,8 +33,8 @@ use Drupal\entity_embed\EntityHelperTrait;
  *     "label" = "label",
  *   },
  *   links = {
- *     "edit-form" = "embed_button.edit",
- *     "delete-form" = "embed_button.delete"
+ *     "edit-form" = "/admin/config/content/embed-button/{embed_button}",
+ *     "delete-form" = "/admin/config/content/embed-button/{embed_button}/delete"
  *   }
  * )
  */

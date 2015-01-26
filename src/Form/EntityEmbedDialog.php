@@ -178,10 +178,15 @@ class EntityEmbedDialog extends FormBase {
           '#type' => 'value',
           '#value' => $entity_element['data-entity-uuid'],
         );
+        $options = $this->displayPluginManager()->getDefinitionOptionsForEntity($entity);
+        \Drupal::moduleHandler()->alter('entity_embed_display_options', $options, $entity);
+        if (!isset($options[$entity_element['data-entity-embed-display']])) {
+          $entity_element['data-entity-embed-display'] = key($options);
+        }
         $form['attributes']['data-entity-embed-display'] = array(
           '#type' => 'select',
           '#title' => $this->t('Display as'),
-          '#options' => $this->displayPluginManager()->getDefinitionOptionsForEntity($entity),
+          '#options' => $options,
           '#default_value' => $entity_element['data-entity-embed-display'],
           '#required' => TRUE,
           '#ajax' => array(
@@ -189,6 +194,8 @@ class EntityEmbedDialog extends FormBase {
             'wrapper' => 'data-entity-embed-settings-wrapper',
             'effect' => 'fade',
           ),
+          // Hide the selection if only one option is available.
+          '#access' => count($options) > 1,
         );
         $form['attributes']['data-entity-embed-settings'] = array(
           '#type' => 'container',

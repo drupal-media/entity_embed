@@ -178,8 +178,12 @@ class EntityEmbedDialog extends FormBase {
           '#type' => 'value',
           '#value' => $entity_element['data-entity-uuid'],
         );
+
         $options = $this->displayPluginManager()->getDefinitionOptionsForEntity($entity);
-        \Drupal::moduleHandler()->alter('entity_embed_display_options', $options, $entity);
+
+        // If the currently selected display is not in the available options,
+        // use the first from the list instead. This can happen if an alter
+        // hook customizes the list based on the entity.
         if (!isset($options[$entity_element['data-entity-embed-display']])) {
           $entity_element['data-entity-embed-display'] = key($options);
         }

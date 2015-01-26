@@ -11,6 +11,7 @@ use Drupal\Component\Utility\String;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\entity_embed\EmbedButtonInterface;
+use Drupal\filter\Entity\FilterFormat;
 use Drupal\filter\FilterFormatInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -48,7 +49,7 @@ class AutocompleteController extends ControllerBase {
   /**
    * Autocomplete callback for entities.
    */
-  public function autocompleteEntity(Request $request, EmbedButtonInterface $embed_button) {
+  public function autocompleteEntity(Request $request, FilterFormatInterface $filter_format, EmbedButtonInterface $embed_button) {
     $string = $request->query->get('q');
     $matches = array();
 

@@ -1,5 +1,2 @@
 administer embed buttons:
   title: 'Administer entity embed settings'
-
-permission_callbacks:
-  - Drupal\entity_embed\EntityEmbedPermissions::permissions

@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\Form;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
@@ -14,9 +15,11 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\editor\Ajax\EditorDialogSave;
+use Drupal\editor\Entity\Editor;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\entity_embed\EmbedButtonInterface;
+use Drupal\filter\FilterFormatInterface;
 use Drupal\Component\Serialization\Json;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -66,10 +69,12 @@ class EntityEmbedDialog extends FormBase {
   /**
    * {@inheritdoc}
    *
+   * @param \Drupal\filter\Entity\FilterFormatInterface $filter_format
+   *   The filter format to which this dialog corresponds.
    * @param \Drupal\entity_embed\Entity\EmbedButtonInterface $embed_button
    *   The embed button to which this dialog corresponds.
    */
-  public function buildForm(array $form, FormStateInterface $form_state, EmbedButtonInterface $embed_button = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, FilterFormatInterface $filter_format = NULL, EmbedButtonInterface $embed_button = NULL) {
     $values = $form_state->getValues();
     $input = $form_state->getUserInput();
     // Initialize entity element with form attributes, if present.
@@ -128,6 +133,7 @@ class EntityEmbedDialog extends FormBase {
           '#default_value' => $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id'],
           '#autocomplete_route_name' => 'entity_embed.autocomplete_entity',
           '#autocomplete_route_parameters' => array(
+            'filter_format' => $filter_format->id(),
             'embed_button' => $embed_button->id(),
           ),
           '#required' => TRUE,
@@ -397,5 +403,35 @@ class EntityEmbedDialog extends FormBase {
     }
 
     return $response;
+  }
+
+  /**
+   * Checks whether or not the embed button is enabled for given text format.
+   *
+   * Returns allowed if the editor toolbar contains the embed button and neutral
+   * otherwise.
+   *
+   * @param \Drupal\filter\Entity\FilterFormatInterface $filter_format
+   *   The filter format to which this dialog corresponds.
+   * @param \Drupal\entity_embed\Entity\EmbedButtonInterface $embed_button
+   *   The embed button to which this dialog corresponds.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  public function buttonIsEnabled(FilterFormatInterface $filter_format, EmbedButtonInterface $embed_button) {
+    $button_label = $embed_button->label();
+    $editor = Editor::load($filter_format->id());
+    $settings = $editor->getSettings();
+    foreach ($settings['toolbar']['rows'] as $row_number => $row) {
+      $button_groups[$row_number] = array();
+      foreach ($row as $group) {
+        if (in_array($button_label, $group['items'])) {
+          return AccessResult::allowed();
+        }
+      }
+    }
+
+    return AccessResult::neutral();
   }
 }

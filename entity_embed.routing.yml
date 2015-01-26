@@ -1,10 +1,11 @@
 entity_embed.dialog:
-  path: '/entity-embed/dialog/entity-embed/{embed_button}'
+  path: '/entity-embed/dialog/entity-embed/{filter_format}/{embed_button}'
   defaults:
     _form: '\Drupal\entity_embed\Form\EntityEmbedDialog'
     _title: 'Embed entity'
   requirements:
-    _entity_access: 'embed_button.use'
+    _entity_access: 'filter_format.use'
+    _custom_access: '\Drupal\entity_embed\Form\EntityEmbedDialog::buttonIsEnabled'
 
 entity_embed.preview:
   path: '/entity-embed/preview/{filter_format}'
@@ -47,8 +48,9 @@ entity.embed_button.delete_form:
     _permission: 'administer embed buttons'
 
 entity_embed.autocomplete_entity:
-  path: '/entity-embed/autocomplete/{embed_button}'
+  path: '/entity-embed/autocomplete/{filter_format}/{embed_button}'
   defaults:
     _controller: '\Drupal\entity_embed\Controller\AutocompleteController::autocompleteEntity'
   requirements:
-    _entity_access: 'embed_button.use'
+    _entity_access: 'filter_format.use'
+    _custom_access: '\Drupal\entity_embed\Form\EntityEmbedDialog::buttonIsEnabled'

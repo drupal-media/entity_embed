@@ -73,6 +73,23 @@ class EmbedButtonForm extends EntityForm {
     $upload_directory = \Drupal::config('entity_embed.settings')->get('upload_directory');
     $upload_location = $file_scheme . '://' . $upload_directory . '/';
 
+    $entity_types = $this->entityManager->getEntityTypeLabels(TRUE);
+    $filtered_entity_types = array();
+    // Add all Content entites by default.
+    $filtered_entity_types['Content'] = $entity_types['Content'];
+    // Select only those config entities which have a view builder.
+    $filtered_config_entities = array();
+    foreach ($entity_types['Configuration'] as $entity_type => $label) {
+      if ($this->entityManager->hasHandler($entity_type, 'view_builder')) {
+        $filtered_config_entities[$entity_type] = $label;
+      }
+    }
+    // Add a group for config entities, only if there's at least one config
+    // entity with view builder.
+    if ($filtered_config_entities) {
+      $filtered_entity_types['Configuration'] = $filtered_config_entities;
+    }
+
     $form['label'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Label'),
@@ -92,7 +109,7 @@ class EmbedButtonForm extends EntityForm {
     $form['entity_type'] = array(
       '#type' => 'select',
       '#title' => $this->t('Entity type'),
-      '#options' => $this->entityManager->getEntityTypeLabels(TRUE),
+      '#options' => $filtered_entity_types,
       '#default_value' => $embed_button->entity_type,
       '#description' => $this->t("Entity type for which this button is to enabled."),
       '#required' => TRUE,

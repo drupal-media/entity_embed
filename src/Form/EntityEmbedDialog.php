@@ -106,6 +106,7 @@ class EntityEmbedDialog extends FormBase {
 
     $form['#tree'] = TRUE;
     $form['#attached']['library'][] = 'editor/drupal.editor.dialog';
+    $form['#attached']['library'][] = 'entity_embed/drupal.entity_embed.dialog';
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
 

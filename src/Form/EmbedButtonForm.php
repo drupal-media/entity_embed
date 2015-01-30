@@ -73,23 +73,6 @@ class EmbedButtonForm extends EntityForm {
     $upload_directory = \Drupal::config('entity_embed.settings')->get('upload_directory');
     $upload_location = $file_scheme . '://' . $upload_directory . '/';
 
-    $entity_types = $this->entityManager->getEntityTypeLabels(TRUE);
-    $filtered_entity_types = array();
-    // Add all Content entites by default.
-    $filtered_entity_types['Content'] = $entity_types['Content'];
-    // Select only those config entities which have a view builder.
-    $filtered_config_entities = array();
-    foreach ($entity_types['Configuration'] as $entity_type => $label) {
-      if ($this->entityManager->hasHandler($entity_type, 'view_builder')) {
-        $filtered_config_entities[$entity_type] = $label;
-      }
-    }
-    // Add a group for config entities, only if there's at least one config
-    // entity with view builder.
-    if ($filtered_config_entities) {
-      $filtered_entity_types['Configuration'] = $filtered_config_entities;
-    }
-
     $form['label'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Label'),
@@ -109,7 +92,7 @@ class EmbedButtonForm extends EntityForm {
     $form['entity_type'] = array(
       '#type' => 'select',
       '#title' => $this->t('Entity type'),
-      '#options' => $filtered_entity_types,
+      '#options' => $this->getFilteredEntityTypes(),
       '#default_value' => $embed_button->entity_type,
       '#description' => $this->t("Entity type for which this button is to enabled."),
       '#required' => TRUE,
@@ -182,6 +165,39 @@ class EmbedButtonForm extends EntityForm {
 
     // Set the UUID of the button icon.
     $entity->set('button_icon_uuid', $button_icon_uuid);
+  }
+
+  /**
+   * Builds a list of entity type labels suitable for embed button options.
+   *
+   * Configuration entity types without a view builder are filtered out while
+   * all other entity types are kept.
+   *
+   * @return array
+   *   An array of entity type labels, keyed by entity type name.
+   */
+  protected function getFilteredEntityTypes() {
+    $options = array();
+    $definitions = $this->entityManager->getDefinitions();
+
+    foreach ($definitions as $entity_type_id => $definition) {
+      // Don't include configuration entities which do not have a view builder.
+      if ($definition->getGroup() != 'configuration' || $definition->hasViewBuilderClass()) {
+        $options[$definition->getGroupLabel()][$entity_type_id] = $definition->getLabel();
+      }
+    }
+
+    // Group entity type labels.
+    foreach ($options as &$group_options) {
+      // Sort the list alphabetically by group label.
+      array_multisort($group_options, SORT_ASC, SORT_NATURAL);
+    }
+
+    // Make sure that the 'Content' group is situated at the top.
+    $content = $this->t('Content', array(), array('context' => 'Entity type group'));
+    $options = array($content => $options[$content]) + $options;
+
+    return $options;
   }
 
   /**

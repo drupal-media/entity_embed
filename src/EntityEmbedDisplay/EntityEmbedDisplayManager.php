@@ -77,7 +77,9 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
         return FALSE;
       }
     });
-    return array_intersect_key($definitions, array_flip($valid_ids));
+    $definitions_for_context = array_intersect_key($definitions, array_flip($valid_ids));
+    $this->moduleHandler->alter('entity_embed_display_plugins_for_context', $definitions_for_context, $contexts);
+    return $definitions_for_context;
   }
 
   /**

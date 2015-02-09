@@ -106,6 +106,7 @@ class EntityEmbedDialog extends FormBase {
 
     $form['#tree'] = TRUE;
     $form['#attached']['library'][] = 'editor/drupal.editor.dialog';
+    $form['#attached']['library'][] = 'entity_embed/drupal.entity_embed.dialog';
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
 
@@ -156,11 +157,20 @@ class EntityEmbedDialog extends FormBase {
 
       case 'embed':
         $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']);
+        $entity_label = '';
+        try {
+          $entity_label = $entity->link();
+        }
+        catch(\Exception $e) {
+          // Contruct markup of the link to the entity manually if link() fails.
+          // @see https://www.drupal.org/node/2402533
+          $entity_label = '<a href="' . $entity->url() . '">' . $entity->label() . '</a>';
+        }
 
         $form['entity'] = array(
           '#type' => 'item',
           '#title' => $this->t('Selected entity'),
-          '#markup' => $entity->link(),
+          '#markup' => $entity_label,
         );
         $form['attributes']['data-entity-type'] = array(
           '#type' => 'value',

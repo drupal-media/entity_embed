@@ -83,7 +83,7 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
   }
 
   /**
-   * Provides an list of plugins that can be used for a certain entity.
+   * Provides a list of plugins that can be used for a certain entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   An entity object.
@@ -96,6 +96,26 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
     return array_map(function ($definition) {
       return (string) $definition['label'];
     }, $definitions);
+  }
+
+  /**
+   * Provides a list of plugins that can be used for a certain entity type.
+   *
+   * @param string $entity_type
+   *   The entity type id.
+   *
+   * @return array
+   *   An array of valid plugin labels, keyed by plugin ID.
+   */
+  public function getDefinitionOptionsForEntityType($entity_type) {
+    $definitions = $this->getDefinitions();
+    $valid_definitions = array();
+    foreach ($definitions as $id => $definition) {
+      if ($definition['entity_types'] == FALSE || in_array($entity_type, $definition['entity_types'])) {
+        $valid_definitions[$id] = $definition['label'];
+      }
+    }
+    return $valid_definitions;
   }
 
 }

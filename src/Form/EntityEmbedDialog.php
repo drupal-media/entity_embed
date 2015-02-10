@@ -106,6 +106,7 @@ class EntityEmbedDialog extends FormBase {
 
     $form['#tree'] = TRUE;
     $form['#attached']['library'][] = 'editor/drupal.editor.dialog';
+    $form['#attached']['library'][] = 'entity_embed/drupal.entity_embed.dialog';
     $form['#prefix'] = '<div id="entity-embed-dialog-form">';
     $form['#suffix'] = '</div>';
 
@@ -128,14 +129,10 @@ class EntityEmbedDialog extends FormBase {
         }
 
         $form['attributes']['data-entity-id'] = array(
-          '#type' => 'textfield',
+          '#type' => 'entity_autocomplete',
+          '#target_type' => $entity_element['data-entity-type'],
           '#title' => $label,
           '#default_value' => $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id'],
-          '#autocomplete_route_name' => 'entity_embed.autocomplete_entity',
-          '#autocomplete_route_parameters' => array(
-            'filter_format' => $filter_format->id(),
-            'embed_button' => $embed_button->id(),
-          ),
           '#required' => TRUE,
           '#description' => $this->t('Type label and pick the right one from suggestions. Note that the unique ID will be saved.'),
         );
@@ -160,11 +157,20 @@ class EntityEmbedDialog extends FormBase {
 
       case 'embed':
         $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']);
+        $entity_label = '';
+        try {
+          $entity_label = $entity->link();
+        }
+        catch(\Exception $e) {
+          // Contruct markup of the link to the entity manually if link() fails.
+          // @see https://www.drupal.org/node/2402533
+          $entity_label = '<a href="' . $entity->url() . '">' . $entity->label() . '</a>';
+        }
 
         $form['entity'] = array(
           '#type' => 'item',
           '#title' => $this->t('Selected entity'),
-          '#markup' => $entity->link(),
+          '#markup' => $entity_label,
         );
         $form['attributes']['data-entity-type'] = array(
           '#type' => 'value',
@@ -178,10 +184,19 @@ class EntityEmbedDialog extends FormBase {
           '#type' => 'value',
           '#value' => $entity_element['data-entity-uuid'],
         );
+
+        $options = $this->displayPluginManager()->getDefinitionOptionsForEntity($entity);
+
+        // If the currently selected display is not in the available options,
+        // use the first from the list instead. This can happen if an alter
+        // hook customizes the list based on the entity.
+        if (!isset($options[$entity_element['data-entity-embed-display']])) {
+          $entity_element['data-entity-embed-display'] = key($options);
+        }
         $form['attributes']['data-entity-embed-display'] = array(
           '#type' => 'select',
           '#title' => $this->t('Display as'),
-          '#options' => $this->displayPluginManager()->getDefinitionOptionsForEntity($entity),
+          '#options' => $options,
           '#default_value' => $entity_element['data-entity-embed-display'],
           '#required' => TRUE,
           '#ajax' => array(
@@ -189,6 +204,8 @@ class EntityEmbedDialog extends FormBase {
             'wrapper' => 'data-entity-embed-settings-wrapper',
             'effect' => 'fade',
           ),
+          // Hide the selection if only one option is available.
+          '#access' => count($options) > 1,
         );
         $form['attributes']['data-entity-embed-settings'] = array(
           '#type' => 'container',
@@ -328,11 +345,7 @@ class EntityEmbedDialog extends FormBase {
     $form_state->setRebuild(TRUE);
     $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
     unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
-    $status_messages = array('#theme' => 'status_messages');
-    $output = drupal_render($rebuild_form);
-    drupal_process_attached($rebuild_form);
-    $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
-    $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
+    $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $rebuild_form));
 
     return $response;
   }
@@ -351,21 +364,18 @@ class EntityEmbedDialog extends FormBase {
     // Display errors in form, if any.
     if ($form_state->hasAnyErrors()) {
       unset($form['#prefix'], $form['#suffix']);
-      $status_messages = array('#theme' => 'status_messages');
-      $output = drupal_render($form);
-      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
-      $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
+      $form['status_messages'] = array(
+        '#theme' => 'status_messages',
+        'weight' => -10,
+      );
+      $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $form));
     }
     else {
       $form_state->setStorage(array('step' => 'embed'));
       $form_state->setRebuild(TRUE);
       $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
       unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
-      $status_messages = array('#theme' => 'status_messages');
-      $output = drupal_render($rebuild_form);
-      drupal_process_attached($rebuild_form);
-      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
-      $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
+      $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $rebuild_form));
     }
 
     return $response;
@@ -387,10 +397,11 @@ class EntityEmbedDialog extends FormBase {
     // Display errors in form, if any.
     if ($form_state->hasAnyErrors()) {
       unset($form['#prefix'], $form['#suffix']);
-      $status_messages = array('#theme' => 'status_messages');
-      $output = drupal_render($form);
-      $output = '<div>' . drupal_render($status_messages) . $output . '</div>';
-      $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $output));
+      $form['status_messages'] = array(
+        '#theme' => 'status_messages',
+        'weight' => -10,
+      );
+      $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $form));
     }
     else {
       // Serialize entity embed settings to JSON string.

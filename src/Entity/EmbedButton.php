@@ -22,7 +22,7 @@ use Drupal\entity_embed\EntityHelperTrait;
  *     "form" = {
  *       "add" = "Drupal\entity_embed\Form\EmbedButtonForm",
  *       "edit" = "Drupal\entity_embed\Form\EmbedButtonForm",
- *       "delete" = "Drupal\entity_embed\Form\EmbedButtonDeleteForm"
+ *       "delete" = "Drupal\Core\Entity\EntityDeleteForm"
  *     }
  *   },
  *   config_prefix = "embed_button",

@@ -69,6 +69,15 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
   public $entity_type;
 
   /**
+   * Array of bundles allowed for the entity type.
+   *
+   * An empty array signifies that all are allowed.
+   *
+   * @var array
+   */
+  public $entity_type_bundles;
+
+  /**
    * UUID of the button's icon file.
    *
    * @var string
@@ -89,6 +98,12 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
     return $this->entityManager()->getDefinition($this->entity_type)->getLabel();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityTypeBundles() {
+    return $this->entity_type_bundles;
+  }
 
   /**
    * {@inheritdoc}

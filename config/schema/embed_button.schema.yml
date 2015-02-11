@@ -25,6 +25,12 @@ entity_embed.embed_button.*:
     entity_type:
       type: string
       label: 'Entity type'
+    entity_type_bundles:
+      type: sequence
+      label: 'Entity type bundles'
+      sequence:
+        - type: string
+          label: 'Bundle'
     button_icon_uuid:
       type: string
       label: 'Button image'

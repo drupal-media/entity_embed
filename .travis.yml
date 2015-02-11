@@ -82,4 +82,8 @@ script:
 
 notifications:
   # Notify on Drupal Media IRC channel.
-  irc: "irc.freenode.net#drupal-media"
+  irc:
+    channels:
+      - "irc.freenode.net#drupal-media"
+    template:
+      - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} | Build details : %{build_url}"

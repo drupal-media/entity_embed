@@ -59,6 +59,7 @@ class EmbedButtonCrudTest extends KernelTestBase {
       'label' => 'Testing embed button instance',
       'button_label' => 'Test',
       'entity_type' => 'node',
+      'entity_type_bundles' => array('article'),
       'button_icon_uuid' => '',
     );
 
@@ -82,6 +83,7 @@ class EmbedButtonCrudTest extends KernelTestBase {
       'id' => 'test_button',
       'button_label' => 'Test',
       'entity_type' => 'node',
+      'entity_type_bundles' => array('article'),
       'button_icon_uuid' => '',
     );
 

@@ -148,7 +148,8 @@ class EmbedButtonForm extends EntityForm {
         }
       }
     }
-    else {
+    // Set options to an empty array if it hasn't been set so far.
+    if (!isset($form['entity_type_bundles']['#options'])) {
       $form['entity_type_bundles']['#options'] = array();
     }
 

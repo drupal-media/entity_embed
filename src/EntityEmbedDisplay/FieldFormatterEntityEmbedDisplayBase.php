@@ -7,11 +7,51 @@
 
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
+use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FormatterPluginManager;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\node\Entity\Node;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBase {
+
+  /**
+   * The field formatter plugin manager.
+   *
+   * @var \Drupal\Core\Field\FormatterPluginManager
+   */
+  protected $formatterPluginManager;
+
+  /**
+   * {@inheritdoc}
+   *
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   *   The entity manager service.
+   *
+   * @param \Drupal\Core\Field\FormatterPluginManager $formatter_plugin_manager
+   *   The field formatter plugin manager.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, FormatterPluginManager $formatter_plugin_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_manager);
+    $this->setConfiguration($configuration);
+    $this->setEntityManager($entity_manager);
+    $this->formatterPluginManager = $formatter_plugin_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity.manager'),
+      $container->get('plugin.manager.field.formatter')
+    );
+  }
 
   /**
    * Get the FieldDefinition object required to render this field's formatter.
@@ -33,6 +73,18 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    *   The field value.
    */
   abstract public function getFieldValue(BaseFieldDefinition $definition);
+
+  /**
+   * {@inheritdoc}
+   */
+  public function access(AccountInterface $account = NULL) {
+    if (!parent::access($account)) {
+      return FALSE;
+    }
+
+    $definition= $this->formatterPluginManager->getDefinition($this->getDerivativeId());
+    return $definition['class']::isApplicable($this->getFieldDefinition());
+  }
 
   /**
    * {@inheritdoc}

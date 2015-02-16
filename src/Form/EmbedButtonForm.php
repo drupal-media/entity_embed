@@ -7,6 +7,8 @@
 
 namespace Drupal\entity_embed\Form;
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
@@ -97,8 +99,7 @@ class EmbedButtonForm extends EntityForm {
       '#description' => $this->t("Entity type for which this button is to enabled."),
       '#required' => TRUE,
       '#ajax' => array(
-        'callback' => array($this, 'updateEntityTypeBundles'),
-        'wrapper' => 'bundle-entity-type-wrapper',
+        'callback' => array($this, 'updateEntityTypeDependentFields'),
         'effect' => 'fade',
       ),
     );
@@ -220,14 +221,24 @@ class EmbedButtonForm extends EntityForm {
   }
 
   /**
-   * Form handler to update the bundle entity types.
+   * Ajax callback to update the form fields which depend on entity type.
    *
    * @param array $form
    *   An associative array containing the structure of the form.
    * @param FormStateInterface $form_state
    *   An associative array containing the current state of the form.
+   *
+   * @response AjaxResponse
+   *   Ajax response with updated options for entity type bundles.
    */
-  public function updateEntityTypeBundles(array &$form, FormStateInterface $form_state) {
-    return $form['entity_type_bundles'];
+  public function updateEntityTypeDependentFields(array &$form, FormStateInterface $form_state) {
+    $response = new AjaxResponse();
+
+    $response->addCommand(new ReplaceCommand(
+      '#bundle-entity-type-wrapper',
+      $form['entity_type_bundles']
+    ));
+
+    return $response;
   }
 }

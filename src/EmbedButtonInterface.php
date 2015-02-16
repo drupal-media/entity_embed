@@ -54,4 +54,12 @@ interface EmbedButtonInterface extends ConfigEntityInterface {
    */
   public function getEntityTypeBundles();
 
+  /**
+   * Returns the list of display plugins allowed for the entity type.
+   *
+   * @return array
+   *   List of allowed display plugins.
+   */
+  public function getAllowedDisplayPlugins();
+
 }

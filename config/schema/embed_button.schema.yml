@@ -34,3 +34,9 @@ entity_embed.embed_button.*:
     button_icon_uuid:
       type: string
       label: 'Button image'
+    display_plugins:
+      type: sequence
+      label: 'Allowed display plugins'
+      sequence:
+        - type: string
+          label: 'Display plugin'

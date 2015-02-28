@@ -116,6 +116,7 @@ class EntityEmbedDialog extends FormBase {
           '#type' => 'value',
           '#value' => $entity_element['data-entity-type'],
         );
+        $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']);
 
         $label = $this->t('Label');
         // Attempt to display a better label if we can by getting it from
@@ -132,7 +133,7 @@ class EntityEmbedDialog extends FormBase {
           '#type' => 'entity_autocomplete',
           '#target_type' => $entity_element['data-entity-type'],
           '#title' => $label,
-          '#default_value' => $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id'],
+          '#default_value' => $entity,
           '#required' => TRUE,
           '#description' => $this->t('Type label and pick the right one from suggestions. Note that the unique ID will be saved.'),
         );

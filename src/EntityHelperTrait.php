@@ -252,8 +252,8 @@ trait EntityHelperTrait {
    *
    * @return self
    */
-  public function setEntityManager(EntityManagerInterface $entityManager) {
-    $this->entityManager = $entityManager;
+  public function setEntityManager(EntityManagerInterface $entity_manager) {
+    $this->entityManager = $entity_manager;
     return $this;
   }
 
@@ -278,8 +278,8 @@ trait EntityHelperTrait {
    *
    * @return self
    */
-  public function setModuleHandler(ModuleHandlerInterface $moduleHandler) {
-    $this->moduleHandler = $moduleHandler;
+  public function setModuleHandler(ModuleHandlerInterface $module_handler) {
+    $this->moduleHandler = $module_handler;
     return $this;
   }
 
@@ -304,8 +304,8 @@ trait EntityHelperTrait {
    *
    * @return self
    */
-  public function setDisplayPluginManager(EntityEmbedDisplayManager $displayPluginManager) {
-    $this->displayPluginManager = $displayPluginManager;
+  public function setDisplayPluginManager(EntityEmbedDisplayManager $display_plugin_manager) {
+    $this->displayPluginManager = $display_plugin_manager;
     return $this;
   }
 }

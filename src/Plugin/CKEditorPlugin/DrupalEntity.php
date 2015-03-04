@@ -31,7 +31,7 @@ class DrupalEntity extends CKEditorPluginBase {
    *
    * @var array
    */
-  protected $embed_buttons;
+  protected $embedButtons;
 
   /**
    * Constructs a Drupal\entity_embed\Plugin\CKEditorPlugin\DrupalEntity object.
@@ -46,7 +46,7 @@ class DrupalEntity extends CKEditorPluginBase {
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
-    $this->embed_buttons = \Drupal::entityQuery('embed_button')->execute();
+    $this->embedButtons = \Drupal::entityQuery('embed_button')->execute();
   }
 
 
@@ -56,7 +56,7 @@ class DrupalEntity extends CKEditorPluginBase {
   public function getButtons() {
     $buttons = array();
 
-    foreach ($this->embed_buttons as $embed_button) {
+    foreach ($this->embedButtons as $embed_button) {
       $button = EmbedButton::load($embed_button);
       $buttons[$button->label()] = array(
         'label' => String::checkPlain($button->getButtonLabel()),
@@ -89,7 +89,7 @@ class DrupalEntity extends CKEditorPluginBase {
   public function getConfig(Editor $editor) {
     $buttons = array();
 
-    foreach ($this->embed_buttons as $embed_button) {
+    foreach ($this->embedButtons as $embed_button) {
       $button = EmbedButton::load($embed_button);
       $buttons[$button->label()] = array(
         'id' => String::checkPlain($button->id()),

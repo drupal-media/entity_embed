@@ -46,4 +46,12 @@ interface EmbedButtonInterface extends ConfigEntityInterface {
    */
   public function getButtonImage();
 
+  /**
+   * Returns the list of bundles selected for the entity type.
+   *
+   * @return array
+   *   List of allowed bundles.
+   */
+  public function getEntityTypeBundles();
+
 }

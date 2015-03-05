@@ -7,6 +7,8 @@
 
 namespace Drupal\entity_embed\Form;
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
@@ -96,6 +98,16 @@ class EmbedButtonForm extends EntityForm {
       '#default_value' => $embed_button->entity_type,
       '#description' => $this->t("Entity type for which this button is to enabled."),
       '#required' => TRUE,
+      '#ajax' => array(
+        'callback' => array($this, 'updateEntityTypeDependentFields'),
+        'effect' => 'fade',
+      ),
+    );
+    $form['entity_type_bundles'] = array(
+      '#type' => 'checkboxes',
+      '#default_value' => $embed_button->entity_type_bundles ?: array(),
+      '#prefix' => '<div id="bundle-entity-type-wrapper">',
+      '#suffix' => '</div>',
     );
     $form['button_label'] = array(
       '#type' => 'textfield',
@@ -116,6 +128,31 @@ class EmbedButtonForm extends EntityForm {
         'file_validate_image_resolution' => array('16x16'),
       ),
     );
+
+    $entity_type_id = $form_state->getValue('entity_type') ?: $embed_button->entity_type;
+    if ($entity_type_id) {
+      $entity_type = $this->entityManager->getDefinition($entity_type_id);
+      // If the entity has bundles, allow option to restrict to bundle(s).
+      if ($entity_type->hasKey('bundle')) {
+        foreach ($this->entityManager->getBundleInfo($entity_type_id) as $bundle_id => $bundle_info) {
+          $bundle_options[$bundle_id] = $bundle_info['label'];
+        }
+
+        // Hide selection if there's just one option, since that's going to be
+        // allowed in either case.
+        if (count($bundle_options) > 1) {
+          $form['entity_type_bundles'] += array(
+            '#title' => $entity_type->getBundleLabel() ?: $this->t('Bundles'),
+            '#options' => $bundle_options,
+            '#description' => $this->t('If none are selected, all are allowed.'),
+          );
+        }
+      }
+    }
+    // Set options to an empty array if it hasn't been set so far.
+    if (!isset($form['entity_type_bundles']['#options'])) {
+      $form['entity_type_bundles']['#options'] = array();
+    }
 
     return $form;
   }
@@ -181,5 +218,27 @@ class EmbedButtonForm extends EntityForm {
       ->condition('id', $button_id)
       ->execute();
     return (bool) $entity;
+  }
+
+  /**
+   * Ajax callback to update the form fields which depend on entity type.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param FormStateInterface $form_state
+   *   An associative array containing the current state of the form.
+   *
+   * @response AjaxResponse
+   *   Ajax response with updated options for entity type bundles.
+   */
+  public function updateEntityTypeDependentFields(array &$form, FormStateInterface $form_state) {
+    $response = new AjaxResponse();
+
+    $response->addCommand(new ReplaceCommand(
+      '#bundle-entity-type-wrapper',
+      $form['entity_type_bundles']
+    ));
+
+    return $response;
   }
 }

@@ -25,7 +25,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   protected $formatterPluginManager;
 
   /**
-   * {@inheritdoc}
+   * Constructs a FieldFormatterEntityEmbedDisplayBase object.
    *
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager service.

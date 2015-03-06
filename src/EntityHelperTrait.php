@@ -108,6 +108,19 @@ trait EntityHelperTrait {
    */
   protected function canRenderEntity(EntityInterface $entity) {
     $entity_type = $entity->getEntityTypeId();
+    return $this->canRenderEntityType($entity_type);
+  }
+
+  /**
+   * Determines if an entity type can be rendered.
+   *
+   * @param string $entity
+   *   The entity type id.
+   *
+   * @return bool
+   *   TRUE if the entitys type has a view builder controller, otherwise FALSE.
+   */
+  protected function canRenderEntityType($entity_type) {
     return $this->entityManager()->hasHandler($entity_type, 'view_builder');
   }
 

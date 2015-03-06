@@ -77,7 +77,10 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
     // Check that the entity itself can be viewed by the user.
     // This uses the accessEntity method on the helper trait instead of
     // Entity::access() because there are bugs with file access.
-    return $this->accessEntity($this->getContextValue('entity'), 'view', $account);
+    if ($this->hasContextValue('entity')) {
+      return $this->accessEntity($this->getContextValue('entity'), 'view', $account);
+    }
+    return TRUE;
   }
 
   /**
@@ -92,12 +95,18 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
    *   otherwise.
    */
   protected function isValidEntityType() {
+    // First, determine whether or not the entity type id is valid. Return FALSE
+    // if the specified id is not valid.
+    $entity_type = $this->getEntityTypeFromContext();
+    if (!$this->entityManager()->getDefinition($entity_type)) {
+      return FALSE;
+    }
+
     $definition = $this->getPluginDefinition();
     if ($definition['entity_types'] === FALSE) {
       return TRUE;
     }
     else {
-      $entity_type = $this->getContextValue('entity')->getEntityTypeId();
       return in_array($entity_type, $definition['entity_types']);
     }
   }
@@ -213,6 +222,34 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
    */
   public function getContextValue($name) {
     return $this->context[$name];
+  }
+
+  /**
+   * Returns whether or not value is set for a defined context.
+   *
+   * @param string $name
+   *   The name of the context in the plugin configuration.
+   *
+   * @return bool
+   *   True if context value exists, false otherwise.
+   */
+  public function hasContextValue($name) {
+    return array_key_exists($name, $this->context);
+  }
+
+  /**
+   * Gets the entity type from a defined context.
+   *
+   * @return string
+   *   The entity type id.
+   */
+  public function getEntityTypeFromContext() {
+    if ($this->hasContextValue('entity')) {
+      return $this->getContextValue('entity')->getEntityTypeId();
+    }
+    else {
+      return $this->getContextValue('entity_type');
+    }
   }
 
   /**

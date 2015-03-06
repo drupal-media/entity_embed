@@ -29,7 +29,7 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
    */
   public function getFieldDefinition() {
     $field = BaseFieldDefinition::create('entity_reference');
-    $field->setSetting('target_type', $this->getContextValue('entity')->getEntityTypeId());
+    $field->setSetting('target_type', $this->getEntityTypeFromContext());
     return $field;
   }
 
@@ -38,26 +38,6 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
    */
   public function getFieldValue(BaseFieldDefinition $definition) {
     return array('target_id' => $this->getContextValue('entity')->id());
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function access(AccountInterface $account = NULL) {
-    if (!parent::access($account)) {
-      return FALSE;
-    }
-
-    switch ($this->getDerivativeId()) {
-      case 'entity_reference_entity_view':
-        // Cannot render an entity if it does not have a view controller.
-        // @todo Remove when https://drupal.org/node/2204325 is fixed in core.
-        return $this->canRenderEntity($this->getContextValue('entity'));
-
-      default:
-        return TRUE;
-
-    }
   }
 
 }

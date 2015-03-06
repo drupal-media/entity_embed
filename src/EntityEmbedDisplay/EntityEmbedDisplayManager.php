@@ -108,14 +108,10 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
    *   An array of valid plugin labels, keyed by plugin ID.
    */
   public function getDefinitionOptionsForEntityType($entity_type) {
-    $definitions = $this->getDefinitions();
-    $valid_definitions = array();
-    foreach ($definitions as $id => $definition) {
-      if ($definition['entity_types'] == FALSE || in_array($entity_type, $definition['entity_types'])) {
-        $valid_definitions[$id] = $definition['label'];
-      }
-    }
-    return $valid_definitions;
+    $definitions = $this->getDefinitionsForContexts(array('entity_type' => $entity_type));
+    return array_map(function ($definition) {
+      return (string) $definition['label'];
+    }, $definitions);
   }
 
 }

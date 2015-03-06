@@ -52,9 +52,12 @@ class ImageFieldFormatter extends FileFieldFormatter {
       return FALSE;
     }
 
-    $uri = $this->getContextValue('entity')->getFileUri();
-    $image = \Drupal::service('image.factory')->get($uri);
-    return $image->isValid();
+    if ($this->hasContextValue('entity')) {
+      $uri = $this->getContextValue('entity')->getFileUri();
+      $image = \Drupal::service('image.factory')->get($uri);
+      return $image->isValid();
+    }
+    return TRUE;
   }
 
   /**

@@ -31,8 +31,8 @@ class EntityEmbedDefaultDisplay extends EntityEmbedDisplayBase {
       return FALSE;
     }
 
-    // Cannot render an entity if it does not have a view controller.
-    return $this->canRenderEntity($this->getContextValue('entity'));
+    // Cannot render the entity type if it does not have a view controller.
+    return $this->canRenderEntityType($this->getEntityTypeFromContext());
   }
 
   /**

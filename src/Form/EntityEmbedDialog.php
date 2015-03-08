@@ -314,6 +314,16 @@ class EntityEmbedDialog extends FormBase {
           }
         }
         break;
+      case 'embed':
+        $entity_element = $form_state->getValue('attributes');
+        $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid']);
+        $plugin_id = $entity_element['data-entity-embed-display'];
+        $plugin_settings = $entity_element['data-entity-embed-settings'] ?: array();
+        $display = $this->displayPluginManager()->createInstance($plugin_id, $plugin_settings);
+        $display->setContextValue('entity', $entity);
+        $display->setAttributes($entity_element);
+        $display->validateConfigurationForm($form, $form_state);
+        break;
     }
   }
 

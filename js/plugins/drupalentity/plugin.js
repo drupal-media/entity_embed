@@ -78,7 +78,7 @@
         // element.
         upcast: function (element) {
           var attributes = element.attributes;
-          if (attributes['data-entity-type'] === undefined || (attributes['data-entity-id'] === undefined && attributes['data-entity-uuid'] === undefined)) {
+          if (attributes['data-entity-type'] === undefined || (attributes['data-entity-id'] === undefined && attributes['data-entity-uuid'] === undefined) || (attributes['data-view-mode'] === undefined && attributes['data-entity-embed-display'] === undefined)) {
             return;
           }
           // Generate an ID for the element, so that we can use the Ajax

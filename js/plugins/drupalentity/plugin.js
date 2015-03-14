@@ -18,9 +18,9 @@
       var dtd = CKEDITOR.dtd, tagName;
       dtd['drupal-entity'] = {'#': 1};
       // Register drupal-entity element as allowed child, in each tag that can
-      // contain a p element.
+      // contain a div element.
       for (tagName in dtd) {
-        if (dtd[tagName].p) {
+        if (dtd[tagName].div) {
           dtd[tagName]['drupal-entity'] = 1;
         }
       }

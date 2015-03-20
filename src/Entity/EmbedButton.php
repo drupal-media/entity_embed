@@ -85,6 +85,15 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
   public $button_icon_uuid;
 
   /**
+   * Array of allowed display plugins for the entity type.
+   *
+   * An empty array signifies that all are allowed.
+   *
+   * @var array
+   */
+  public $display_plugins;
+
+  /**
    * {@inheritdoc}
    */
   public function getEntityTypeMachineName() {
@@ -123,6 +132,20 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
     else {
       return file_create_url(drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png');
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAllowedDisplayPlugins() {
+    $allowed_display_plugins = array();
+    // Include only those plugin ids in result whose value is set.
+    foreach ($this->display_plugins as $key => $value) {
+      if ($value) {
+        $allowed_display_plugins[$key] = $value;
+      }
+    }
+    return $allowed_display_plugins;
   }
 
   /**

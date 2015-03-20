@@ -61,6 +61,7 @@ class EmbedButtonCrudTest extends KernelTestBase {
       'entity_type' => 'node',
       'entity_type_bundles' => array('article'),
       'button_icon_uuid' => '',
+      'display_plugins' => array('default'),
     );
 
     // Create an embed_button with required values.
@@ -85,6 +86,7 @@ class EmbedButtonCrudTest extends KernelTestBase {
       'entity_type' => 'node',
       'entity_type_bundles' => array('article'),
       'button_icon_uuid' => '',
+      'display_plugins' => array('default'),
     );
 
     $this->assertIdentical($actual_properties, $expected_properties, 'Actual config properties are structured as expected.');

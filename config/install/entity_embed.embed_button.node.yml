@@ -3,3 +3,4 @@ id: 'node'
 button_label: 'Content'
 entity_type: 'node'
 entity_type_bundles: []
+display_plugins: []

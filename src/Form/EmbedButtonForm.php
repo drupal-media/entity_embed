@@ -128,6 +128,12 @@ class EmbedButtonForm extends EntityForm {
         'file_validate_image_resolution' => array('16x16'),
       ),
     );
+    $form['display_plugins'] = array(
+      '#type' => 'checkboxes',
+      '#default_value' => $embed_button->display_plugins ?: array(),
+      '#prefix' => '<div id="display-plugins-wrapper">',
+      '#suffix' => '</div>',
+    );
 
     $entity_type_id = $form_state->getValue('entity_type') ?: $embed_button->entity_type;
     if ($entity_type_id) {
@@ -148,10 +154,20 @@ class EmbedButtonForm extends EntityForm {
           );
         }
       }
+
+      // Allow option to limit display plugins.
+      $form['display_plugins'] += array(
+        '#title' => $this->t('Allowed display plugins'),
+        '#options' => \Drupal::service('plugin.manager.entity_embed.display')->getDefinitionOptionsForEntityType($entity_type_id),
+        '#description' => $this->t('If none are selected, all are allowed. Note that these are the plugins which are allowed for this entity type, all of these might not be available for the selected entity.'),
+      );
     }
     // Set options to an empty array if it hasn't been set so far.
     if (!isset($form['entity_type_bundles']['#options'])) {
       $form['entity_type_bundles']['#options'] = array();
+    }
+    if (!isset($form['display_plugins']['#options'])) {
+      $form['display_plugins']['#options'] = array();
     }
 
     return $form;
@@ -267,9 +283,16 @@ class EmbedButtonForm extends EntityForm {
   public function updateEntityTypeDependentFields(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
+    // Update options for entity type bundles.
     $response->addCommand(new ReplaceCommand(
       '#bundle-entity-type-wrapper',
       $form['entity_type_bundles']
+    ));
+
+    // Update options for display plugins.
+    $response->addCommand(new ReplaceCommand(
+      '#display-plugins-wrapper',
+      $form['display_plugins']
     ));
 
     return $response;

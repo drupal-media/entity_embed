@@ -189,18 +189,24 @@ class EntityEmbedDialog extends FormBase {
           '#value' => $entity_element['data-entity-uuid'],
         );
 
-        $options = $this->displayPluginManager()->getDefinitionOptionsForEntity($entity);
+        // Build the list of allowed display plugins.
+        $allowed_plugins = $embed_button->getAllowedDisplayPlugins();
+        $available_plugins = $this->displayPluginManager()->getDefinitionOptionsForEntity($entity);
+        // If list of allowed options is empty, it means that all plugins are
+        // allowed. Else, take the intresection of allowed and available
+        // plugins.
+        $display_plugin_options = empty($allowed_plugins) ? $available_plugins : array_intersect_key($available_plugins, $allowed_plugins);
 
         // If the currently selected display is not in the available options,
         // use the first from the list instead. This can happen if an alter
         // hook customizes the list based on the entity.
-        if (!isset($options[$entity_element['data-entity-embed-display']])) {
-          $entity_element['data-entity-embed-display'] = key($options);
+        if (!isset($display_plugin_options[$entity_element['data-entity-embed-display']])) {
+          $entity_element['data-entity-embed-display'] = key($display_plugin_options);
         }
         $form['attributes']['data-entity-embed-display'] = array(
           '#type' => 'select',
           '#title' => $this->t('Display as'),
-          '#options' => $options,
+          '#options' => $display_plugin_options,
           '#default_value' => $entity_element['data-entity-embed-display'],
           '#required' => TRUE,
           '#ajax' => array(
@@ -209,7 +215,7 @@ class EntityEmbedDialog extends FormBase {
             'effect' => 'fade',
           ),
           // Hide the selection if only one option is available.
-          '#access' => count($options) > 1,
+          '#access' => count($display_plugin_options) > 1,
         );
         $form['attributes']['data-entity-embed-settings'] = array(
           '#type' => 'container',

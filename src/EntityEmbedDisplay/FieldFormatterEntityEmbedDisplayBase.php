@@ -29,7 +29,6 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    *
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager service.
-   *
    * @param \Drupal\Core\Field\FormatterPluginManager $formatter_plugin_manager
    *   The field formatter plugin manager.
    */
@@ -82,7 +81,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
       return FALSE;
     }
 
-    $definition= $this->formatterPluginManager->getDefinition($this->getDerivativeId());
+    $definition = $this->formatterPluginManager->getDefinition($this->getDerivativeId());
     return $definition['class']::isApplicable($this->getFieldDefinition());
   }
 

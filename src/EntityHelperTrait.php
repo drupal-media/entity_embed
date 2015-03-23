@@ -114,7 +114,7 @@ trait EntityHelperTrait {
   /**
    * Determines if an entity type can be rendered.
    *
-   * @param string $entity
+   * @param string $entity_type
    *   The entity type id.
    *
    * @return bool
@@ -260,7 +260,7 @@ trait EntityHelperTrait {
   /**
    * Sets the entity manager service.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entityManager
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager service.
    *
    * @return self
@@ -286,7 +286,7 @@ trait EntityHelperTrait {
   /**
    * Sets the module handler service.
    *
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler service.
    *
    * @return self
@@ -312,7 +312,7 @@ trait EntityHelperTrait {
   /**
    * Sets the display plugin manager service.
    *
-   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $displayPluginManager
+   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $display_plugin_manager
    *   The display plugin manager service.
    *
    * @return self

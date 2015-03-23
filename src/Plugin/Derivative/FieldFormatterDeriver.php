@@ -29,7 +29,7 @@ class FieldFormatterDeriver extends DeriverBase implements ContainerDeriverInter
   /**
    * Constructs new FieldFormatterEntityEmbedDisplayBase.
    *
-   * @param \Drupal\Core\Field\FormatterPluginManager $formatterManager
+   * @param \Drupal\Core\Field\FormatterPluginManager $formatter_manager
    *   The field formatter plugin manager.
    */
   public function __construct(FormatterPluginManager $formatter_manager) {

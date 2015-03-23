@@ -7,7 +7,7 @@
 
 namespace Drupal\entity_embed\Plugin\CKEditorPlugin;
 
-use Drupal\Component\Utility\String;
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\editor\Entity\Editor;
 use Drupal\entity_embed\Entity\EmbedButton;
@@ -59,7 +59,7 @@ class DrupalEntity extends CKEditorPluginBase {
     foreach ($this->embedButtons as $embed_button) {
       $button = EmbedButton::load($embed_button);
       $buttons[$button->label()] = array(
-        'label' => String::checkPlain($button->getButtonLabel()),
+        'label' => SafeMarkup::checkPlain($button->getButtonLabel()),
         'image' => $button->getButtonImage(),
       );
     }
@@ -92,11 +92,11 @@ class DrupalEntity extends CKEditorPluginBase {
     foreach ($this->embedButtons as $embed_button) {
       $button = EmbedButton::load($embed_button);
       $buttons[$button->label()] = array(
-        'id' => String::checkPlain($button->id()),
-        'name' => String::checkPlain($button->label()),
-        'label' => String::checkPlain($button->getButtonLabel()),
-        'entity_type' => String::checkPlain($button->getEntityTypeMachineName()),
-        'image' => String::checkPlain($button->getButtonImage()),
+        'id' => SafeMarkup::checkPlain($button->id()),
+        'name' => SafeMarkup::checkPlain($button->label()),
+        'label' => SafeMarkup::checkPlain($button->getButtonLabel()),
+        'entity_type' => SafeMarkup::checkPlain($button->getEntityTypeMachineName()),
+        'image' => SafeMarkup::checkPlain($button->getButtonImage()),
       );
     }
 

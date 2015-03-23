@@ -93,7 +93,7 @@ class ImageFieldFormatter extends FileFieldFormatter {
       // stage, then this should be treated as a new edit. We show two double
       // quotes in place of empty alt text only if that was filled intentionally
       // by the user.
-      if(!empty($entity_element) && $entity_element['data-entity-embed-display'] == 'image:image') {
+      if (!empty($entity_element) && $entity_element['data-entity-embed-display'] == 'image:image') {
         $alt = '""';
       }
     }

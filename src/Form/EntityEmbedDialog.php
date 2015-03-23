@@ -412,8 +412,17 @@ class EntityEmbedDialog extends FormBase {
   public function submitEmbedForm(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
-    $values = $form_state->getValues();
+    // Submit configuration form the selected display plugin.
+    $entity_element = $form_state->getValue('attributes');
+    $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid']);
+    $plugin_id = $entity_element['data-entity-embed-display'];
+    $plugin_settings = $entity_element['data-entity-embed-settings'] ?: array();
+    $display = $this->displayPluginManager()->createInstance($plugin_id, $plugin_settings);
+    $display->setContextValue('entity', $entity);
+    $display->setAttributes($entity_element);
+    $display->submitConfigurationForm($form, $form_state);
 
+    $values = $form_state->getValues();
     // Display errors in form, if any.
     if ($form_state->hasAnyErrors()) {
       unset($form['#prefix'], $form['#suffix']);

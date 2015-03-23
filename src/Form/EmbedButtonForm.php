@@ -65,7 +65,7 @@ class EmbedButtonForm extends EntityForm {
 
     // Get default for button image. If its uuid is set, get the id of the file
     // to be used as default in the form.
-    $button_icon = array();
+    $button_icon = NULL;
     if ($embed_button->button_icon_uuid) {
       $file = $this->entityManager->loadEntityByUuid('file', $embed_button->button_icon_uuid);
       $button_icon = array($file->id());
@@ -198,13 +198,15 @@ class EmbedButtonForm extends EntityForm {
    */
   protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $button_icons = $values['button_icon'];
 
-    $button_icon_uuid = NULL;
+    $button_icon_fid = $form_state->getValue(array('button_icon', '0'));
     // If a file was uploaded to be used as the icon, get its UUID to be stored
     // in the config entity.
-    if ($button_icons && $file = $this->entityManager->getStorage('file')->load($button_icons[0])) {
+    if (!empty($button_icon_fid) && $file = $this->entityManager->getStorage('file')->load($button_icon_fid)) {
       $button_icon_uuid = $file->uuid();
+    }
+    else {
+      $button_icon_uuid = NULL;
     }
 
     // Set all form values in the entity except the button icon since it is a

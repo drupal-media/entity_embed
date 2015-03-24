@@ -385,7 +385,7 @@ class EntityEmbedDialog extends FormBase {
     if ($form_state->hasAnyErrors()) {
       unset($form['#prefix'], $form['#suffix']);
       $form['status_messages'] = array(
-        '#theme' => 'status_messages',
+        '#type' => 'status_messages',
         '#weight' => -10,
       );
       $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $form));
@@ -418,7 +418,7 @@ class EntityEmbedDialog extends FormBase {
     if ($form_state->hasAnyErrors()) {
       unset($form['#prefix'], $form['#suffix']);
       $form['status_messages'] = array(
-        '#theme' => 'status_messages',
+        '#type' => 'status_messages',
         '#weight' => -10,
       );
       $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $form));

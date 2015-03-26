@@ -10,6 +10,7 @@ namespace Drupal\entity_embed;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a service for embedded entity post render cache callbacks.

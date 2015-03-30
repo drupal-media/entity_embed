@@ -29,8 +29,8 @@ entity_embed.embed_button.*:
       type: sequence
       label: 'Entity type bundles'
       sequence:
-        - type: string
-          label: 'Bundle'
+        type: string
+        label: 'Bundle'
     button_icon_uuid:
       type: string
       label: 'Button image'
@@ -38,5 +38,5 @@ entity_embed.embed_button.*:
       type: sequence
       label: 'Allowed display plugins'
       sequence:
-        - type: string
-          label: 'Display plugin'
+        type: string
+        label: 'Display plugin'

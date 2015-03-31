@@ -8,9 +8,12 @@
 namespace Drupal\entity_embed\Plugin\CKEditorPlugin;
 
 use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\editor\Entity\Editor;
 use Drupal\entity_embed\Entity\EmbedButton;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines the "drupalentity" plugin.
@@ -21,7 +24,7 @@ use Drupal\entity_embed\Entity\EmbedButton;
  *   module = "entity_embed"
  * )
  */
-class DrupalEntity extends CKEditorPluginBase {
+class DrupalEntity extends CKEditorPluginBase implements ContainerFactoryPluginInterface {
 
   /**
    * All embed button configuration entities.
@@ -42,13 +45,26 @@ class DrupalEntity extends CKEditorPluginBase {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
+   * @param \Drupal\Core\Entity\Query\QueryInterface $embed_button_query
+   *   The entity query object for embed button.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, QueryInterface $embed_button_query) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
-    $this->embedButtons = \Drupal::entityQuery('embed_button')->execute();
+    $this->embedButtons = $embed_button_query->execute();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity.query')->get('embed_button')
+      );
+    }
 
   /**
    * {@inheritdoc}

@@ -74,14 +74,39 @@ class ImageFieldFormatter extends FileFieldFormatter {
       unset($form['image_link']['#options']['content']);
     }
 
+    $entity_element = $form_state->get('entity_element');
+    // The alt attribute is *required*, but we allow users to opt-in to empty
+    // alt attributes for the very rare edge cases where that is valid by
+    // specifying two double quotes as the alternative text in the dialog.
+    // However, that *is* stored as an empty alt attribute, so if we're editing
+    // an existing image (which means the src attribute is set) and its alt
+    // attribute is empty, then we show that as two double quotes in the dialog.
+    // @see https://www.drupal.org/node/2307647
+    // Alt attribute behavior is taken from the Core image dialog to ensure a
+    // consistent UX across various forms.
+    // @see Drupal\editor\Form\EditorImageDialog::buildForm()
+    $alt = $this->getAttributeValue('alt', '');
+    if ($alt === '') {
+      // Do not change empty alt text to two double quotes if the previously
+      // used display plugin was not 'image:image'. That means that some other
+      // plugin was used so if this image formatter is selected at a later
+      // stage, then this should be treated as a new edit. We show two double
+      // quotes in place of empty alt text only if that was filled intentionally
+      // by the user.
+      if (!empty($entity_element) && $entity_element['data-entity-embed-display'] == 'image:image') {
+        $alt = '""';
+      }
+    }
+
     // Add support for editing the alternate and title text attributes.
     $form['alt'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Alternate text'),
-      '#default_value' => $this->getAttributeValue('alt', ''),
+      '#default_value' => $alt,
       '#description' => $this->t('This text will be used by screen readers, search engines, or when the image cannot be loaded.'),
       '#parents' => array('attributes', 'alt'),
-      // @see http://www.gawds.org/show.php?contentid=28
+      '#required' => TRUE,
+      '#required_error' => $this->t('Alternative text is required.<br />(Only in rare cases should this be left empty. To create empty alternative text, enter <code>""</code> — two double quotes without any content).'),
       '#maxlength' => 512,
     );
     $form['title'] = array(
@@ -94,6 +119,17 @@ class ImageFieldFormatter extends FileFieldFormatter {
     );
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    // When the alt attribute is set to two double quotes, transform it to the
+    // empty string: two double quotes signify "empty alt attribute". See above.
+    if (trim($form_state->getValue(array('attributes', 'alt'))) === '""') {
+      $form_state->setValue(array('attributes', 'alt'), '');
+    }
   }
 
 }

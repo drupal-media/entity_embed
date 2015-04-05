@@ -21,6 +21,7 @@ use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\entity_embed\EmbedButtonInterface;
 use Drupal\filter\FilterFormatInterface;
 use Drupal\Component\Serialization\Json;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -37,16 +38,26 @@ class EntityEmbedDialog extends FormBase {
   protected $formBuilder;
 
   /**
+   * A logger instance.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected $logger;
+
+  /**
    * Constructs a EntityEmbedDialog object.
    *
    * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
    *   The Module Handler.
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    *   The Form Builder.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   A logger instance.
    */
-  public function __construct(EntityEmbedDisplayManager $plugin_manager, FormBuilderInterface $form_builder) {
+  public function __construct(EntityEmbedDisplayManager $plugin_manager, FormBuilderInterface $form_builder, LoggerInterface $logger) {
     $this->setDisplayPluginManager($plugin_manager);
     $this->formBuilder = $form_builder;
+    $this->logger = $logger;
   }
 
   /**
@@ -55,7 +66,8 @@ class EntityEmbedDialog extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('plugin.manager.entity_embed.display'),
-      $container->get('form_builder')
+      $container->get('form_builder'),
+      $container->get('logger.factory')->get('entity_embed')
     );
   }
 
@@ -77,6 +89,9 @@ class EntityEmbedDialog extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, FilterFormatInterface $filter_format = NULL, EmbedButtonInterface $embed_button = NULL) {
     $values = $form_state->getValues();
     $input = $form_state->getUserInput();
+    // Set embed button element in form state, so that it can be used later in
+    // validateForm() function.
+    $form_state->set('embed_button', $embed_button);
     // Initialize entity element with form attributes, if present.
     $entity_element = empty($values['attributes']) ? array() : $values['attributes'];
     // The default values are set directly from \Drupal::request()->request,
@@ -306,13 +321,27 @@ class EntityEmbedDialog extends FormBase {
             if (!$this->accessEntity($entity, 'view')) {
               $form_state->setError($form['attributes']['data-entity-id'], $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
             }
-            elseif ($uuid = $entity->uuid()) {
-              $form_state->setValueForElement($form['attributes']['data-entity-uuid'], $uuid);
-              $form_state->setValueForElement($form['attributes']['data-entity-id'], $entity->id());
-            }
             else {
-              $form_state->setValueForElement($form['attributes']['data-entity-uuid'], '');
               $form_state->setValueForElement($form['attributes']['data-entity-id'], $entity->id());
+              if ($uuid = $entity->uuid()) {
+                $form_state->setValueForElement($form['attributes']['data-entity-uuid'], $uuid);
+              }
+              else {
+                $form_state->setValueForElement($form['attributes']['data-entity-uuid'], '');
+              }
+
+              // Ensure that at least one display plugin is present before
+              // proceeding to the next step. Rasie an error otherwise.
+              $embed_button = $form_state->get('embed_button');
+              $allowed_plugins = $embed_button->getAllowedDisplayPlugins();
+              $available_plugins = $this->displayPluginManager()->getDefinitionOptionsForEntity($entity);
+              $display_plugin_options = empty($allowed_plugins) ? $available_plugins : array_intersect_key($available_plugins, $allowed_plugins);
+              // If no plugin is available after taking the intersection,
+              // raise error. Also log an exception.
+              if (empty($display_plugin_options)) {
+                $form_state->setError($form['attributes']['data-entity-id'], $this->t('No display options available for the selected entity. Please select another entity.'));
+                $this->logger->warning('No display options available for "@type:" entity "@id" while embedding using button "@button". Please ensure that at least one display plugin is allowed for this embed button which is available for this entity.', array('@type' => $entity_type, '@id' => $entity->id(), '@button' => $embed_button->id()));
+              }
             }
           }
           else {
@@ -320,7 +349,9 @@ class EntityEmbedDialog extends FormBase {
           }
         }
         break;
+
       case 'embed':
+        // Validate configuration forms for the display plugin used.
         $entity_element = $form_state->getValue('attributes');
         $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid']);
         $plugin_id = $entity_element['data-entity-embed-display'];

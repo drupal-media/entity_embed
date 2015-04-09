@@ -125,8 +125,7 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    * {@inheritdoc}
    */
   public function getButtonImage() {
-    if ($this->button_icon_uuid) {
-      $image = $this->entityManager()->loadEntityByUuid('file', $this->button_icon_uuid);
+    if ($this->button_icon_uuid && $image = $this->entityManager()->loadEntityByUuid('file', $this->button_icon_uuid)) {
       return $image->url();
     }
     else {

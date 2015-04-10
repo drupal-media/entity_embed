@@ -18,6 +18,13 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
   use EntityHelperTrait;
 
   /**
+   * The state service.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
    * Modules to enable.
    *
    * @var array
@@ -29,6 +36,12 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     'node',
   );
 
+  protected function setUp() {
+    parent::setUp();
+
+    $this->state = $this->container->get('state');
+  }
+
   /**
    * Tests hook_entity_embed_display_plugins_alter().
    */
@@ -36,7 +49,7 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     // Enable entity_embed_test.module's
     // hook_entity_embed_display_plugins_alter() implementation and ensure it is
     // working as designed.
-    \Drupal::state()->set('entity_embed_test_entity_embed_display_plugins_alter', TRUE);
+    $this->state->set('entity_embed_test_entity_embed_display_plugins_alter', TRUE);
     $plugins = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->node);
     // Ensure that name of each plugin is prefixed with 'testing_hook:'.
     foreach ($plugins as $plugin => $plugin_info) {
@@ -54,7 +67,7 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
   public function testEntityEmbedHooks() {
     // Enable entity_embed_test.module's hook_entity_preembed() implementation
     // and ensure it is working as designed.
-    \Drupal::state()->set('entity_embed_test_entity_preembed', TRUE);
+    $this->state->set('entity_embed_test_entity_preembed', TRUE);
     $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
@@ -67,11 +80,11 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     // Ensure that embedded node's title has been replaced.
     $this->assertText('Title set by hook_entity_preembed', 'Title of the embedded node is replaced by hook_entity_preembed()');
     $this->assertNoText($this->node->title->value, 'Original title of the embedded node is not visible.');
-    \Drupal::state()->set('entity_embed_test_entity_preembed', FALSE);
+    $this->state->set('entity_embed_test_entity_preembed', FALSE);
 
     // Enable entity_embed_test.module's hook_entity_embed_alter()
     // implementation and ensure it is working as designed.
-    \Drupal::state()->set('entity_embed_test_entity_embed_alter', TRUE);
+    $this->state->set('entity_embed_test_entity_embed_alter', TRUE);
     $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
@@ -84,11 +97,11 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     // Ensure that embedded node's title has been replaced.
     $this->assertText('Title set by hook_entity_preembed', 'Title of the embedded node is replaced by hook_entity_embed_alter()');
     $this->assertNoText($this->node->title->value, 'Original title of the embedded node is not visible.');
-    \Drupal::state()->set('entity_embed_test_entity_embed_alter', FALSE);
+    $this->state->set('entity_embed_test_entity_embed_alter', FALSE);
 
     // Enable entity_embed_test.module's hook_entity_embed_context_alter()
     // implementation and ensure it is working as designed.
-    \Drupal::state()->set('entity_embed_test_entity_embed_context_alter', TRUE);
+    $this->state->set('entity_embed_test_entity_embed_context_alter', TRUE);
     $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
@@ -102,7 +115,7 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     $this->assertNoText($this->node->body->value, 'Body of the embedded node does not exists in page.');
     $this->assertText($this->node->title->value, 'Title of the embedded node exists in page.');
     $this->assertLinkByHref('node/' . $this->node->id(), 0, 'Link to the embedded node exists.');
-    \Drupal::state()->set('entity_embed_test_entity_embed_context_alter', FALSE);
+    $this->state->set('entity_embed_test_entity_embed_context_alter', FALSE);
   }
 
 }

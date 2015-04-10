@@ -7,9 +7,15 @@
 
 namespace Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay;
 
+use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FormatterPluginManager;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Image\ImageFactory;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\TypedData\TypedDataManager;
+use Drupal\node\Entity\Node;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Embed entity displays for image field formatters.
@@ -24,6 +30,45 @@ use Drupal\Core\Session\AccountInterface;
  * )
  */
 class ImageFieldFormatter extends FileFieldFormatter {
+
+  /**
+    * The image factory.
+    *
+    * @var \Drupal\Core\Image\ImageFactory
+    */
+    protected $imageFactory;
+
+  /**
+   * {@inheritdoc}
+   *
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   *   The entity manager service.
+   * @param \Drupal\Core\Field\FormatterPluginManager $formatter_plugin_manager
+   *   The field formatter plugin manager.
+   * @param \Drupal\Core\TypedData\TypedDataManager $typed_data_manager
+   *   The typed data manager.
+   * @param \Drupal\Core\Image\ImageFactory $image_factory
+   *   The image factory.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, FormatterPluginManager $formatter_plugin_manager, TypedDataManager $typed_data_manager, ImageFactory $image_factory) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_manager, $formatter_plugin_manager, $typed_data_manager);
+    $this->imageFactory = $image_factory;
+  }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+      return new static(
+        $configuration,
+        $plugin_id,
+        $plugin_definition,
+        $container->get('entity.manager'),
+        $container->get('plugin.manager.field.formatter'),
+        $container->get('typed_data_manager'),
+        $container->get('image.factory')
+      );
+    }
 
   /**
    * {@inheritdoc}
@@ -54,7 +99,7 @@ class ImageFieldFormatter extends FileFieldFormatter {
 
     if ($this->hasContextValue('entity')) {
       $uri = $this->getContextValue('entity')->getFileUri();
-      $image = \Drupal::service('image.factory')->get($uri);
+      $image = $this->imageFactory->get($uri);
       return $image->isValid();
     }
     return TRUE;

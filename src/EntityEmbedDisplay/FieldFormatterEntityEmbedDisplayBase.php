@@ -12,6 +12,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FormatterPluginManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\TypedData\TypedDataManager;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -25,18 +26,28 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   protected $formatterPluginManager;
 
   /**
+   * The typed data manager.
+   *
+   * @var \Drupal\Core\TypedData\TypedDataManager
+   */
+  protected $typedDataManager;
+
+  /**
    * Constructs a FieldFormatterEntityEmbedDisplayBase object.
    *
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager service.
    * @param \Drupal\Core\Field\FormatterPluginManager $formatter_plugin_manager
    *   The field formatter plugin manager.
+   * @param \Drupal\Core\TypedData\TypedDataManager $typed_data_manager
+   *   The typed data manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, FormatterPluginManager $formatter_plugin_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_manager);
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, FormatterPluginManager $formatter_plugin_manager, TypedDataManager $typed_data_manager) {
+    $this->formatterPluginManager = $formatter_plugin_manager;
     $this->setConfiguration($configuration);
     $this->setEntityManager($entity_manager);
-    $this->formatterPluginManager = $formatter_plugin_manager;
+    $this->typedDataManager = $typed_data_manager;
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_manager);
   }
 
   /**
@@ -48,7 +59,8 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
       $plugin_id,
       $plugin_definition,
       $container->get('entity.manager'),
-      $container->get('plugin.manager.field.formatter')
+      $container->get('plugin.manager.field.formatter'),
+      $container->get('typed_data_manager')
     );
   }
 
@@ -104,7 +116,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     // Create a field item list object, 1 is the value, array('target_id' => 1)
     // would work too, or multiple values. 1 is passed down from the list to the
     // field item, which knows that an integer is the ID.
-    $items = \Drupal::typedDataManager()->create(
+    $items = $this->typedDataManager->create(
       $definition,
       $this->getFieldValue($definition),
       $definition->getName(),
@@ -130,7 +142,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return \Drupal::service('plugin.manager.field.formatter')->getDefaultSettings($this->getDerivativeId());
+    return $this->formatterPluginManager->getDefaultSettings($this->getDerivativeId());
   }
 
   /**
@@ -167,7 +179,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     /* @var \Drupal\Core\Field\FormatterInterface $formatter */
     // Create the formatter plugin. Will use the default formatter for that
     // field type if none is passed.
-    return \Drupal::service('plugin.manager.field.formatter')->getInstance(array(
+    return $this->formatterPluginManager->getInstance(array(
       'field_definition' => $definition,
       'view_mode' => '_entity_embed',
       'configuration' => $display,

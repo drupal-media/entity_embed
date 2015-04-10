@@ -14,6 +14,8 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmbedButtonForm extends EntityForm {
@@ -33,16 +35,36 @@ class EmbedButtonForm extends EntityForm {
   protected $entityQuery;
 
   /**
+   * The display plugin manager.
+   *
+   * @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager
+   */
+  protected $displayPluginManager;
+
+  /**
+   * The entity_embed settings config object.
+   *
+   * @var \Drupal\Core\Config\Config
+   */
+  protected $entityEmbedConfig;
+
+  /**
    * Constructs a new EmbedButtonForm.
    *
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query
    *   The entity query.
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager service.
+   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
+   *   The plugin manager.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
    */
-  public function __construct(QueryFactory $entity_query, EntityManagerInterface $entity_manager) {
+  public function __construct(QueryFactory $entity_query, EntityManagerInterface $entity_manager, EntityEmbedDisplayManager $plugin_manager, ConfigFactoryInterface $config_factory) {
     $this->entityQuery = $entity_query;
     $this->entityManager = $entity_manager;
+    $this->displayPluginManager = $plugin_manager;
+    $this->entityEmbedConfig = $config_factory->get('entity_embed.settings');
   }
 
   /**
@@ -51,7 +73,9 @@ class EmbedButtonForm extends EntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity.query'),
-      $container->get('entity.manager')
+      $container->get('entity.manager'),
+      $container->get('plugin.manager.entity_embed.display'),
+      $container->get('config.factory')
     );
   }
 
@@ -71,8 +95,8 @@ class EmbedButtonForm extends EntityForm {
       $button_icon = array($file->id());
     }
 
-    $file_scheme = \Drupal::config('entity_embed.settings')->get('file_scheme');
-    $upload_directory = \Drupal::config('entity_embed.settings')->get('upload_directory');
+    $file_scheme = $this->entityEmbedConfig->get('file_scheme');
+    $upload_directory = $this->entityEmbedConfig->get('upload_directory');
     $upload_location = $file_scheme . '://' . $upload_directory . '/';
 
     $form['label'] = array(
@@ -158,7 +182,7 @@ class EmbedButtonForm extends EntityForm {
       // Allow option to limit display plugins.
       $form['display_plugins'] += array(
         '#title' => $this->t('Allowed display plugins'),
-        '#options' => \Drupal::service('plugin.manager.entity_embed.display')->getDefinitionOptionsForEntityType($entity_type_id),
+        '#options' => $this->displayPluginManager->getDefinitionOptionsForEntityType($entity_type_id),
         '#description' => $this->t('If none are selected, all are allowed. Note that these are the plugins which are allowed for this entity type, all of these might not be available for the selected entity.'),
       );
     }

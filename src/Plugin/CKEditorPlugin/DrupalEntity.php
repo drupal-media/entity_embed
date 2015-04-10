@@ -58,8 +58,11 @@ class DrupalEntity extends CKEditorPluginBase {
 
     foreach ($this->embedButtons as $embed_button) {
       $button = EmbedButton::load($embed_button);
-      $buttons[$button->label()] = array(
+      $buttons[$button->id()] = array(
+        'id' => SafeMarkup::checkPlain($button->id()),
+        'name' => SafeMarkup::checkPlain($button->label()),
         'label' => SafeMarkup::checkPlain($button->getButtonLabel()),
+        'entity_type' => SafeMarkup::checkPlain($button->getEntityTypeMachineName()),
         'image' => $button->getButtonImage(),
       );
     }
@@ -87,18 +90,7 @@ class DrupalEntity extends CKEditorPluginBase {
    * {@inheritdoc}
    */
   public function getConfig(Editor $editor) {
-    $buttons = array();
-
-    foreach ($this->embedButtons as $embed_button) {
-      $button = EmbedButton::load($embed_button);
-      $buttons[$button->label()] = array(
-        'id' => SafeMarkup::checkPlain($button->id()),
-        'name' => SafeMarkup::checkPlain($button->label()),
-        'label' => SafeMarkup::checkPlain($button->getButtonLabel()),
-        'entity_type' => SafeMarkup::checkPlain($button->getEntityTypeMachineName()),
-        'image' => SafeMarkup::checkPlain($button->getButtonImage()),
-      );
-    }
+    $buttons = $this->getButtons();
 
     return array(
       'DrupalEntity_dialogTitleAdd' => t('Insert entity'),

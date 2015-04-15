@@ -134,7 +134,7 @@
       if (editor.ui.addButton) {
         for (var key in editor.config.DrupalEntity_buttons) {
           var button = editor.config.DrupalEntity_buttons[key];
-          editor.ui.addButton(button.name, {
+          editor.ui.addButton(button.id, {
             label: button.label,
             data: button,
             click: function(editor) {

@@ -215,13 +215,15 @@ class EmbedButtonForm extends EntityForm {
     parent::validate($form, $form_state);
 
     $embed_button = $this->entity;
-    // Get a list of all buttons that are provided by all plugins.
-    $all_buttons = array_reduce($this->ckeditorPluginManager->getButtons(), function($result, $item) {
-      return array_merge($result, array_keys($item));
-    }, array());
-    // Ensure that button ID is unique.
-    if (in_array($embed_button->id(), $all_buttons)) {
-      $form_state->setErrorByName('id', $this->t('Machine names must be unique. A CKEditor button with ID %id already exists.', array('%id' => $embed_button->id())));
+    if ($embed_button->isNew()) {
+      // Get a list of all buttons that are provided by all plugins.
+      $all_buttons = array_reduce($this->ckeditorPluginManager->getButtons(), function($result, $item) {
+        return array_merge($result, array_keys($item));
+      }, array());
+      // Ensure that button ID is unique.
+      if (in_array($embed_button->id(), $all_buttons)) {
+        $form_state->setErrorByName('id', $this->t('Machine names must be unique. A CKEditor button with ID %id already exists.', array('%id' => $embed_button->id())));
+      }
     }
   }
 

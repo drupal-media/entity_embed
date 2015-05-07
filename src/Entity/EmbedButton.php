@@ -31,6 +31,15 @@ use Drupal\entity_embed\EntityHelperTrait;
  *     "id" = "id",
  *     "label" = "label",
  *   },
+ *   config_export = {
+ *     "label",
+ *     "id",
+ *     "button_label",
+ *     "entity_type",
+ *     "entity_type_bundles",
+ *     "button_icon_uuid",
+ *     "display_plugins",
+ *   },
  *   links = {
  *     "edit-form" = "/admin/config/content/embed-button/{embed_button}",
  *     "delete-form" = "/admin/config/content/embed-button/{embed_button}/delete"

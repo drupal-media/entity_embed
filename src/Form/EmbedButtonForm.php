@@ -9,12 +9,13 @@ namespace Drupal\entity_embed\Form;
 
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\ckeditor\CKEditorPluginManager;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -42,6 +43,13 @@ class EmbedButtonForm extends EntityForm {
   protected $displayPluginManager;
 
   /**
+   * The CKEditor plugin manager.
+   *
+   * @var \Drupal\ckeditor\CKEditorPluginManager
+   */
+  protected $ckeditorPluginManager;
+
+  /**
    * The entity_embed settings config object.
    *
    * @var \Drupal\Core\Config\Config
@@ -57,13 +65,16 @@ class EmbedButtonForm extends EntityForm {
    *   The entity manager service.
    * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
    *   The plugin manager.
+   * @param \Drupal\ckeditor\CKEditorPluginManager $ckeditor_plugin_manager
+   *   The CKEditor plugin manager.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
    */
-  public function __construct(QueryFactory $entity_query, EntityManagerInterface $entity_manager, EntityEmbedDisplayManager $plugin_manager, ConfigFactoryInterface $config_factory) {
+  public function __construct(QueryFactory $entity_query, EntityManagerInterface $entity_manager, EntityEmbedDisplayManager $plugin_manager, CKEditorPluginManager $ckeditor_plugin_manager, ConfigFactoryInterface $config_factory) {
     $this->entityQuery = $entity_query;
     $this->entityManager = $entity_manager;
     $this->displayPluginManager = $plugin_manager;
+    $this->ckeditorPluginManager = $ckeditor_plugin_manager;
     $this->entityEmbedConfig = $config_factory->get('entity_embed.settings');
   }
 
@@ -75,6 +86,7 @@ class EmbedButtonForm extends EntityForm {
       $container->get('entity.query'),
       $container->get('entity.manager'),
       $container->get('plugin.manager.entity_embed.display'),
+      $container->get('plugin.manager.ckeditor.plugin'),
       $container->get('config.factory')
     );
   }
@@ -194,6 +206,25 @@ class EmbedButtonForm extends EntityForm {
     }
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validate(array $form, FormStateInterface $form_state) {
+    parent::validate($form, $form_state);
+
+    $embed_button = $this->entity;
+    if ($embed_button->isNew()) {
+      // Get a list of all buttons that are provided by all plugins.
+      $all_buttons = array_reduce($this->ckeditorPluginManager->getButtons(), function($result, $item) {
+        return array_merge($result, array_keys($item));
+      }, array());
+      // Ensure that button ID is unique.
+      if (in_array($embed_button->id(), $all_buttons)) {
+        $form_state->setErrorByName('id', $this->t('Machine names must be unique. A CKEditor button with ID %id already exists.', array('%id' => $embed_button->id())));
+      }
+    }
   }
 
   /**

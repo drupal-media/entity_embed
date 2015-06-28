@@ -107,7 +107,9 @@
           var $element = $(element.$);
           // Use the Ajax framework to fetch the HTML, so that we can retrieve
           // out-of-band assets (JS, CSS...).
-          new Drupal.ajax($element.attr('id'), $element, {
+          var entityEmbedPreview = new Drupal.ajax({
+            base: $element.attr('id'),
+            element: $element,
             url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + $.param({
               value: element.getOuterHtml()
             })),
@@ -115,9 +117,7 @@
             // Use a custom event to trigger the call.
             event: 'entity_embed_dummy_event'
           });
-          // Trigger the call manually. The actual HTML is inserted in our
-          // 'entity_embed_insert' Ajax command on success.
-          $element.trigger('entity_embed_dummy_event');
+          entityEmbedPreview.execute();
         },
 
         // Downcast the element.

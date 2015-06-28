@@ -117,8 +117,8 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
               unset($context['data-view-mode']);
             }
 
-            $placeholder = $this->buildPlaceholder($entity, $result, $context);
-            $this->setDomNodeContent($node, $placeholder);
+            //$placeholder = $this->buildPlaceholder($entity, $result, $context);
+            //$this->setDomNodeContent($node, $placeholder);
 
             // Allow modules to alter the context.
             $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);

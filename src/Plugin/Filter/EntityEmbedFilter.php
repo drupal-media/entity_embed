@@ -76,6 +76,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       foreach ($xpath->query('//*[@data-entity-type and (@data-entity-uuid or @data-entity-id) and (@data-entity-embed-display or @data-view-mode)]') as $node) {
         $entity_type = $node->getAttribute('data-entity-type');
         $entity = NULL;
+        $entity_output = '';
 
         try {
           // Load the entity either by UUID (preferred) or ID.
@@ -118,11 +119,33 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
             $placeholder = $this->buildPlaceholder($entity, $result, $context);
             $this->setDomNodeContent($node, $placeholder);
+
+            // Allow modules to alter the context.
+            $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);
+
+            // Add cache tags and contexts.
+            if ($tags = $entity->getCacheTags()) {
+              $result->addCacheTags($tags);
+            }
+            if ($contexts = $entity->getCacheContexts()) {
+              $result->addCacheContexts($contexts);
+            }
+
+            if ($entity->access('view')) {
+              $entity_output = $this->renderEntityEmbedDisplayPlugin(
+                $entity,
+                $context['data-entity-embed-display'],
+                $context['data-entity-embed-settings'],
+                $context
+              );
+            }
           }
         }
         catch(\Exception $e) {
           watchdog_exception('entity_embed', $e);
         }
+
+        $this->setDomNodeContent($node, $entity_output);
       }
 
       $result->setProcessedText(Html::serialize($dom));

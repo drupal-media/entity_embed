@@ -160,7 +160,7 @@ class EmbedButtonForm extends EntityForm {
       '#default_value' => $button_icon,
       '#upload_validators' => array(
         'file_validate_extensions' => array('gif png jpg jpeg'),
-        'file_validate_image_resolution' => array('16x16'),
+        'file_validate_image_resolution' => array('32x32', '16x16'),
       ),
     );
     $form['display_plugins'] = array(

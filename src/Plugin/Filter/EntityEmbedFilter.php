@@ -8,7 +8,6 @@
 namespace Drupal\entity_embed\Plugin\Filter;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;

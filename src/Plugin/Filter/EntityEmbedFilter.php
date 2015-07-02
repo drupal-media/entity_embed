@@ -172,47 +172,6 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   }
 
   /**
-   * Build a render cache placeholder that will eventually render an entity.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity to be rendered.
-   * @param FilterProcessResult $result
-   *   The filter process result object that will have post_render_cache and
-   *   cache tags added.
-   * @param array $context
-   *   (optional) An array of contextual information to be included in the
-   *   generated placeholder.
-   *
-   * @return string
-   *   The generated render cache placeholder from
-   *   drupal_render_cache_generate_placeholder().
-   */
-  public function buildPlaceholder(EntityInterface $entity, FilterProcessResult $result, array $context = array()) {
-    $callback = 'entity_embed.post_render_cache:renderEmbed';
-    $context += array(
-      'data-entity-type' => $entity->getEntityTypeId(),
-      'data-entity-id' => $entity->id(),
-      'data-entity-embed-display' => 'default',
-      'data-entity-embed-settings' => array(),
-      'data-langcode' => NULL,
-    );
-
-    // Allow modules to alter the context.
-    $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);
-
-    $placeholder = drupal_render_cache_generate_placeholder($callback, $context);
-
-    $result->addPostRenderCacheCallback($callback, $context);
-
-    // Add cache tags.
-    if ($tags = $entity->getCacheTags()) {
-      $result->addCacheTags($tags);
-    }
-
-    return $placeholder;
-  }
-
-  /**
    * Replace the contents of a DOMNode.
    *
    * @param \DOMNode $node

@@ -12,6 +12,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
@@ -123,15 +124,18 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             // Allow modules to alter the context.
             $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);
 
-            // Add cache tags and contexts.
-            if ($tags = $entity->getCacheTags()) {
-              $result->addCacheTags($tags);
-            }
-            if ($contexts = $entity->getCacheContexts()) {
-              $result->addCacheContexts($contexts);
-            }
+            $access = $entity->access('view', NULL, TRUE);
+            $accessMetaData = CacheableMetadata::createFromObject($access);
+            $entityMetadata = CacheableMetadata::createFromObject($entity);
 
-            if ($entity->access('view')) {
+            // @todo Swap these https://www.drupal.org/node/2516802 is fixed in core.
+            $result->addCacheContexts($accessMetaData->getCacheContexts());
+            $result->addCacheTags($accessMetaData->getCacheTags());
+            $result->addCacheContexts($entityMetadata->getCacheContexts());
+            $result->addCacheTags($entityMetadata->getCacheTags());
+            //$result = $result->merge($entityMetadata)->merge($accessMetadata);
+
+            if ($access->isAllowed()) {
               $entity_output = $this->renderEntityEmbedDisplayPlugin(
                 $entity,
                 $context['data-entity-embed-display'],

@@ -30,7 +30,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Embedded node exists in page');
-    $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
 
     // Tests entity embed using entity UUID and view mode.
     $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-view-mode="teaser">This placeholder should not be rendered.</div>';
@@ -41,7 +41,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Embedded node exists in page.');
-    $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
 
     // Ensure that placeholder is not replaced when embed is unsuccessful.
     $content = '<div data-entity-type="node" data-entity-id="InvalidID" data-view-mode="teaser">This placeholder should be rendered since specified entity does not exists.</div>';
@@ -51,7 +51,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
-    $this->assertText(strip_tags($content), 'Placeholder appears in the output when embed is unsuccessful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is unsuccessful.');
 
     // Ensure that UUID is preferred over ID when both attributes are present.
     $sample_node = $this->drupalCreateNode();
@@ -64,7 +64,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Entity specifed with UUID exists in the page.');
     $this->assertNoText($sample_node->body->value, 'Entity specifed with ID does not exists in the page.');
-    $this->assertNoText(strip_tags($content), 'Placeholder not appears in the output when embed is successful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
 
     // Test entity embed using 'default' display plugin.
     $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
@@ -75,7 +75,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Embedded node exists in page.');
-    $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
 
     // Ensure that display plugin is preferred over view mode when both
     // attributes are present.
@@ -87,7 +87,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Embedded node exists in page with the view mode specified by entity-embed-settings.');
-    $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
 
     // Test that tag of container element is replaced when it's 'drupal-entity'.
     $content = '<drupal-entity data-entity-type="node" data-entity-id="' . $this->node->id() . '" data-view-mode="teaser">this placeholder should not be rendered.</drupal-entity>';
@@ -110,7 +110,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $node = $this->drupalCreateNode($settings);
     $this->drupalget('node/' . $node->id());
     $this->asserttext($this->node->body->value, 'embedded node exists in page');
-    $this->assertRaw('</not-drupal-entity>');
+    $this->assertNoRaw('</not-drupal-entity>');
   }
 
 }

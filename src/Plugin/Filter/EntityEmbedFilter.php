@@ -94,12 +94,6 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
           if ($entity) {
             $context = array();
 
-            // Set the initial langcode but it can be overridden by a data
-            // attribute.
-            if (!empty($langcode)) {
-              $context['data-langcode'] = $langcode;
-            }
-
             // Convert the data attributes to the context array.
             foreach ($node->attributes as $attribute) {
               $key = $attribute->nodeName;
@@ -114,12 +108,17 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
             // Support the deprecated view-mode data attribute.
             if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-settings'])) {
-              $context['data-entity-embed-settings']['view_mode'] = $context['data-view-mode'];
-              unset($context['data-view-mode']);
+              $context['data-entity-embed-display'] = 'default';
+              $context['data-entity-embed-settings'] = ['view_mode' => &$context['data-view-mode']];
             }
 
-            //$placeholder = $this->buildPlaceholder($entity, $result, $context);
-            //$this->setDomNodeContent($node, $placeholder);
+            // Merge in default attributes.
+            $context += array(
+              'data-entity-id' => $entity->id(),
+              'data-entity-embed-display' => 'default',
+              'data-entity-embed-settings' => array(),
+              'data-langcode' => $langcode,
+            );
 
             // Allow modules to alter the context.
             $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);

@@ -7,6 +7,7 @@
 #   https://github.com/sonnym/travis-ci-drupal-module-example
 
 language: php
+sudo: required
 
 php:
   - 5.5
@@ -103,6 +104,8 @@ script:
 
 after_script:
   - drupal-ti after_script
+
+notifications:
 
 notifications:
   irc:

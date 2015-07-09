@@ -106,8 +106,6 @@ after_script:
   - drupal-ti after_script
 
 notifications:
-
-notifications:
   irc:
     channels:
       - "irc.freenode.net#drupal-media"

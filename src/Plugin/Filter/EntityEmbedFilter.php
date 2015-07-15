@@ -122,19 +122,20 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             // Allow modules to alter the context.
             $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);
 
-            $access = $entity->access('view', NULL, TRUE);
+            // Do not use $entity->access() here because it does not work with
+            // public files. Uses EntityHelperTrait::accessEntity() instead.
+            // @see https://www.drupal.org/node/2533978
+            $access = $this->accessEntity($entity, 'view', NULL, TRUE);
             $access_metadata = CacheableMetadata::createFromObject($access);
             $entity_metadata = CacheableMetadata::createFromObject($entity);
             $result = $result->merge($entity_metadata)->merge($access_metadata);
 
-            if ($access->isAllowed()) {
-              $entity_output = $this->renderEntityEmbedDisplayPlugin(
-                $entity,
-                $context['data-entity-embed-display'],
-                $context['data-entity-embed-settings'],
-                $context
-              );
-            }
+            $entity_output = $this->renderEntityEmbedDisplayPlugin(
+              $entity,
+              $context['data-entity-embed-display'],
+              $context['data-entity-embed-settings'],
+              $context
+            );
           }
         }
         catch(\Exception $e) {
@@ -199,18 +200,14 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     }
 
     if (strlen($content)) {
-      // Load the contents into a new DOMDocument and retrieve the element.
-      $replacement_node = Html::load($content)->getElementsByTagName('body')
-        ->item(0)
-        ->childNodes
-        ->item(0);
+      // Load the contents into a new DOMDocument and retrieve the elements.
+      $replacement_nodes = Html::load($content)->getElementsByTagName('body')->item(0);
 
-      // Import the updated DOMNode from the new DOMDocument into the original
-      // one, importing also the child nodes of the replacement DOMNode.
-      $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
-
-      // Finally, append the contents to the DOMNode.
-      $node->appendChild($replacement_node);
+      // Finally, import and append the contents to the original node.
+      foreach ($replacement_nodes->childNodes as $replacement_node) {
+        $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
+        $node->appendchild($replacement_node);
+      }
     }
   }
 

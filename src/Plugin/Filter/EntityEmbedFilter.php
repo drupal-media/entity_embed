@@ -130,14 +130,12 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             $entity_metadata = CacheableMetadata::createFromObject($entity);
             $result = $result->merge($entity_metadata)->merge($access_metadata);
 
-            if ($access->isAllowed()) {
-              $entity_output = $this->renderEntityEmbedDisplayPlugin(
-                $entity,
-                $context['data-entity-embed-display'],
-                $context['data-entity-embed-settings'],
-                $context
-              );
-            }
+            $entity_output = $this->renderEntityEmbedDisplayPlugin(
+              $entity,
+              $context['data-entity-embed-display'],
+              $context['data-entity-embed-settings'],
+              $context
+            );
           }
         }
         catch(\Exception $e) {

@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\Tests;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Form\FormState;
 use Drupal\entity_embed\EntityHelperTrait;
 
@@ -86,17 +87,17 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
     }
 
     // Test entity embed using 'Generic file' display plugin.
-    $description = "This is sample description";
-    $content = '<div data-entity-type="file" data-entity-uuid="' . $this->file->uuid() . '" data-entity-embed-display="file:file_default" data-entity-embed-settings=\'{"description":"' . $description . '"}\'>This placeholder should not be rendered.</div>';
+    $embed_settings = array('description' => "This is sample description");
+    $content = '<div data-entity-type="file" data-entity-uuid="' . $this->file->uuid() . '" data-entity-embed-display="file:file_default" data-entity-embed-settings=\'' . Json::encode($embed_settings) . '\'>This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with file:file_default';
     $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
-    $this->assertText($description, 'Description of the embedded file exists in page.');
+    $this->assertText($embed_settings['description'], 'Description of the embedded file exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
-    $this->assertLinkByHref('files/example.txt', 0, 'Link to the embedded file exists.');
+    $this->assertLinkByHref(file_create_url($this->file->getFileUri()), 0, 'Link to the embedded file exists.');
   }
 
 }

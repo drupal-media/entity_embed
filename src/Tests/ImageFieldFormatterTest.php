@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\Tests;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Form\FormState;
 use Drupal\entity_embed\EntityHelperTrait;
 
@@ -91,16 +92,17 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     // Test entity embed using 'Image' display plugin.
     $alt_text = "This is sample description";
     $title = "This is sample title";
-    $content = '<div data-entity-type="file" data-entity-uuid="' . $this->image->uuid() . '" data-entity-embed-display="image:image" data-entity-embed-settings=\'{"image_link":"file", "alt":"' . $alt_text . '", "title":"' . $title . '"}\'>This placeholder should not be rendered.</div>';
+    $embed_settings = array('image_link' => 'file');
+    $content = '<div data-entity-type="file" data-entity-uuid="' . $this->image->uuid() . '" data-entity-embed-display="image:image" data-entity-embed-settings=\'' . Json::encode($embed_settings) . '\' alt="' . $alt_text . '" title="' . $title . '">This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with image:image';
     $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
-    $this->assertNoText($alt_text, 'Alternate text for the embedded image is not visible when embed is successful.');
+    $this->assertRaw($alt_text, 'Alternate text for the embedded image is visible when embed is successful.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
-    $this->assertLinkByHref('files/example.png', 0, 'Link to the embedded image exists.');
+    $this->assertLinkByHref(file_create_url($this->image->getFileUri()), 0, 'Link to the embedded image exists.');
   }
 
 }

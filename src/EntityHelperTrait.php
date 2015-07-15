@@ -190,7 +190,7 @@ trait EntityHelperTrait {
     // result before rendering.
     $build = $display->build();
     $this->moduleHandler()->alter('entity_embed', $build, $display);
-    $entity_output = drupal_render($build);
+    $entity_output = \Drupal::service('renderer')->render($build);
 
     $depth--;
     return $entity_output;
@@ -220,6 +220,7 @@ trait EntityHelperTrait {
    */
   protected function accessEntity(EntityInterface $entity, $op = 'view', AccountInterface $account = NULL, $return_as_object = FALSE) {
     if ($entity->getEntityTypeId() === 'file') {
+      /** @var \Drupal\file\Entity\File $entity */
       $uri = $entity->getFileUri();
       if (\Drupal::service('file_system')->uriScheme($uri) === 'public') {
         return $return_as_object ? AccessResult::allowed() : TRUE;

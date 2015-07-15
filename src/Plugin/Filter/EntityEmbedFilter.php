@@ -202,18 +202,14 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     }
 
     if (strlen($content)) {
-      // Load the contents into a new DOMDocument and retrieve the element.
-      $replacement_node = Html::load($content)->getElementsByTagName('body')
-        ->item(0)
-        ->childNodes
-        ->item(0);
+      // Load the contents into a new DOMDocument and retrieve the elements.
+      $replacement_nodes = Html::load($content)->getElementsByTagName('body')->item(0);
 
-      // Import the updated DOMNode from the new DOMDocument into the original
-      // one, importing also the child nodes of the replacement DOMNode.
-      $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
-
-      // Finally, append the contents to the DOMNode.
-      $node->appendChild($replacement_node);
+      // Finally, import and append the contents to the original node.
+      foreach ($replacement_nodes->childNodes as $replacement_node) {
+        $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
+        $node->appendchild($replacement_node);
+      }
     }
   }
 

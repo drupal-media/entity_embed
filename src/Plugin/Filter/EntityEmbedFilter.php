@@ -123,15 +123,9 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);
 
             $access = $entity->access('view', NULL, TRUE);
-            $accessMetaData = CacheableMetadata::createFromObject($access);
-            $entityMetadata = CacheableMetadata::createFromObject($entity);
-
-            // @todo Swap these https://www.drupal.org/node/2516802 is fixed in core.
-            $result->addCacheContexts($accessMetaData->getCacheContexts());
-            $result->addCacheTags($accessMetaData->getCacheTags());
-            $result->addCacheContexts($entityMetadata->getCacheContexts());
-            $result->addCacheTags($entityMetadata->getCacheTags());
-            //$result = $result->merge($entityMetadata)->merge($accessMetadata);
+            $access_metadata = CacheableMetadata::createFromObject($access);
+            $entity_metadata = CacheableMetadata::createFromObject($entity);
+            $result = $result->merge($entity_metadata)->merge($access_metadata);
 
             if ($access->isAllowed()) {
               $entity_output = $this->renderEntityEmbedDisplayPlugin(

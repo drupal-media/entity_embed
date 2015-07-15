@@ -147,7 +147,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
           watchdog_exception('entity_embed', $e);
         }
 
-        $this->replaceDomNodeContent($node, $entity_output);
+        $this->setDomNodeContent($node, $entity_output);
       }
 
       $result->setProcessedText(Html::serialize($dom));
@@ -174,6 +174,52 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   }
 
   /**
+   * Set the contents of a DOMNode.
+   *
+   * @param \DOMNode $node
+   *   A DOMNode or DOMElement object.
+   * @param string $content
+   *   The text or HTML that will replace the contents of $node.
+   */
+  protected function setDomNodeContent(\DOMNode $node, $content) {
+    // Remove all children of the DOMNode.
+    while ($node->hasChildNodes()) {
+      $node->removeChild($node->firstChild);
+    }
+
+    // Rename tag of container elemet to 'div' if it was 'drupal-entity'.
+    if ($node->tagName == 'drupal-entity') {
+      $new_node = $node->ownerDocument->createElement('div');
+
+      // Copy all attributes of original node to new node.
+      if ($node->attributes->length) {
+        foreach ($node->attributes as $attribute) {
+          $new_node->setAttribute($attribute->nodeName, $attribute->nodeValue);
+        }
+      }
+
+      $node->parentNode->replaceChild($new_node, $node);
+
+      $node = $new_node;
+    }
+
+    if (strlen($content)) {
+      // Load the contents into a new DOMDocument and retrieve the element.
+      $replacement_node = Html::load($content)->getElementsByTagName('body')
+        ->item(0)
+        ->childNodes
+        ->item(0);
+
+      // Import the updated DOMNode from the new DOMDocument into the original
+      // one, importing also the child nodes of the replacement DOMNode.
+      $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
+
+      // Finally, append the contents to the DOMNode.
+      $node->appendChild($replacement_node);
+    }
+  }
+
+  /**
    * Replace the contents of a DOMNode.
    *
    * @param \DOMNode $node
@@ -182,10 +228,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    *   The text or HTML that will replace the contents of $node.
    */
   protected function replaceDomNodeContent(\DOMNode $node, $content) {
-    if (empty($content)) {
-      $node->parentNode->removeChild($node);
-    }
-    else {
+    if (strlen($content)) {
       // Load the contents into a new DOMDocument and retrieve the element.
       $replacement_node = Html::load($content)->getElementsByTagName('body')
         ->item(0)
@@ -193,9 +236,14 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
         ->item(0);
 
       // Import the updated DOMNode from the new DOMDocument into the original
-      // one, importing also the child nodes of the replacment DOMNode.
+      // one, importing also the child nodes of the replacement DOMNode.
       $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
+
       $node->parentNode->replaceChild($replacement_node, $node);
     }
+    else {
+      $node->parentNode->removeChild($node);
+    }
   }
+
 }

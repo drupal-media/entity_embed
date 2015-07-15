@@ -8,10 +8,10 @@
 namespace Drupal\entity_embed\Plugin\Filter;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
@@ -93,12 +93,6 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
           if ($entity) {
             $context = array();
 
-            // Set the initial langcode but it can be overridden by a data
-            // attribute.
-            if (!empty($langcode)) {
-              $context['data-langcode'] = $langcode;
-            }
-
             // Convert the data attributes to the context array.
             foreach ($node->attributes as $attribute) {
               $key = $attribute->nodeName;
@@ -113,25 +107,27 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
             // Support the deprecated view-mode data attribute.
             if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-settings'])) {
-              $context['data-entity-embed-settings']['view_mode'] = $context['data-view-mode'];
-              unset($context['data-view-mode']);
+              $context['data-entity-embed-display'] = 'default';
+              $context['data-entity-embed-settings'] = ['view_mode' => &$context['data-view-mode']];
             }
 
-            //$placeholder = $this->buildPlaceholder($entity, $result, $context);
-            //$this->setDomNodeContent($node, $placeholder);
+            // Merge in default attributes.
+            $context += array(
+              'data-entity-id' => $entity->id(),
+              'data-entity-embed-display' => 'default',
+              'data-entity-embed-settings' => array(),
+              'data-langcode' => $langcode,
+            );
 
             // Allow modules to alter the context.
             $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);
 
-            // Add cache tags and contexts.
-            if ($tags = $entity->getCacheTags()) {
-              $result->addCacheTags($tags);
-            }
-            if ($contexts = $entity->getCacheContexts()) {
-              $result->addCacheContexts($contexts);
-            }
+            $access = $entity->access('view', NULL, TRUE);
+            $access_metadata = CacheableMetadata::createFromObject($access);
+            $entity_metadata = CacheableMetadata::createFromObject($entity);
+            $result = $result->merge($entity_metadata)->merge($access_metadata);
 
-            if ($entity->access('view')) {
+            if ($access->isAllowed()) {
               $entity_output = $this->renderEntityEmbedDisplayPlugin(
                 $entity,
                 $context['data-entity-embed-display'],
@@ -172,65 +168,14 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   }
 
   /**
-   * Build a render cache placeholder that will eventually render an entity.
+   * Set the contents of a DOMNode.
    *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity to be rendered.
-   * @param FilterProcessResult $result
-   *   The filter process result object that will have post_render_cache and
-   *   cache tags added.
-   * @param array $context
-   *   (optional) An array of contextual information to be included in the
-   *   generated placeholder.
-   *
-   * @return string
-   *   The generated render cache placeholder from
-   *   drupal_render_cache_generate_placeholder().
-   */
-  public function buildPlaceholder(EntityInterface $entity, FilterProcessResult $result, array $context = array()) {
-    $callback = 'entity_embed.post_render_cache:renderEmbed';
-    $context += array(
-      'data-entity-type' => $entity->getEntityTypeId(),
-      'data-entity-id' => $entity->id(),
-      'data-entity-embed-display' => 'default',
-      'data-entity-embed-settings' => array(),
-      'data-langcode' => NULL,
-    );
-
-    // Allow modules to alter the context.
-    $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);
-
-    $placeholder = drupal_render_cache_generate_placeholder($callback, $context);
-
-    $result->addPostRenderCacheCallback($callback, $context);
-
-    // Add cache tags.
-    if ($tags = $entity->getCacheTags()) {
-      $result->addCacheTags($tags);
-    }
-
-    return $placeholder;
-  }
-
-  /**
-   * Replace the contents of a DOMNode.
-   *
-   * @param \DOMNode $node
-   *   A DOMNode or DOMElement object.
+   * @param \DOMElement $node
+   *   A DOMElement object.
    * @param string $content
    *   The text or HTML that will replace the contents of $node.
    */
-  protected function setDomNodeContent(\DOMNode $node, $content) {
-    // Load the contents into a new DOMDocument and retrieve the element.
-    $replacement_node = Html::load($content)->getElementsByTagName('body')
-      ->item(0)
-      ->childNodes
-      ->item(0);
-
-    // Import the updated DOMNode from the new DOMDocument into the original
-    // one, importing also the child nodes of the replacment DOMNode.
-    $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
-
+  protected function setDomNodeContent(\DOMElement $node, $content) {
     // Remove all children of the DOMNode.
     while ($node->hasChildNodes()) {
       $node->removeChild($node->firstChild);
@@ -238,6 +183,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
     // Rename tag of container elemet to 'div' if it was 'drupal-entity'.
     if ($node->tagName == 'drupal-entity') {
+      /** @var \DOMElement $new_node */
       $new_node = $node->ownerDocument->createElement('div');
 
       // Copy all attributes of original node to new node.
@@ -252,7 +198,47 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       $node = $new_node;
     }
 
-    // Finally, append the contents to the DOMNode.
-    $node->appendChild($replacement_node);
+    if (strlen($content)) {
+      // Load the contents into a new DOMDocument and retrieve the element.
+      $replacement_node = Html::load($content)->getElementsByTagName('body')
+        ->item(0)
+        ->childNodes
+        ->item(0);
+
+      // Import the updated DOMNode from the new DOMDocument into the original
+      // one, importing also the child nodes of the replacement DOMNode.
+      $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
+
+      // Finally, append the contents to the DOMNode.
+      $node->appendChild($replacement_node);
+    }
   }
+
+  /**
+   * Replace the contents of a DOMNode.
+   *
+   * @param \DOMElement $node
+   *   A DOMElement object.
+   * @param string $content
+   *   The text or HTML that will replace the contents of $node.
+   */
+  protected function replaceDomNodeContent(\DOMElement $node, $content) {
+    if (strlen($content)) {
+      // Load the contents into a new DOMDocument and retrieve the element.
+      $replacement_node = Html::load($content)->getElementsByTagName('body')
+        ->item(0)
+        ->childNodes
+        ->item(0);
+
+      // Import the updated DOMNode from the new DOMDocument into the original
+      // one, importing also the child nodes of the replacement DOMNode.
+      $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
+
+      $node->parentNode->replaceChild($replacement_node, $node);
+    }
+    else {
+      $node->parentNode->removeChild($node);
+    }
+  }
+
 }

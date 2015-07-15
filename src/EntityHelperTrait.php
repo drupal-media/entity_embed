@@ -8,6 +8,7 @@
 namespace Drupal\entity_embed;
 
 use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityStorageException;
@@ -198,6 +199,8 @@ trait EntityHelperTrait {
   /**
    * Check access to an entity.
    *
+   * @todo Remove when https://www.drupal.org/node/2533978 is fixed in core.
+   *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity object.
    * @param string $op
@@ -205,43 +208,25 @@ trait EntityHelperTrait {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   (optional) The user for which to check access, or NULL to check access
    *   for the current user. Defaults to NULL.
+   * @param bool $return_as_object
+   *   (optional) Defaults to FALSE.
    *
-   * @return bool|null
-   *   self::ALLOW, self::DENY, or self::KILL.
+   * @return bool|\Drupal\Core\Access\AccessResultInterface
+   *   The access result. Returns a boolean if $return_as_object is FALSE (this
+   *   is the default) and otherwise an AccessResultInterface object.
+   *   When a boolean is returned, the result of AccessInterface::isAllowed() is
+   *   returned, i.e. TRUE means access is explicitly allowed, FALSE means
+   *   access is either explicitly forbidden or "no opinion".
    */
-  protected function accessEntity(EntityInterface $entity, $op = 'view', AccountInterface $account = NULL) {
-    switch ($entity->getEntityTypeId()) {
-      case 'file':
-        // Due to issues with access checking with file entities in core,
-        // we cannot actually use Entity::access() which would have been called
-        // by parent::access().
-        //
-        // @see https://drupal.org/node/2128791
-        // @see https://drupal.org/node/2148353
-        // @see https://drupal.org/node/2078473
-        $uri = $entity->getFileUri();
-        switch (file_uri_scheme($uri)) {
-          case 'public':
-            return TRUE;
-
-          case 'private':
-          case 'temporary':
-            $headers = $this->moduleHandler()->invokeAll('file_download', array($uri));
-            foreach ($headers as $result) {
-              if ($result == -1) {
-                return FALSE;
-              }
-            }
-
-            if (count($headers)) {
-              return TRUE;
-            }
-            break;
-        }
-
-      default:
-        return $entity->access($op, $account);
+  protected function accessEntity(EntityInterface $entity, $op = 'view', AccountInterface $account = NULL, $return_as_object = FALSE) {
+    if ($entity->getEntityTypeId() === 'file') {
+      $uri = $entity->getFileUri();
+      if (\Drupal::service('file_system')->uriScheme($uri) === 'public') {
+        return $return_as_object ? AccessResult::allowed() : TRUE;
+      }
     }
+
+    return $entity->access($op, $account, $return_as_object);
   }
 
   /**

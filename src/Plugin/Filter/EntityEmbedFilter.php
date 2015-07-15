@@ -176,12 +176,12 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   /**
    * Set the contents of a DOMNode.
    *
-   * @param \DOMNode $node
-   *   A DOMNode or DOMElement object.
+   * @param \DOMElement $node
+   *   A DOMElement object.
    * @param string $content
    *   The text or HTML that will replace the contents of $node.
    */
-  protected function setDomNodeContent(\DOMNode $node, $content) {
+  protected function setDomNodeContent(\DOMElement $node, $content) {
     // Remove all children of the DOMNode.
     while ($node->hasChildNodes()) {
       $node->removeChild($node->firstChild);
@@ -189,6 +189,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
     // Rename tag of container elemet to 'div' if it was 'drupal-entity'.
     if ($node->tagName == 'drupal-entity') {
+      /** @var \DOMElement $new_node */
       $new_node = $node->ownerDocument->createElement('div');
 
       // Copy all attributes of original node to new node.
@@ -222,12 +223,12 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   /**
    * Replace the contents of a DOMNode.
    *
-   * @param \DOMNode $node
-   *   A DOMNode or DOMElement object.
+   * @param \DOMElement $node
+   *   A DOMElement object.
    * @param string $content
    *   The text or HTML that will replace the contents of $node.
    */
-  protected function replaceDomNodeContent(\DOMNode $node, $content) {
+  protected function replaceDomNodeContent(\DOMElement $node, $content) {
     if (strlen($content)) {
       // Load the contents into a new DOMDocument and retrieve the element.
       $replacement_node = Html::load($content)->getElementsByTagName('body')

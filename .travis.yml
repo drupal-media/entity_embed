@@ -21,6 +21,10 @@ matrix:
     - php: 7
     - php: hhvm
 
+branches:
+  only:
+    - "8.x-1.x"
+
 env:
   global:
     # add composer's global bin directory to the path

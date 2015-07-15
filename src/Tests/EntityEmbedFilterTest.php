@@ -110,7 +110,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $node = $this->drupalCreateNode($settings);
     $this->drupalget('node/' . $node->id());
     $this->asserttext($this->node->body->value, 'embedded node exists in page');
-    $this->assertNoRaw('</not-drupal-entity>');
+    $this->assertRaw('</not-drupal-entity>');
   }
 
 }

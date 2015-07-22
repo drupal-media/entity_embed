@@ -49,7 +49,7 @@ class EmbedButtonAdminTest extends EntityEmbedTestBase {
     $this->drupalGet('admin/config/content/embed-button');
     $this->assertResponse(403, 'User without admin permissions are not able to visit the configuration page.');
 
-    // Swtich to admin user.
+    // Switch to admin user.
     $this->drupalLogin($this->adminUser);
 
     $this->drupalGet('admin/config/content/embed-button');

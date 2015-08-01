@@ -470,9 +470,9 @@ class EntityEmbedDialog extends FormBase {
    * Returns allowed if the editor toolbar contains the embed button and neutral
    * otherwise.
    *
-   * @param \Drupal\filter\Entity\FilterFormatInterface $filter_format
+   * @param \Drupal\filter\FilterFormatInterface $filter_format
    *   The filter format to which this dialog corresponds.
-   * @param \Drupal\entity_embed\Entity\EmbedButtonInterface $embed_button
+   * @param \Drupal\entity_embed\EmbedButtonInterface $embed_button
    *   The embed button to which this dialog corresponds.
    *
    * @return \Drupal\Core\Access\AccessResultInterface

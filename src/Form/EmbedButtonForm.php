@@ -134,7 +134,7 @@ class EmbedButtonForm extends EntityForm {
       '#description' => $this->t("Entity type for which this button is to enabled."),
       '#required' => TRUE,
       '#ajax' => array(
-        'callback' => array($this, 'updateEntityTypeDependentFields'),
+        'callback' => '::updateEntityTypeDependentFields',
         'effect' => 'fade',
       ),
     );
@@ -329,9 +329,9 @@ class EmbedButtonForm extends EntityForm {
    * Ajax callback to update the form fields which depend on entity type.
    *
    * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param FormStateInterface $form_state
-   *   An associative array containing the current state of the form.
+   *   The build form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
    *
    * @response AjaxResponse
    *   Ajax response with updated options for entity type bundles.

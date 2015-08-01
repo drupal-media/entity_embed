@@ -156,7 +156,7 @@ class EntityEmbedDialog extends FormBase {
           // No regular submit-handler. This form only works via JavaScript.
           '#submit' => array(),
           '#ajax' => array(
-            'callback' => array($this, 'submitSelectForm'),
+            'callback' => '::submitSelectForm',
             'event' => 'click',
           ),
         );
@@ -213,7 +213,7 @@ class EntityEmbedDialog extends FormBase {
           '#default_value' => $entity_element['data-entity-embed-display'],
           '#required' => TRUE,
           '#ajax' => array(
-            'callback' => array($this, 'updatePluginConfigurationForm'),
+            'callback' => '::updatePluginConfigurationForm',
             'wrapper' => 'data-entity-embed-settings-wrapper',
             'effect' => 'fade',
           ),
@@ -273,7 +273,7 @@ class EntityEmbedDialog extends FormBase {
           // No regular submit-handler. This form only works via JavaScript.
           '#submit' => array(),
           '#ajax' => array(
-            'callback' => array($this, 'goBack'),
+            'callback' => '::goBack',
             'event' => 'click',
           ),
         );
@@ -283,7 +283,7 @@ class EntityEmbedDialog extends FormBase {
           // No regular submit-handler. This form only works via JavaScript.
           '#submit' => array(),
           '#ajax' => array(
-            'callback' => array($this, 'submitEmbedForm'),
+            'callback' => '::submitEmbedForm',
             'event' => 'click',
           ),
         );
@@ -361,9 +361,9 @@ class EntityEmbedDialog extends FormBase {
    * Form submission handler to update the plugin configuration form.
    *
    * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param FormStateInterface $form_state
-   *   An associative array containing the current state of the form.
+   *   The build form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
    */
   public function updatePluginConfigurationForm(array &$form, FormStateInterface $form_state) {
     return $form['attributes']['data-entity-embed-settings'];
@@ -373,9 +373,9 @@ class EntityEmbedDialog extends FormBase {
    * Form submission handler to go back to the previous step of the form.
    *
    * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param FormStateInterface $form_state
-   *   An associative array containing the current state of the form.
+   *   The build form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
    */
   public function goBack(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
@@ -393,9 +393,9 @@ class EntityEmbedDialog extends FormBase {
    * Form submission handler that selects an entity and display embed settings.
    *
    * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param FormStateInterface $form_state
-   *   An associative array containing the current state of the form.
+   *   The build form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
    */
   public function submitSelectForm(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();

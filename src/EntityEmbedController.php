@@ -41,7 +41,7 @@ class EntityEmbedController extends ControllerBase {
       throw new NotFoundHttpException();
     }
 
-    $entity_output = check_markup($text, $filter_format->id());
+    $entity_output = (string) check_markup($text, $filter_format->id());
 
     $response = new AjaxResponse();
     $response->addCommand(new EntityEmbedInsertCommand($entity_output));

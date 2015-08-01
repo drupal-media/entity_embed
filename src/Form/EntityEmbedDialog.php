@@ -21,7 +21,6 @@ use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\entity_embed\EmbedButtonInterface;
 use Drupal\filter\FilterFormatInterface;
 use Drupal\Component\Serialization\Json;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -38,26 +37,16 @@ class EntityEmbedDialog extends FormBase {
   protected $formBuilder;
 
   /**
-   * A logger instance.
-   *
-   * @var \Psr\Log\LoggerInterface
-   */
-  protected $logger;
-
-  /**
    * Constructs a EntityEmbedDialog object.
    *
    * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
    *   The Module Handler.
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    *   The Form Builder.
-   * @param \Psr\Log\LoggerInterface $logger
-   *   A logger instance.
    */
-  public function __construct(EntityEmbedDisplayManager $plugin_manager, FormBuilderInterface $form_builder, LoggerInterface $logger) {
+  public function __construct(EntityEmbedDisplayManager $plugin_manager, FormBuilderInterface $form_builder) {
     $this->setDisplayPluginManager($plugin_manager);
     $this->formBuilder = $form_builder;
-    $this->logger = $logger;
   }
 
   /**
@@ -66,8 +55,7 @@ class EntityEmbedDialog extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('plugin.manager.entity_embed.display'),
-      $container->get('form_builder'),
-      $container->get('logger.factory')->get('entity_embed')
+      $container->get('form_builder')
     );
   }
 
@@ -340,7 +328,7 @@ class EntityEmbedDialog extends FormBase {
               // raise error. Also log an exception.
               if (empty($display_plugin_options)) {
                 $form_state->setError($form['attributes']['data-entity-id'], $this->t('No display options available for the selected entity. Please select another entity.'));
-                $this->logger->warning('No display options available for "@type:" entity "@id" while embedding using button "@button". Please ensure that at least one display plugin is allowed for this embed button which is available for this entity.', array('@type' => $entity_type, '@id' => $entity->id(), '@button' => $embed_button->id()));
+                $this->logger('entity_embed')->warning('No display options available for "@type:" entity "@id" while embedding using button "@button". Please ensure that at least one display plugin is allowed for this embed button which is available for this entity.', array('@type' => $entity_type, '@id' => $entity->id(), '@button' => $embed_button->id()));
               }
             }
           }

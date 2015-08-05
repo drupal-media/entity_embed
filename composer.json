@@ -7,5 +7,8 @@
     "issues": "https://www.drupal.org/project/issues/entity_embed",
     "irc": "irc://irc.freenode.org/drupal-media"
   },
-  "license": "GPL-2.0+"
+  "license": "GPL-2.0+",
+  "require": {
+    "drupal/embed": "*"
+  }
 }

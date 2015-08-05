@@ -17,7 +17,7 @@ use Drupal\Component\Plugin\Exception\PluginException;
  * Provides an Entity embed display plugin manager.
  *
  * @see \Drupal\entity_embed\Annotation\EntityEmbedDisplay
- * @see \Drupal\entity_embed\EntityEmbedDisplayInterface
+ * @see \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayInterface
  */
 class EntityEmbedDisplayManager extends DefaultPluginManager {
 

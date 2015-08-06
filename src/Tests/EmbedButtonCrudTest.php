@@ -35,7 +35,7 @@ class EmbedButtonCrudTest extends KernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->controller = $this->container->get('entity.manager')->getStorage('embed_button');
+    $this->controller = $this->container->get('entity.manager')->getStorage('entity_embed_button');
   }
 
   /**

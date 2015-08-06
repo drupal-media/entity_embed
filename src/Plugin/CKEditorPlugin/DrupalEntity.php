@@ -62,7 +62,7 @@ class DrupalEntity extends CKEditorPluginBase implements ContainerFactoryPluginI
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity.query')->get('embed_button')
+      $container->get('entity.query')->get('entity_embed_button')
       );
     }
 

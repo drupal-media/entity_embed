@@ -1,5 +1,5 @@
 entity_embed.embed_button_add:
-  route_name: embed_button.add
+  route_name: entity_embed_button.add
   title: 'Add Embed Button'
   appears_on:
-    - embed_button.list
+    - entity_embed_button.list

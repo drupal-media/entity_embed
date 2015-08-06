@@ -15,8 +15,8 @@ use Drupal\entity_embed\EntityHelperTrait;
  * Defines the EmbedButton entity.
  *
  * @ConfigEntityType(
- *   id = "embed_button",
- *   label = @Translation("Embed Button"),
+ *   id = "entity_embed_button",
+ *   label = @Translation("Entity embed button"),
  *   handlers = {
  *     "list_builder" = "Drupal\entity_embed\EmbedButtonListBuilder",
  *     "form" = {
@@ -41,8 +41,8 @@ use Drupal\entity_embed\EntityHelperTrait;
  *     "display_plugins",
  *   },
  *   links = {
- *     "edit-form" = "/admin/config/content/embed-button/{embed_button}",
- *     "delete-form" = "/admin/config/content/embed-button/{embed_button}/delete"
+ *     "edit-form" = "/admin/config/content/embed-button/{entity_embed_button}",
+ *     "delete-form" = "/admin/config/content/embed-button/{entity_embed_button}/delete"
  *   }
  * )
  */

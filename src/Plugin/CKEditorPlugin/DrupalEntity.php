@@ -77,7 +77,7 @@ class DrupalEntity extends CKEditorPluginBase implements ContainerFactoryPluginI
       $buttons[$button->id()] = array(
         'id' => SafeMarkup::checkPlain($button->id()),
         'name' => SafeMarkup::checkPlain($button->label()),
-        'label' => SafeMarkup::checkPlain($button->getButtonLabel()),
+        'label' => SafeMarkup::checkPlain($button->label()),
         'entity_type' => SafeMarkup::checkPlain($button->getEntityTypeMachineName()),
         'image' => $button->getButtonImage(),
       );

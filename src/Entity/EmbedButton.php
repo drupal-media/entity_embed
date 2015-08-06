@@ -32,9 +32,8 @@ use Drupal\entity_embed\EntityHelperTrait;
  *     "label" = "label",
  *   },
  *   config_export = {
- *     "label",
  *     "id",
- *     "button_label",
+ *     "label",
  *     "entity_type",
  *     "entity_type_bundles",
  *     "button_icon_uuid",
@@ -62,13 +61,6 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    * @var string
    */
   public $label;
-
-  /**
-   * Label of the button shown in CKEditor toolbar.
-   *
-   * @var string
-   */
-  public $button_label;
 
   /**
    * Selected entity type.
@@ -121,13 +113,6 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    */
   public function getEntityTypeBundles() {
     return $this->entity_type_bundles;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getButtonLabel() {
-    return $this->button_label;
   }
 
   /**

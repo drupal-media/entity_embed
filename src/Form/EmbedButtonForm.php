@@ -133,14 +133,6 @@ class EmbedButtonForm extends EntityForm {
       '#prefix' => '<div id="bundle-entity-type-wrapper">',
       '#suffix' => '</div>',
     );
-    $form['button_label'] = array(
-      '#type' => 'textfield',
-      '#title' => $this->t('Button Label'),
-      '#maxlength' => 255,
-      '#default_value' => $embed_button->button_label,
-      '#description' => $this->t("Label for the button to be shown in CKEditor toolbar."),
-      '#required' => TRUE,
-    );
     $form['button_icon'] = array(
       '#title' => $this->t('Button image'),
       '#type' => 'managed_file',

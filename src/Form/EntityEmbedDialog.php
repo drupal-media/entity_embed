@@ -231,7 +231,7 @@ class EntityEmbedDialog extends FormBase {
         );
         $form['attributes']['data-entity-label'] = array(
           '#type' => 'value',
-          '#value' => $embed_button->getButtonLabel(),
+          '#value' => $embed_button->label(),
         );
         $plugin_id = !empty($values['attributes']['data-entity-embed-display']) ? $values['attributes']['data-entity-embed-display'] : $entity_element['data-entity-embed-display'];
         if (!empty($plugin_id)) {

@@ -57,7 +57,6 @@ class EmbedButtonCrudTest extends KernelTestBase {
     $plugin = array(
       'id' => 'test_button',
       'label' => 'Testing embed button instance',
-      'button_label' => 'Test',
       'entity_type' => 'node',
       'entity_type_bundles' => array('article'),
       'button_icon_uuid' => '',
@@ -80,16 +79,15 @@ class EmbedButtonCrudTest extends KernelTestBase {
       'langcode' => $this->container->get('language_manager')->getDefaultLanguage()->getId(),
       'status' => TRUE,
       'dependencies' => array(),
-      'label' => 'Testing embed button instance',
       'id' => 'test_button',
-      'button_label' => 'Test',
+      'label' => 'Testing embed button instance',
       'entity_type' => 'node',
       'entity_type_bundles' => array('article'),
       'button_icon_uuid' => '',
       'display_plugins' => array('default'),
     );
 
-    $this->assertIdentical($actual_properties, $expected_properties, 'Actual config properties are structured as expected.');
+    $this->assertIdentical($actual_properties, $expected_properties);
   }
 
   /**
@@ -102,7 +100,6 @@ class EmbedButtonCrudTest extends KernelTestBase {
 
     // Verify several properties of the embed button.
     $this->assertEqual($entity->label(), 'Testing embed button instance');
-    $this->assertEqual($entity->getButtonLabel(), 'Test');
     $this->assertEqual($entity->getEntityTypeMachineName(), 'node');
     $this->assertTrue($entity->uuid());
   }

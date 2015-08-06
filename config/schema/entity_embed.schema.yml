@@ -19,9 +19,6 @@ entity_embed.embed_button.*:
     id:
       type: string
       label: 'Machine name'
-    button_label:
-      type: string
-      label: 'Button label'
     entity_type:
       type: string
       label: 'Entity type'

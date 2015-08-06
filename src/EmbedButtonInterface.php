@@ -31,14 +31,6 @@ interface EmbedButtonInterface extends ConfigEntityInterface {
   public function getEntityTypeLabel();
 
   /**
-   * Returns the label for the button to be shown in CKEditor toolbar.
-   *
-   * @return string
-   *   Label for the button.
-   */
-  public function getButtonLabel();
-
-  /**
    * Returns the URL of the button's icon.
    *
    * @return string

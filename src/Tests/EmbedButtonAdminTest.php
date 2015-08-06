@@ -65,7 +65,6 @@ class EmbedButtonAdminTest extends EntityEmbedTestBase {
       'id' => $button_id,
       'label' => $name,
       'entity_type' => 'node',
-      'button_label' => $name,
     );
     $this->drupalPostForm(NULL, $edit, t('Save'));
     // Ensure that the newly created button exists.
@@ -80,10 +79,9 @@ class EmbedButtonAdminTest extends EntityEmbedTestBase {
     $new_name = $this->randomMachineName();
     $edit = array(
       'label' => $new_name,
-      'button_label' => $new_name,
     );
     $this->drupalPostForm(NULL, $edit, t('Save'));
-    // Ensure that name and button_label has been changed.
+    // Ensure that name and label has been changed.
     $this->drupalGet('admin/config/content/embed-button');
     $this->assertText($new_name, 'New label appears on the list page');
     $this->assertNoText($name, 'Old label does not appears on the list page');

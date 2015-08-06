@@ -79,15 +79,15 @@ class EmbedButtonCrudTest extends KernelTestBase {
       'langcode' => $this->container->get('language_manager')->getDefaultLanguage()->getId(),
       'status' => TRUE,
       'dependencies' => array(),
-      'label' => 'Testing embed button instance',
       'id' => 'test_button',
+      'label' => 'Testing embed button instance',
       'entity_type' => 'node',
       'entity_type_bundles' => array('article'),
       'button_icon_uuid' => '',
       'display_plugins' => array('default'),
     );
 
-    $this->assertIdentical($actual_properties, $expected_properties, 'Actual config properties are structured as expected.');
+    $this->assertIdentical($actual_properties, $expected_properties);
   }
 
   /**

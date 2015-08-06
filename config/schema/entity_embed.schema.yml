@@ -1,5 +1,5 @@
 entity_embed.settings:
-  type: mapping
+  type: config_object
   label: 'Entity embed settings'
   mapping:
     file_scheme:

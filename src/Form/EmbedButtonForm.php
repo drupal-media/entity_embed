@@ -333,7 +333,7 @@ class EmbedButtonForm extends EntityForm {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
    *
-   * @response AjaxResponse
+   * @return AjaxResponse
    *   Ajax response with updated options for entity type bundles.
    */
   public function updateEntityTypeDependentFields(array &$form, FormStateInterface $form_state) {

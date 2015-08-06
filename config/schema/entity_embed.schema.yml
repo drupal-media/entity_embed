@@ -4,10 +4,10 @@ entity_embed.settings:
   mapping:
     file_scheme:
       type: string
-      label: 'File scheme for buton images'
+      label: 'File scheme for button images'
     upload_directory:
       type: string
-      label: 'Upload directory for buton images'
+      label: 'Upload directory for button images'
 
 entity_embed.embed_button.*:
   type: config_entity

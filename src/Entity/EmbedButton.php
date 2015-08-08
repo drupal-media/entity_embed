@@ -15,8 +15,8 @@ use Drupal\entity_embed\EntityHelperTrait;
  * Defines the EmbedButton entity.
  *
  * @ConfigEntityType(
- *   id = "embed_button",
- *   label = @Translation("Embed Button"),
+ *   id = "entity_embed_button",
+ *   label = @Translation("Entity embed button"),
  *   handlers = {
  *     "list_builder" = "Drupal\entity_embed\EmbedButtonListBuilder",
  *     "form" = {
@@ -32,17 +32,16 @@ use Drupal\entity_embed\EntityHelperTrait;
  *     "label" = "label",
  *   },
  *   config_export = {
- *     "label",
  *     "id",
- *     "button_label",
+ *     "label",
  *     "entity_type",
  *     "entity_type_bundles",
  *     "button_icon_uuid",
  *     "display_plugins",
  *   },
  *   links = {
- *     "edit-form" = "/admin/config/content/embed-button/{embed_button}",
- *     "delete-form" = "/admin/config/content/embed-button/{embed_button}/delete"
+ *     "edit-form" = "/admin/config/content/embed-button/{entity_embed_button}",
+ *     "delete-form" = "/admin/config/content/embed-button/{entity_embed_button}/delete"
  *   }
  * )
  */
@@ -62,13 +61,6 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    * @var string
    */
   public $label;
-
-  /**
-   * Label of the button shown in CKEditor toolbar.
-   *
-   * @var string
-   */
-  public $button_label;
 
   /**
    * Selected entity type.
@@ -121,13 +113,6 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
    */
   public function getEntityTypeBundles() {
     return $this->entity_type_bundles;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getButtonLabel() {
-    return $this->button_label;
   }
 
   /**

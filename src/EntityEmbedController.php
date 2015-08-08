@@ -30,7 +30,7 @@ class EntityEmbedController extends ControllerBase {
    *   The filter format.
    *
    * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-   *   Throws an exception if 'text' parameter is not found in the request.
+   *   Throws an exception if 'value' parameter is not found in the request.
    *
    * @return \Symfony\Component\HttpFoundation\Response
    *   The preview of the entity specified by the data attributes.

@@ -14,7 +14,7 @@ use Drupal\Core\Url;
  */
 function entity_embed_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
-    case 'embed_button.list':
+    case 'entity_embed_button.list':
       return '<p>' . t("Embed buttons define the buttons that can be added to CKEditor's toolbar. All buttons correspond to the selcted entity type, although a particular entity type can have more than one buttons. After you've created the desired buttons, go to <a href='@filterformats'>Text formats and editors configuration</a> page to add them to CKEditor's toolbar. Make sure to add <em>&lt;drupal-entity&gt;</em> to the list of 'Allowed HTML tags'.", array('@filterformats' => Url::fromRoute('filter.admin_overview')->toString())) . '</p>';
   }
 }

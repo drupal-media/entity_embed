@@ -13,7 +13,6 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\ckeditor\CKEditorPluginManager;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
@@ -27,13 +26,6 @@ class EmbedButtonForm extends EntityForm {
    * @var \Drupal\Core\Entity\EntityManagerInterface
    */
   protected $entityManager;
-
-  /**
-   * The entity query factory service.
-   *
-   * @var \Drupal\Core\Entity\Query\QueryFactory
-   */
-  protected $entityQuery;
 
   /**
    * The display plugin manager.
@@ -59,8 +51,6 @@ class EmbedButtonForm extends EntityForm {
   /**
    * Constructs a new EmbedButtonForm.
    *
-   * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query
-   *   The entity query.
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager service.
    * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
@@ -70,8 +60,7 @@ class EmbedButtonForm extends EntityForm {
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
    */
-  public function __construct(QueryFactory $entity_query, EntityManagerInterface $entity_manager, EntityEmbedDisplayManager $plugin_manager, CKEditorPluginManager $ckeditor_plugin_manager, ConfigFactoryInterface $config_factory) {
-    $this->entityQuery = $entity_query;
+  public function __construct(EntityManagerInterface $entity_manager, EntityEmbedDisplayManager $plugin_manager, CKEditorPluginManager $ckeditor_plugin_manager, ConfigFactoryInterface $config_factory) {
     $this->entityManager = $entity_manager;
     $this->displayPluginManager = $plugin_manager;
     $this->ckeditorPluginManager = $ckeditor_plugin_manager;
@@ -83,7 +72,6 @@ class EmbedButtonForm extends EntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.query'),
       $container->get('entity.manager'),
       $container->get('plugin.manager.entity_embed.display'),
       $container->get('plugin.manager.ckeditor.plugin'),
@@ -122,7 +110,8 @@ class EmbedButtonForm extends EntityForm {
       '#type' => 'machine_name',
       '#default_value' => $embed_button->id(),
       '#machine_name' => array(
-        'exists' => array($this, 'exists'),
+        'exists' => ['Drupal\entity_embed\Entity\EmbedButton', 'load'],
+        'source' => array('label'),
       ),
       '#disabled' => !$embed_button->isNew(),
     );
@@ -143,14 +132,6 @@ class EmbedButtonForm extends EntityForm {
       '#default_value' => $embed_button->entity_type_bundles ?: array(),
       '#prefix' => '<div id="bundle-entity-type-wrapper">',
       '#suffix' => '</div>',
-    );
-    $form['button_label'] = array(
-      '#type' => 'textfield',
-      '#title' => $this->t('Button Label'),
-      '#maxlength' => 255,
-      '#default_value' => $embed_button->button_label,
-      '#description' => $this->t("Label for the button to be shown in CKEditor toolbar."),
-      '#required' => TRUE,
     );
     $form['button_icon'] = array(
       '#title' => $this->t('Button image'),
@@ -238,7 +219,7 @@ class EmbedButtonForm extends EntityForm {
       drupal_set_message($this->t('Saved the %label Embed Button.', array(
         '%label' => $embed_button->label(),
       )));
-      $form_state->setRedirect('embed_button.list');
+      $form_state->setRedirect('entity_embed_button.list');
     }
     else {
       drupal_set_message($this->t('The %label Embed Button was not saved.', array(
@@ -310,22 +291,6 @@ class EmbedButtonForm extends EntityForm {
   }
 
   /**
-   * Determines if the button already exists.
-   *
-   * @param string $button_id
-   *   The button ID.
-   *
-   * @return bool
-   *   TRUE if the button exists, FALSE otherwise.
-   */
-  public function exists($button_id) {
-    $entity = $this->entityQuery->get('embed_button')
-      ->condition('id', $button_id)
-      ->execute();
-    return (bool) $entity;
-  }
-
-  /**
    * Ajax callback to update the form fields which depend on entity type.
    *
    * @param array $form
@@ -333,7 +298,7 @@ class EmbedButtonForm extends EntityForm {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
    *
-   * @response AjaxResponse
+   * @return AjaxResponse
    *   Ajax response with updated options for entity type bundles.
    */
   public function updateEntityTypeDependentFields(array &$form, FormStateInterface $form_state) {

@@ -480,17 +480,10 @@ class EntityEmbedDialog extends FormBase {
    *   The access result.
    */
   public function buttonIsEnabled(FilterFormatInterface $filter_format, EmbedButtonInterface $entity_embed_button) {
-    $button_id = $entity_embed_button->id();
+    /** @var \Drupal\editor\EditorInterface $editor */
     if ($editor = Editor::load($filter_format->id())) {
-      /** @var \Drupal\editor\EditorInterface $editor */
-      $settings = $editor->getSettings();
-      foreach ($settings['toolbar']['rows'] as $row_number => $row) {
-        $button_groups[$row_number] = array();
-        foreach ($row as $group) {
-          if (in_array($button_id, $group['items'])) {
-            return AccessResult::allowed();
-          }
-        }
+      if ($entity_embed_button->isEnabledInEditor($editor)) {
+        return AccessResult::allowed();
       }
     }
 

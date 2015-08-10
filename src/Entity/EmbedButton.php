@@ -8,6 +8,7 @@
 namespace Drupal\entity_embed\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
+use Drupal\editor\EditorInterface;
 use Drupal\entity_embed\EmbedButtonInterface;
 use Drupal\entity_embed\EntityHelperTrait;
 
@@ -153,6 +154,24 @@ class EmbedButton extends ConfigEntityBase implements EmbedButtonInterface {
     }
 
     return $this->dependencies;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isEnabledInEditor(EditorInterface $editor) {
+    if ($id = $this->id()) {
+      $settings = $editor->getSettings();
+      foreach ($settings['toolbar']['rows'] as $row_number => $row) {
+        foreach ($row as $group) {
+          if (in_array($id, $group['items'])) {
+            return TRUE;
+          }
+        }
+      }
+    }
+
+    return FALSE;
   }
 
 }

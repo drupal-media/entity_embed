@@ -57,12 +57,12 @@ function hook_entity_embed_display_plugins_for_context_alter(array &$definitions
 /**
  * Alter the context of an embedded entity before it is rendered.
  *
- * @param \Drupal\Core\Entity\EntityInterface $entity
- *   The entity object.
  * @param array &$context
  *   The context array.
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity object.
  */
-function hook_entity_embed_context_alter(\Drupal\Core\Entity\EntityInterface $entity, array &$context) {
+function hook_entity_embed_context_alter(array &$context, \Drupal\Core\Entity\EntityInterface $entity) {
   if (isset($context['overrides']) && is_array($context['overrides'])) {
     foreach ($context['overrides'] as $key => $value) {
       $entity->key = $value;
@@ -73,12 +73,12 @@ function hook_entity_embed_context_alter(\Drupal\Core\Entity\EntityInterface $en
 /**
  * Alter the context of an particular embedded entity type before it is rendered.
  *
- * @param \Drupal\Core\Entity\EntityInterface $entity
- *   The entity object.
  * @param array &$context
  *   The context array.
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity object.
  */
-function hook_ENTITY_TYPE_embed_context_alter(\Drupal\Core\Entity\EntityInterface $entity, array &$context) {
+function hook_ENTITY_TYPE_embed_context_alter(array &$context, \Drupal\Core\Entity\EntityInterface $entity) {
   if (isset($context['overrides']) && is_array($context['overrides'])) {
     foreach ($context['overrides'] as $key => $value) {
       $entity->key = $value;

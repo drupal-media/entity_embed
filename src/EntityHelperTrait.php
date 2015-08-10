@@ -179,7 +179,7 @@ trait EntityHelperTrait {
     );
 
     // Allow modules to alter the entity prior to embed rendering.
-    $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed_context", 'entity_embed_context'), $entity, $context);
+    $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed_context", 'entity_embed_context'), $context, $entity);
 
     // Build and render the display plugin, allowing modules to alter the
     // result before rendering.

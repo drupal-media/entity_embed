@@ -173,12 +173,13 @@ trait EntityHelperTrait {
     // Merge in default attributes.
     $context += array(
       'data-entity-id' => $entity->id(),
+      'data-entity-type' => $entity->getEntityTypeId(),
       'data-entity-embed-display' => 'default',
       'data-entity-embed-settings' => array(),
     );
 
-    // Allow modules to alter the entity prior to display rendering.
-    $this->moduleHandler()->invokeAll('entity_preembed', array($entity, $context));
+    // Allow modules to alter the entity prior to embed rendering.
+    $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed_context", 'entity_embed_context'), $entity, $context);
 
     // Build and render the display plugin, allowing modules to alter the
     // result before rendering.
@@ -189,7 +190,7 @@ trait EntityHelperTrait {
       $context
     );
     // @todo Should this hook get invoked if $build is an empty array?
-    $this->moduleHandler()->alter('entity_embed', $build, $display);
+    $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed", 'entity_embed'), $build, $entity, $context);
     $entity_output = $this->renderer()->render($build);
 
     return $entity_output;
@@ -213,6 +214,7 @@ trait EntityHelperTrait {
    */
   protected function renderEntityEmbedDisplayPlugin(EntityInterface $entity, $plugin_id, array $plugin_configuration = array(), array $context = array()) {
     // Build the display plugin.
+    /** @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayBase $display */
     $display = $this->displayPluginManager()->createInstance($plugin_id, $plugin_configuration);
     $display->setContextValue('entity', $entity);
     $display->setAttributes($context);

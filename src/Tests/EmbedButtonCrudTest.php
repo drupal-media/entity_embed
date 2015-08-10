@@ -9,6 +9,7 @@ namespace Drupal\entity_embed\Tests;
 
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\entity_embed\EmbedButtonInterface;
+use Drupal\file\Entity\File;
 use Drupal\simpletest\KernelTestBase;
 
 /**
@@ -121,6 +122,49 @@ class EmbedButtonCrudTest extends KernelTestBase {
     // Ensure that the storage is now empty.
     $config = $config_storage->listAll('entity_embed.embed_button.');
     $this->assertTrue(empty($config), 'There are no embed buttons in config storage.');
+  }
+
+  /**
+   * Tests the embed_button and file usage integration.
+   */
+  public function testEmbedButtonIcon() {
+    $this->enableModules(['system', 'user', 'file']);
+
+    $this->installSchema('file', ['file_usage']);
+    $this->installConfig(['system']);
+    $this->installEntitySchema('user');
+    $this->installEntitySchema('file');
+
+    $file1 = file_save_data(file_get_contents('core/misc/druplicon.png'));
+    $file1->setTemporary();
+    $file1->save();
+
+    $file2 = file_save_data(file_get_contents('core/misc/druplicon.png'));
+    $file2->setTemporary();
+    $file2->save();
+
+    $button = array(
+      'id' => 'test_button',
+      'label' => 'Testing embed button instance',
+      'button_label' => 'Test',
+      'entity_type' => 'node',
+      'entity_type_bundles' => array('article'),
+      'button_icon_uuid' => $file1->uuid(),
+      'display_plugins' => array('default'),
+    );
+
+    $entity = entity_create('entity_embed_button', $button);
+    $entity->save();
+    $this->assertTrue(File::load($file1->id())->isPermanent());
+
+    $entity->button_icon_uuid = $file2->uuid();
+    $entity->save();
+
+    $this->assertTrue(File::load($file1->id())->isTemporary());
+    $this->assertTrue(File::load($file2->id())->isPermanent());
+
+    $entity->delete();
+    $this->assertTrue(File::load($file2->id())->isTemporary());
   }
 
 }

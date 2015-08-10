@@ -7,12 +7,12 @@
 
 namespace Drupal\entity_embed;
 
-use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 
@@ -46,6 +46,13 @@ trait EntityHelperTrait {
    * @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager.
    */
   protected $displayPluginManager;
+
+  /**
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface.
+   */
+  protected $renderer;
 
   /**
    * Loads an entity from the database.
@@ -145,6 +152,50 @@ trait EntityHelperTrait {
   }
 
   /**
+   * Renders an embedded entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to be rendered.
+   * @param array $context
+   *   (optional) Array of context values, corresponding to the attributes on
+   *   the embed HTML tag.
+   *
+   * @return string
+   *   The HTML of the entity rendered with the display plugin.
+   */
+  protected function renderEntityEmbed(EntityInterface $entity, array $context = array()) {
+    // Support the deprecated view-mode data attribute.
+    if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-settings'])) {
+      $context['data-entity-embed-display'] = 'default';
+      $context['data-entity-embed-settings'] = ['view_mode' => &$context['data-view-mode']];
+    }
+
+    // Merge in default attributes.
+    $context += array(
+      'data-entity-id' => $entity->id(),
+      'data-entity-embed-display' => 'default',
+      'data-entity-embed-settings' => array(),
+    );
+
+    // Allow modules to alter the entity prior to display rendering.
+    $this->moduleHandler()->invokeAll('entity_preembed', array($entity, $context));
+
+    // Build and render the display plugin, allowing modules to alter the
+    // result before rendering.
+    $build = $this->renderEntityEmbedDisplayPlugin(
+      $entity,
+      $context['data-entity-embed-display'],
+      $context['data-entity-embed-settings'],
+      $context
+    );
+    // @todo Should this hook get invoked if $build is an empty array?
+    $this->moduleHandler()->alter('entity_embed', $build, $display);
+    $entity_output = $this->renderer()->render($build);
+
+    return $entity_output;
+  }
+
+  /**
    * Renders an entity using an EntityEmbedDisplay plugin.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
@@ -157,24 +208,10 @@ trait EntityHelperTrait {
    *   (optional) Array of additional context values, usually the embed HTML
    *   tag's attributes.
    *
-   * @return string
-   *   The HTML of the entity rendered with the display plugin.
-   *
-   * @throws \Drupal\entity_embed\RecursiveRenderingException;
-   *   Throws an exception when the post_render_cache callback goes into a
-   *   potentially infinite loop.
+   * @return array
+   *   A render array for the display plugin.
    */
   protected function renderEntityEmbedDisplayPlugin(EntityInterface $entity, $plugin_id, array $plugin_configuration = array(), array $context = array()) {
-    // Protect ourselves from recursive rendering.
-    static $depth = 0;
-    $depth++;
-    if ($depth > 20) {
-      throw new RecursiveRenderingException(SafeMarkup::format('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $entity->getEntityTypeId(), '@entity_id' => $entity->id())));
-    }
-
-    // Allow modules to alter the entity prior to display rendering.
-    $this->moduleHandler()->invokeAll('entity_preembed', array($entity, $context));
-
     // Build the display plugin.
     $display = $this->displayPluginManager()->createInstance($plugin_id, $plugin_configuration);
     $display->setContextValue('entity', $entity);
@@ -183,17 +220,10 @@ trait EntityHelperTrait {
     // Check if the display plugin is accessible. This also checks entity
     // access, which is why we never call $entity->access() here.
     if (!$display->access()) {
-      return '';
+      return array();
     }
 
-    // Build and render the display plugin, allowing modules to alter the
-    // result before rendering.
-    $build = $display->build();
-    $this->moduleHandler()->alter('entity_embed', $build, $display);
-    $entity_output = \Drupal::service('renderer')->render($build);
-
-    $depth--;
-    return $entity_output;
+    return $display->build();
   }
 
   /**
@@ -305,6 +335,32 @@ trait EntityHelperTrait {
    */
   public function setDisplayPluginManager(EntityEmbedDisplayManager $display_plugin_manager) {
     $this->displayPluginManager = $display_plugin_manager;
+    return $this;
+  }
+
+  /**
+   * Returns the renderer.
+   *
+   * @return \Drupal\Core\Render\RendererInterface
+   *   The renderer.
+   */
+  protected function renderer() {
+    if (!isset($this->renderer)) {
+      $this->renderer = \Drupal::service('renderer');
+    }
+    return $this->renderer;
+  }
+
+  /**
+   * Sets the renderer.
+   *
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer.
+   *
+   * @return self
+   */
+  public function setRenderer(RendererInterface $renderer) {
+    $this->renderer = $renderer;
     return $this;
   }
 }

@@ -71,10 +71,11 @@ class EntityEmbedDialog extends FormBase {
    *
    * @param \Drupal\filter\FilterFormatInterface $filter_format
    *   The filter format to which this dialog corresponds.
-   * @param \Drupal\entity_embed\EmbedButtonInterface $embed_button
+   * @param \Drupal\entity_embed\EmbedButtonInterface $entity_embed_button
    *   The embed button to which this dialog corresponds.
    */
-  public function buildForm(array $form, FormStateInterface $form_state, FilterFormatInterface $filter_format = NULL, EmbedButtonInterface $embed_button = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, FilterFormatInterface $filter_format = NULL, EmbedButtonInterface $entity_embed_button = NULL) {
+    $embed_button = $entity_embed_button;
     $values = $form_state->getValues();
     $input = $form_state->getUserInput();
     // Set embed button element in form state, so that it can be used later in
@@ -472,14 +473,14 @@ class EntityEmbedDialog extends FormBase {
    *
    * @param \Drupal\filter\FilterFormatInterface $filter_format
    *   The filter format to which this dialog corresponds.
-   * @param \Drupal\entity_embed\EmbedButtonInterface $embed_button
+   * @param \Drupal\entity_embed\EmbedButtonInterface $entity_embed_button
    *   The embed button to which this dialog corresponds.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    */
-  public function buttonIsEnabled(FilterFormatInterface $filter_format, EmbedButtonInterface $embed_button) {
-    $button_id = $embed_button->id();
+  public function buttonIsEnabled(FilterFormatInterface $filter_format, EmbedButtonInterface $entity_embed_button) {
+    $button_id = $entity_embed_button->id();
     $editor = Editor::load($filter_format->id());
     $settings = $editor->getSettings();
     foreach ($settings['toolbar']['rows'] as $row_number => $row) {

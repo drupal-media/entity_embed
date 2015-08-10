@@ -121,7 +121,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             );
 
             // Allow modules to alter the context.
-            $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);
+            $this->moduleHandler()->alter('entity_embed_context', $context, $entity);
 
             // Do not use $entity->access() here because it does not work with
             // public files. Uses EntityHelperTrait::accessEntity() instead.

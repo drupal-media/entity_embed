@@ -59,12 +59,10 @@ function hook_entity_embed_display_plugins_for_context_alter(array &$definitions
  *
  * @param array &$context
  *   The context array.
- * @param callable &$callback
- *   The post-render callback to be used.
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The entity being rendered.
  */
-function hook_entity_embed_context_alter(array &$context, callable &$callback, \Drupal\Core\Entity\EntityInterface $entity) {
+function hook_entity_embed_context_alter(array &$context, \Drupal\Core\Entity\EntityInterface $entity) {
 
 }
 

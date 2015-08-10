@@ -8,6 +8,7 @@
 namespace Drupal\entity_embed;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\editor\EditorInterface;
 
 /**
  * Provides an interface defining a embed button entity.
@@ -53,5 +54,16 @@ interface EmbedButtonInterface extends ConfigEntityInterface {
    *   List of allowed display plugins.
    */
   public function getAllowedDisplayPlugins();
+
+  /**
+   * Checks if the entity embed button is enabled in an editor configuration.
+   *
+   * @param \Drupal\editor\EditorInterface $editor
+   *   The editor object to check.
+   *
+   * @return bool
+   *   TRUE if this entity embed button is enabled in $editor. FALSE otherwise.
+   */
+  public function isEnabledInEditor(EditorInterface $editor);
 
 }

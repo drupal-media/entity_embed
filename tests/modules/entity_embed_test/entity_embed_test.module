@@ -11,7 +11,7 @@ use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayInterface;
 /**
  * Implements hook_entity_embed_context_alter().
  */
-function entity_embed_test_entity_embed_context_alter(array &$context, &$callback, EntityInterface $entity) {
+function entity_embed_test_entity_embed_context_alter(array &$context, EntityInterface $entity) {
   // Allow tests to enable or disable this hook.
   if (!\Drupal::state()->get('entity_embed_test_entity_embed_context_alter', FALSE)) {
     return;

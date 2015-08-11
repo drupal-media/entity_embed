@@ -145,8 +145,10 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
           watchdog_exception('entity_embed', $e);
         }
 
-        // Ensure this element is using <div> now instead of <drupal-entity>.
-        $this->changeNodeName($node, 'div');
+        // Ensure this element is using <div> now if it was <drupal-entity>.
+        if ($node->tagName == 'drupal-entity') {
+          $this->changeNodeName($node, 'div');
+        }
         $this->setNodeContent($node, $entity_output);
       }
 

@@ -7,6 +7,8 @@
 
 namespace Drupal\entity_embed\Tests;
 
+use Drupal\editor\Entity\Editor;
+use Drupal\filter\Entity\FilterFormat;
 use Drupal\simpletest\WebTestBase;
 
 /**
@@ -19,7 +21,7 @@ abstract class EntityEmbedTestBase extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('entity_embed', 'node');
+  public static $modules = ['entity_embed', 'node', 'ckeditor'];
 
   /**
    * The test user.
@@ -39,26 +41,43 @@ abstract class EntityEmbedTestBase extends WebTestBase {
     parent::setUp();
 
     // Create a page content type.
-    $this->drupalCreateContentType(array('type' => 'page', 'name' => 'Basic page'));
+    $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);
 
     // Create Filtered HTML text format and enable entity_embed filter.
-    $format = entity_create('filter_format', array(
+    $format = FilterFormat::create([
       'format' => 'custom_format',
       'name' => 'Custom format',
-      'filters' => array(
-        'entity_embed' => array(
+      'filters' => [
+        'entity_embed' => [
           'status' => 1,
-        ),
-      ),
-    ));
+        ],
+      ],
+    ]);
     $format->save();
 
+    $editor_group = [
+      'name' => 'Entity Embed',
+      'items' => [
+        'node',
+      ],
+    ];
+    $editor = Editor::create([
+      'format' => 'custom_format',
+      'editor' => 'ckeditor',
+      'settings' => [
+        'toolbar' => [
+          'rows' => [[$editor_group]],
+        ],
+      ],
+    ]);
+    $editor->save();
+
     // Create a user with required permissions.
-    $this->webUser = $this->drupalCreateUser(array(
+    $this->webUser = $this->drupalCreateUser([
       'access content',
       'create page content',
       'use text format custom_format',
-    ));
+    ]);
     $this->drupalLogin($this->webUser);
 
     // Create a sample node to be embedded.

@@ -65,23 +65,6 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
    * method.
    */
   public function testEntityEmbedHooks() {
-    // Enable entity_embed_test.module's hook_entity_preembed() implementation
-    // and ensure it is working as designed.
-    $this->state->set('entity_embed_test_entity_preembed', TRUE);
-    $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
-    $settings = array();
-    $settings['type'] = 'page';
-    $settings['title'] = 'Test hook_entity_preembed()';
-    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
-    $node = $this->drupalCreateNode($settings);
-    $this->drupalGet('node/' . $node->id());
-    $this->assertText($this->node->body->value, 'Embedded node exists in page.');
-    $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
-    // Ensure that embedded node's title has been replaced.
-    $this->assertText('Title set by hook_entity_preembed', 'Title of the embedded node is replaced by hook_entity_preembed()');
-    $this->assertNoText($this->node->title->value, 'Original title of the embedded node is not visible.');
-    $this->state->set('entity_embed_test_entity_preembed', FALSE);
-
     // Enable entity_embed_test.module's hook_entity_embed_alter()
     // implementation and ensure it is working as designed.
     $this->state->set('entity_embed_test_entity_embed_alter', TRUE);
@@ -95,7 +78,7 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     $this->assertText($this->node->body->value, 'Embedded node exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
     // Ensure that embedded node's title has been replaced.
-    $this->assertText('Title set by hook_entity_preembed', 'Title of the embedded node is replaced by hook_entity_embed_alter()');
+    $this->assertText('Title set by hook_entity_embed_alter', 'Title of the embedded node is replaced by hook_entity_embed_alter()');
     $this->assertNoText($this->node->title->value, 'Original title of the embedded node is not visible.');
     $this->state->set('entity_embed_test_entity_embed_alter', FALSE);
 
@@ -113,7 +96,8 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     // To ensure that 'label' plugin is used, verify that the body of the
     // embedded node is not visible and the title links to the embedded node.
     $this->assertNoText($this->node->body->value, 'Body of the embedded node does not exists in page.');
-    $this->assertText($this->node->title->value, 'Title of the embedded node exists in page.');
+    $this->assertText('Title set by hook_entity_embed_context_alter', 'Title of the embedded node is replaced by hook_entity_embed_context_alter()');
+    $this->assertNoText($this->node->title->value, 'Original title of the embedded node is not visible.');
     $this->assertLinkByHref('node/' . $this->node->id(), 0, 'Link to the embedded node exists.');
     $this->state->set('entity_embed_test_entity_embed_context_alter', FALSE);
   }

@@ -8,11 +8,13 @@
 namespace Drupal\entity_embed\Plugin\Filter;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\entity_embed\EntityHelperTrait;
+use Drupal\entity_embed\RecursiveRenderingException;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -87,43 +89,17 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
           $entity = $this->loadEntity($entity_type, $id);
 
           if ($entity) {
+            // Protect ourselves from recursive rendering.
+            static $depth = 0;
+            $depth++;
+            if ($depth > 20) {
+              throw new RecursiveRenderingException(SafeMarkup::format('Recursive rendering detected when rendering embedded entity @entity_type(@entity_id).', array('@entity_type' => $entity->getEntityTypeId(), '@entity_id' => $entity->id())));
+            }
+
             // If a UUID was not used, but is available, add it to the HTML.
             if (!$node->getAttribute('data-entity-uuid') && $uuid = $entity->uuid()) {
               $node->setAttribute('data-entity-uuid', $uuid);
             }
-          }
-
-          if ($entity) {
-            $context = array();
-
-            // Convert the data attributes to the context array.
-            foreach ($node->attributes as $attribute) {
-              $key = $attribute->nodeName;
-              $context[$key] = $attribute->nodeValue;
-
-              // Check for JSON-encoded attributes.
-              $data = json_decode($context[$key], TRUE, 10);
-              if ($data !== NULL && json_last_error() === JSON_ERROR_NONE) {
-                $context[$key] = $data;
-              }
-            }
-
-            // Support the deprecated view-mode data attribute.
-            if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-settings'])) {
-              $context['data-entity-embed-display'] = 'default';
-              $context['data-entity-embed-settings'] = ['view_mode' => &$context['data-view-mode']];
-            }
-
-            // Merge in default attributes.
-            $context += array(
-              'data-entity-id' => $entity->id(),
-              'data-entity-embed-display' => 'default',
-              'data-entity-embed-settings' => array(),
-              'data-langcode' => $langcode,
-            );
-
-            // Allow modules to alter the context.
-            $this->moduleHandler()->alter('entity_embed_context', $context, $callback, $entity);
 
             // Do not use $entity->access() here because it does not work with
             // public files. Uses EntityHelperTrait::accessEntity() instead.
@@ -133,12 +109,11 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             $entity_metadata = CacheableMetadata::createFromObject($entity);
             $result = $result->merge($entity_metadata)->merge($access_metadata);
 
-            $entity_output = $this->renderEntityEmbedDisplayPlugin(
-              $entity,
-              $context['data-entity-embed-display'],
-              $context['data-entity-embed-settings'],
-              $context
-            );
+            $context = $this->getDomNodeAttributesAsArray($node);
+            $context += array('data-langcode' => $langcode);
+            $entity_output = $this->renderEntityEmbed($entity, $context);
+
+            $depth--;
           }
         }
         catch(\Exception $e) {
@@ -175,4 +150,32 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     }
   }
 
+  /**
+   * Convert the attributes on a DOMNode object to an array.
+   *
+   * This will also un-serialize any attribute values stored as JSON.
+   *
+   * @param \DOMNode $node
+   *   A DOMNode object.
+   *
+   * @return array
+   *   The attributes as an associative array, keyed by the attribute names.
+   */
+  public function getDomNodeAttributesAsArray(\DOMNode $node) {
+    $return = array();
+
+    // Convert the data attributes to the context array.
+    foreach ($node->attributes as $attribute) {
+      $key = $attribute->nodeName;
+      $return[$key] = $attribute->nodeValue;
+
+      // Check for JSON-encoded attributes.
+      $data = json_decode($return[$key], TRUE, 10);
+      if ($data !== NULL && json_last_error() === JSON_ERROR_NONE) {
+        $return[$key] = $data;
+      }
+    }
+
+    return $return;
+  }
 }

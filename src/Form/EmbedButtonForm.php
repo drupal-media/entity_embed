@@ -156,6 +156,7 @@ class EmbedButtonForm extends EntityForm {
       $entity_type = $this->entityManager->getDefinition($entity_type_id);
       // If the entity has bundles, allow option to restrict to bundle(s).
       if ($entity_type->hasKey('bundle')) {
+        $bundle_options = array();
         foreach ($this->entityManager->getBundleInfo($entity_type_id) as $bundle_id => $bundle_info) {
           $bundle_options[$bundle_id] = $bundle_info['label'];
         }

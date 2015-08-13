@@ -55,12 +55,23 @@ class EntityEmbedDialogTest extends EntityEmbedTestBase {
     // Ensure form structure of the 'select' step and submit form.
     $this->assertFieldByName('attributes[data-entity-id]', '', 'Entity ID/UUID field is present.');
 
-    //$edit = ['attributes[data-entity-id]' => $this->node->id()];
-    //$this->drupalPostAjaxForm(NULL, $edit, 'op');
+    // $edit = ['attributes[data-entity-id]' => $this->node->id()];
+    // $this->drupalPostAjaxForm(NULL, $edit, 'op');
     // Ensure form structure of the 'embed' step and submit form.
-    //$this->assertFieldByName('attributes[data-entity-embed-display]', 'Display plugin field is present.');
+    // $this->assertFieldByName('attributes[data-entity-embed-display]', 'Display plugin field is present.');
   }
 
+  /**
+   * Retrieves an embed dialog based on given parameters.
+   *
+   * @param string $filter_format_id
+   *   ID of the filter format.
+   * @param string $entity_embed_button_id
+   *   ID of the embed button.
+   *
+   * @return string
+   *   The retrieved HTML string.
+   */
   public function getEmbedDialog($filter_format_id = NULL, $entity_embed_button_id = NULL) {
     $url = 'entity-embed/dialog/entity-embed';
     if (!empty($filter_format_id)) {
@@ -71,4 +82,5 @@ class EntityEmbedDialogTest extends EntityEmbedTestBase {
     }
     return $this->drupalGet($url);
   }
+
 }

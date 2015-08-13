@@ -6,4 +6,5 @@ package: Filters
 dependencies:
   - editor
   - filter
+  - embed
 configure: entity_embed_button.list

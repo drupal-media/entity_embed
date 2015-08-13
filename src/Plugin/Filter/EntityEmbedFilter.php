@@ -18,6 +18,7 @@ use Drupal\entity_embed\RecursiveRenderingException;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\embed\DomHelperTrait;
 
 /**
  * Provides a filter to display embedded entities based on data attributes.
@@ -31,6 +32,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInterface {
   use EntityHelperTrait;
+  use DomHelperTrait;
 
   /**
    * Constructs a EntityEmbedFilter object.
@@ -118,7 +120,11 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
           watchdog_exception('entity_embed', $e);
         }
 
-        $this->setDomNodeContent($node, $entity_output);
+        // Ensure this element is using <div> now if it was <drupal-entity>.
+        if ($node->tagName == 'drupal-entity') {
+          $this->changeNodeName($node, 'div');
+        }
+        $this->setNodeContent($node, $entity_output);
       }
 
       $result->setProcessedText(Html::serialize($dom));
@@ -172,75 +178,4 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
     return $return;
   }
-
-  /**
-   * Set the contents of a DOMNode.
-   *
-   * @param \DOMElement $node
-   *   A DOMElement object.
-   * @param string $content
-   *   The text or HTML that will replace the contents of $node.
-   */
-  protected function setDomNodeContent(\DOMElement $node, $content) {
-    // Remove all children of the DOMNode.
-    while ($node->hasChildNodes()) {
-      $node->removeChild($node->firstChild);
-    }
-
-    // Rename tag of container elemet to 'div' if it was 'drupal-entity'.
-    if ($node->tagName == 'drupal-entity') {
-      /** @var \DOMElement $new_node */
-      $new_node = $node->ownerDocument->createElement('div');
-
-      // Copy all attributes of original node to new node.
-      if ($node->attributes->length) {
-        foreach ($node->attributes as $attribute) {
-          $new_node->setAttribute($attribute->nodeName, $attribute->nodeValue);
-        }
-      }
-
-      $node->parentNode->replaceChild($new_node, $node);
-
-      $node = $new_node;
-    }
-
-    if (strlen($content)) {
-      // Load the contents into a new DOMDocument and retrieve the elements.
-      $replacement_nodes = Html::load($content)->getElementsByTagName('body')->item(0);
-
-      // Finally, import and append the contents to the original node.
-      foreach ($replacement_nodes->childNodes as $replacement_node) {
-        $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
-        $node->appendchild($replacement_node);
-      }
-    }
-  }
-
-  /**
-   * Replace the contents of a DOMNode.
-   *
-   * @param \DOMElement $node
-   *   A DOMElement object.
-   * @param string $content
-   *   The text or HTML that will replace the contents of $node.
-   */
-  protected function replaceDomNodeContent(\DOMElement $node, $content) {
-    if (strlen($content)) {
-      // Load the contents into a new DOMDocument and retrieve the element.
-      $replacement_node = Html::load($content)->getElementsByTagName('body')
-        ->item(0)
-        ->childNodes
-        ->item(0);
-
-      // Import the updated DOMNode from the new DOMDocument into the original
-      // one, importing also the child nodes of the replacement DOMNode.
-      $replacement_node = $node->ownerDocument->importNode($replacement_node, TRUE);
-
-      $node->parentNode->replaceChild($replacement_node, $node);
-    }
-    else {
-      $node->parentNode->removeChild($node);
-    }
-  }
-
 }

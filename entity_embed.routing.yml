@@ -7,14 +7,6 @@ entity_embed.dialog:
     _entity_access: 'filter_format.use'
     _custom_access: '\Drupal\entity_embed\Form\EntityEmbedDialog::buttonIsEnabled'
 
-entity_embed.preview:
-  path: '/entity-embed/preview/{filter_format}'
-  defaults:
-    _controller: '\Drupal\entity_embed\EntityEmbedController::preview'
-    _title: 'Preview embedded entity'
-  requirements:
-    _entity_access: 'filter_format.use'
-
 entity_embed_button.list:
   path: '/admin/config/content/embed-button'
   defaults:

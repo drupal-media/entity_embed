@@ -110,7 +110,7 @@
           var entityEmbedPreview = new Drupal.ajax({
             base: $element.attr('id'),
             element: $element,
-            url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?' + $.param({
+            url: Drupal.url('embed/preview/' + editor.config.drupal.format + '?' + $.param({
               value: element.getOuterHtml()
             })),
             progress: {type: 'none'},
@@ -210,55 +210,5 @@
     }
     return 'entity-embed-' + generateEmbedId.counter++;
   }
-
-  /**
-   * Attaches or detaches behaviors, except the ones we do not want.
-   *
-   * @param {string} action
-   *   Either 'attach' or 'detach'.
-   * @param context
-   *   The context argument for Drupal.attachBehaviors()/detachBehaviors().
-   * @param settings
-   *   The settings argument for Drupal.attachBehaviors()/detachBehaviors().
-   */
-  function runEmbedBehaviors(action, context, settings) {
-    // Do not run the excluded behaviors.
-    var stashed = {};
-    $.each(Drupal.entityEmbed.excludedBehaviors, function (i, behavior) {
-      stashed[behavior] = Drupal.behaviors[behavior];
-      delete Drupal.behaviors[behavior];
-    });
-    // Run the remaining behaviors.
-    (action == 'attach' ? Drupal.attachBehaviors : Drupal.detachBehaviors)(context, settings);
-    // Put the stashed behaviors back in.
-    $.extend(Drupal.behaviors, stashed);
-  }
-
-  /**
-   * Ajax 'entity_embed_insert' command: insert the rendered entity.
-   *
-   * The regular Drupal.ajax.commands.insert() command cannot target elements
-   * within iframes. This is a skimmed down equivalent that works whether the
-   * CKEditor is in iframe or divarea mode.
-   */
-  Drupal.AjaxCommands.prototype.entity_embed_insert = function(ajax, response, status) {
-    var $target = ajax.element;
-    // No need to detach behaviors here, the widget is created fresh each time.
-    $target.html(response.html);
-    runEmbedBehaviors('attach', $target.get(0), response.settings || ajax.settings);
-  };
-
-  /**
-   * Stores settings specific to Entity Embed module.
-   */
-  Drupal.entityEmbed = {
-    /**
-     * A list of behaviors which are to be excluded while attaching/detaching.
-     *
-     * - Drupal.behaviors.editor, to avoid CK inception.
-     * - Drupal.behaviors.contextual, to keep contextual links hidden.
-     */
-    excludedBehaviors: ['editor', 'contextual']
-  };
 
 })(jQuery, Drupal, CKEDITOR);

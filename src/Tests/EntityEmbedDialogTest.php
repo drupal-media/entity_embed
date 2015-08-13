@@ -73,7 +73,7 @@ class EntityEmbedDialogTest extends EntityEmbedTestBase {
    *   The retrieved HTML string.
    */
   public function getEmbedDialog($filter_format_id = NULL, $entity_embed_button_id = NULL) {
-    $url = 'entity-embed/dialog/entity-embed';
+    $url = 'entity-embed/dialog';
     if (!empty($filter_format_id)) {
       $url .= '/' . $filter_format_id;
       if (!empty($entity_embed_button_id)) {

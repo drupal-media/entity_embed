@@ -8,8 +8,8 @@
 namespace Drupal\entity_embed\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
-use Drupal\editor\EditorInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\editor\EditorInterface;
 use Drupal\entity_embed\EmbedButtonInterface;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\file\FileUsage\FileUsageInterface;

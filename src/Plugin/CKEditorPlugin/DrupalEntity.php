@@ -98,7 +98,7 @@ class DrupalEntity extends CKEditorPluginBase implements ContainerFactoryPluginI
    */
   public function getLibraries(Editor $editor) {
     return array(
-      'core/drupal.ajax',
+      'embed/embed',
     );
   }
 

@@ -8,13 +8,13 @@
 namespace Drupal\entity_embed\Plugin\Filter;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\entity_embed\EntityHelperTrait;
-use Drupal\entity_embed\RecursiveRenderingException;
+use Drupal\entity_embed\Exception\EntityNotFoundException;
+use Drupal\entity_embed\Exception\RecursiveRenderingException;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -93,7 +93,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             static $depth = 0;
             $depth++;
             if ($depth > 20) {
-              throw new RecursiveRenderingException(SafeMarkup::format('Recursive rendering detected when rendering embedded entity @entity_type(@entity_id).', array('@entity_type' => $entity->getEntityTypeId(), '@entity_id' => $entity->id())));
+              throw new RecursiveRenderingException(sprintf('Recursive rendering detected when rendering embedded %s entity %s.', $entity_type, $entity->id()));
             }
 
             // If a UUID was not used, but is available, add it to the HTML.
@@ -114,6 +114,9 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             $entity_output = $this->renderEntityEmbed($entity, $context);
 
             $depth--;
+          }
+          else {
+            throw new EntityNotFoundException(sprintf('Unable to load embedded %s entity %s.', $entity_type, $id));
           }
         }
         catch(\Exception $e) {

@@ -27,16 +27,8 @@ class FileFieldFormatter extends EntityReferenceFieldFormatter {
   /**
    * {@inheritdoc}
    */
-  public function getFieldDefinition() {
-    $field = BaseFieldDefinition::create('file');
-    return $field;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getFieldValue(BaseFieldDefinition $definition) {
-    $value = parent::getFieldValue($definition);
+  public function getFieldValue() {
+    $value = parent::getFieldValue();
     $value += array_intersect_key($this->getConfiguration(), array('description' => ''));
     return $value;
   }

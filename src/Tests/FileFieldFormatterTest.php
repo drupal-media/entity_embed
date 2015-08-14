@@ -34,18 +34,13 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
   /**
    * Created file entity.
    *
-   * @var \Drupal\file\Entity\File
+   * @var \Drupal\file\FileInterface
    */
   protected $file;
 
   protected function setUp() {
     parent::setUp();
-
-    file_put_contents('public://example.txt', $this->randomMachineName());
-    $this->file = entity_create('file', array(
-      'uri' => 'public://example.txt',
-    ));
-    $this->file->save();
+    $this->file = $this->getTestFile('text');
   }
 
   /**

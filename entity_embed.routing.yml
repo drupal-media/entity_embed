@@ -1,5 +1,5 @@
 entity_embed.dialog:
-  path: '/entity-embed/dialog/entity-embed/{filter_format}/{entity_embed_button}'
+  path: '/entity-embed/dialog/{filter_format}/{entity_embed_button}'
   defaults:
     _form: '\Drupal\entity_embed\Form\EntityEmbedDialog'
     _title: 'Embed entity'
@@ -11,30 +11,30 @@ entity_embed_button.list:
   path: '/admin/config/content/embed-button'
   defaults:
     _entity_list: 'entity_embed_button'
-    _title: 'Embed Buttons'
+    _title: 'Entity embed buttons'
   requirements:
-    _permission: 'administer embed buttons'
+    _permission: 'administer entity embed buttons'
 
 entity_embed_button.add:
   path: '/admin/config/content/embed-button/add'
   defaults:
     _entity_form: 'entity_embed_button.add'
-    _title: 'Add Embed Button'
+    _title: 'Add entity embed button'
   requirements:
-    _permission: 'administer embed buttons'
+    _permission: 'administer entity embed buttons'
 
 entity.entity_embed_button.edit_form:
   path: '/admin/config/content/embed-button/{entity_embed_button}'
   defaults:
     _entity_form: 'entity_embed_button.edit'
-    _title: 'Edit Embed button'
+    _title: 'Edit entity embed button'
   requirements:
-    _permission: 'administer embed buttons'
+    _permission: 'administer entity embed buttons'
 
 entity.entity_embed_button.delete_form:
   path: '/admin/config/content/embed-button/{entity_embed_button}/delete'
   defaults:
     _entity_form: 'entity_embed_button.delete'
-    _title: 'Delete Embed button'
+    _title: 'Delete entity embed button'
   requirements:
-    _permission: 'administer embed buttons'
+    _permission: 'administer entity embed buttons'

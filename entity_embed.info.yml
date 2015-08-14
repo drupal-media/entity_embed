@@ -5,6 +5,6 @@ core: 8.x
 package: Filters
 dependencies:
   - editor
-  - filter
   - embed
+  - filter
 configure: entity_embed_button.list

@@ -9,6 +9,7 @@ namespace Drupal\entity_embed\Tests;
 
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\entity_embed\EmbedButtonInterface;
+use Drupal\entity_embed\Entity\EmbedButton;
 use Drupal\file\Entity\File;
 use Drupal\simpletest\KernelTestBase;
 
@@ -125,7 +126,7 @@ class EmbedButtonCrudTest extends KernelTestBase {
   }
 
   /**
-   * Tests the embed_button and file usage integration.
+   * Tests the entity_embed_button and file usage integration.
    */
   public function testEmbedButtonIcon() {
     $this->enableModules(['system', 'user', 'file']);
@@ -153,7 +154,7 @@ class EmbedButtonCrudTest extends KernelTestBase {
       'display_plugins' => array('default'),
     );
 
-    $entity = entity_create('entity_embed_button', $button);
+    $entity = EmbedButton::create($button);
     $entity->save();
     $this->assertTrue(File::load($file1->id())->isPermanent());
 

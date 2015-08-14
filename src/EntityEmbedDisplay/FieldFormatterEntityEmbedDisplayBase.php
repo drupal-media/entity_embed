@@ -184,9 +184,8 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    */
   public function getUniqueFieldDefinition() {
     $definition = $this->getFieldDefinition();
-    //static $index = 0;
-    //$definition->setName('_entity_embed_' . $index++);
-    $definition->setName('_entity_embed');
+    static $index = 0;
+    $definition->setName('_entity_embed_' . $index++);
     return $definition;
   }
 }

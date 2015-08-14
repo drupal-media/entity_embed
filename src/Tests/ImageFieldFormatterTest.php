@@ -93,6 +93,17 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     $this->assertRaw($alt_text, 'Alternate text for the embedded image is visible when embed is successful.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appears in the output when embed is successful.');
     $this->assertLinkByHref(file_create_url($this->image->getFileUri()), 0, 'Link to the embedded image exists.');
+
+    // Embed all three field types in one, to ensure they all render correctly.
+    $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="entity_reference:entity_reference_label"></div>';
+    $content .= '<div data-entity-type="file" data-entity-uuid="' . $this->file->uuid() . '" data-entity-embed-display="file:file_default"></div>';
+    $content .= '<div data-entity-type="file" data-entity-uuid="' . $this->image->uuid() . '" data-entity-embed-display="image:image"></div>';
+    $settings = array();
+    $settings['type'] = 'page';
+    $settings['title'] = 'Test node entity embedded first then a file entity';
+    $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
+    $node = $this->drupalCreateNode($settings);
+    $this->drupalGet('node/' . $node->id());
   }
 
 }

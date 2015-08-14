@@ -277,6 +277,8 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
    *
    * @param string $name
    *   The name of the attribute.
+   * @param mixed $default
+   *   The default value to return if the attribute value does not exist.
    *
    * @return mixed
    *   The currently set attribute value.

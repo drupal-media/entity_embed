@@ -33,6 +33,20 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   protected $typedDataManager;
 
   /**
+   * The field definition.
+   *
+   * @var \Drupal\Core\Field\BaseFieldDefinition
+   */
+  protected $fieldDefinition;
+
+  /**
+   * The field formatter.
+   *
+   * @var \Drupal\Core\Field\FormatterInterface
+   */
+  protected $fieldFormatter;
+
+  /**
    * Constructs a FieldFormatterEntityEmbedDisplayBase object.
    *
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
@@ -72,18 +86,24 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    *
    * @see \Drupal\entity_embed\FieldFormatterEntityEmbedDisplayBase::build()
    */
-  abstract public function getFieldDefinition();
+  public function getFieldDefinition() {
+    if (!isset($this->fieldDefinition)) {
+      $field_type = $this->getPluginDefinition()['field_type'];
+      $this->fieldDefinition = BaseFieldDefinition::create($field_type);
+      // Ensure the field name is unique for each display plugin instance.
+      static $index = 0;
+      $this->fieldDefinition->setName('_entity_embed_' . $index++);
+    }
+    return $this->fieldDefinition;
+  }
 
   /**
    * Get the field value required to pass into the field formatter.
    *
-   * @param \Drupal\Core\Field\BaseFieldDefinition $definition
-   *   The field definition.
-   *
    * @return mixed
    *   The field value.
    */
-  abstract public function getFieldValue(BaseFieldDefinition $definition);
+  abstract public function getFieldValue();
 
   /**
    * {@inheritdoc}
@@ -105,9 +125,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     // added.
     $node = Node::create(array('type' => '_entity_embed'));
 
-    // Create the field definition, some might need more settings, it currently
-    // doesn't load in the field type defaults. https://drupal.org/node/2116341
-    $definition = $this->getUniqueFieldDefinition();
+    $definition = $this->getFieldDefinition();
 
     /* @var \Drupal\Core\Field\FieldItemListInterface $items $items */
     // Create a field item list object, 1 is the value, array('target_id' => 1)
@@ -124,8 +142,8 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
       $items->setLangcode($langcode);
     }
 
-    $formatter = $this->getFormatter($definition);
     // Prepare, expects an array of items, keyed by parent entity ID.
+    $formatter = $this->getFieldFormatter();
     $formatter->prepareView(array($node->id() => $items));
     $build = $formatter->viewElements($items);
     // For some reason $build[0]['#printed'] is TRUE, which means it will fail
@@ -146,44 +164,48 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    return $this->getFormatter()->settingsForm($form, $form_state);
+    return $this->getFieldFormatter()->settingsForm($form, $form_state);
   }
 
   /**
-   * Constructs a \Drupal\Core\Field\FormatterInterface object.
-   *
-   * @param \Drupal\Core\Field\BaseFieldDefinition $definition
-   *   The field definition.
+   * Constructs a field formatter.
    *
    * @return \Drupal\Core\Field\FormatterInterface
    *   The formatter object.
    */
-  protected function getFormatter(BaseFieldDefinition $definition = NULL) {
-    if (!isset($definition)) {
-      $definition = $this->getUniqueFieldDefinition();
+  public function getFieldFormatter() {
+    if (!isset($this->fieldFormatter)) {
+      $display = array(
+        'type' => $this->getDerivativeId(),
+        'settings' => $this->getConfiguration(),
+        'label' => 'hidden',
+      );
+
+      // Create the formatter plugin. Will use the default formatter for that
+      // field type if none is passed.
+      $this->fieldFormatter = $this->formatterPluginManager->getInstance(
+        array(
+          'field_definition' => $this->getFieldDefinition(),
+          'view_mode' => '_entity_embed',
+          'configuration' => $display,
+        )
+      );
     }
 
-    $display = array(
-      'type' => $this->getDerivativeId(),
-      'settings' => $this->getConfiguration(),
-      'label' => 'hidden',
-    );
-
-    /* @var \Drupal\Core\Field\FormatterInterface $formatter */
-    // Create the formatter plugin. Will use the default formatter for that
-    // field type if none is passed.
-    return $this->formatterPluginManager->getInstance(array(
-      'field_definition' => $definition,
-      'view_mode' => '_entity_embed',
-      'configuration' => $display,
-    ));
+    return $this->fieldFormatter;
   }
 
   /**
-   * @return \Drupal\Core\Field\BaseFieldDefinition $definition
+   * Creates a new faux-field definition.
+   *
+   * @param string $type
+   *   The type of the field.
+   *
+   * @return \Drupal\Core\Field\BaseFieldDefinition
+   *   A new field definition.
    */
-  public function getUniqueFieldDefinition() {
-    $definition = $this->getFieldDefinition();
+  protected function createFieldDefinition($type) {
+    $definition = BaseFieldDefinition::create($type);
     static $index = 0;
     $definition->setName('_entity_embed_' . $index++);
     return $definition;

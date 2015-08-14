@@ -55,34 +55,26 @@ class ImageFieldFormatter extends FileFieldFormatter {
     $this->imageFactory = $image_factory;
   }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-      return new static(
-        $configuration,
-        $plugin_id,
-        $plugin_definition,
-        $container->get('entity.manager'),
-        $container->get('plugin.manager.field.formatter'),
-        $container->get('typed_data_manager'),
-        $container->get('image.factory')
-      );
-    }
-
   /**
    * {@inheritdoc}
    */
-  public function getFieldDefinition() {
-    $field = BaseFieldDefinition::create('image');
-    return $field;
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity.manager'),
+      $container->get('plugin.manager.field.formatter'),
+      $container->get('typed_data_manager'),
+      $container->get('image.factory')
+    );
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFieldValue(BaseFieldDefinition $definition) {
-    $value = parent::getFieldValue($definition);
+  public function getFieldValue() {
+    $value = parent::getFieldValue();
     // File field support descriptions, but images do not.
     unset($value['description']);
     $value += array_intersect_key($this->getAttributeValues(), array('alt' => '', 'title' => ''));

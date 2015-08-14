@@ -43,7 +43,7 @@ abstract class EntityEmbedTestBase extends WebTestBase {
     // Create a page content type.
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);
 
-    // Create Filtered HTML text format and enable entity_embed filter.
+    // Create a text format and enable the entity_embed filter.
     $format = FilterFormat::create([
       'format' => 'custom_format',
       'name' => 'Custom format',

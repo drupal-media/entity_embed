@@ -1,6 +1,6 @@
 /**
  * @file
- * Drupal Entity plugin.
+ * Drupal Entity embed plugin.
  */
 
 (function ($, Drupal, CKEDITOR) {
@@ -34,15 +34,15 @@
         exec: function (editor, data) {
           data = data || {};
 
-          var existingElement = getSelectedEntity(editor);
+          var existingElement = getSelectedEmbeddedEntity(editor);
 
           var existingValues = {};
           if (existingElement && existingElement.$ && existingElement.$.firstChild) {
-            var entityDOMElement = existingElement.$.firstChild;
+            var embedDOMElement = existingElement.$.firstChild;
             // Populate array with the entity's current attributes.
             var attribute = null, attributeName;
-            for (var key = 0; key < entityDOMElement.attributes.length; key++) {
-              attribute = entityDOMElement.attributes.item(key);
+            for (var key = 0; key < embedDOMElement.attributes.length; key++) {
+              attribute = embedDOMElement.attributes.item(key);
               attributeName = attribute.nodeName.toLowerCase();
               if (attributeName.substring(0, 15) === 'data-cke-saved-') {
                 continue;
@@ -71,13 +71,13 @@
             if (existingElement) {
               // Detach the behaviors that were attached when the entity content
               // was inserted.
-              runEmbedBehaviors('detach', existingElement.$);
+              Drupal.runEmbedBehaviors('detach', existingElement.$);
               existingElement.remove();
             }
           };
 
           // Open the entity embed dialog for corresponding EmbedButton.
-          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/entity-embed/' + editor.config.drupal.format + '/' + embed_button_id), existingValues, saveCallback, dialogSettings);
+          Drupal.ckeditor.openDialog(editor, Drupal.url('entity-embed/dialog/' + editor.config.drupal.format + '/' + embed_button_id), existingValues, saveCallback, dialogSettings);
         }
       });
 
@@ -156,7 +156,7 @@
         });
 
         editor.contextMenu.addListener(function(element) {
-          if (isEntityWidget(editor, element)) {
+          if (isEmbeddedEntityWidget(editor, element)) {
             return { drupalentity: CKEDITOR.TRISTATE_OFF };
           }
         });
@@ -164,9 +164,9 @@
 
       // Execute widget editing action on double click.
       editor.on('doubleclick', function (evt) {
-        var element = getSelectedEntity(editor) || evt.data.element;
+        var element = getSelectedEmbeddedEntity(editor) || evt.data.element;
 
-        if (isEntityWidget(editor, element)) {
+        if (isEmbeddedEntityWidget(editor, element)) {
           editor.execCommand('editdrupalentity');
         }
       });
@@ -178,10 +178,10 @@
    *
    * @param {CKEDITOR.editor} editor
    */
-  function getSelectedEntity(editor) {
+  function getSelectedEmbeddedEntity(editor) {
     var selection = editor.getSelection();
     var selectedElement = selection.getSelectedElement();
-    if (isEntityWidget(editor, selectedElement)) {
+    if (isEmbeddedEntityWidget(editor, selectedElement)) {
       return selectedElement;
     }
 
@@ -194,7 +194,7 @@
    * @param {CKEDITOR.editor} editor
    * @param {CKEDITOR.htmlParser.element} element
    */
-  function isEntityWidget (editor, element) {
+  function isEmbeddedEntityWidget (editor, element) {
     var widget = editor.widgets.getByElement(element, true);
     return widget && widget.name === 'drupalentity';
   }

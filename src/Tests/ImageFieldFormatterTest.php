@@ -42,18 +42,8 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
 
   protected function setUp() {
     parent::setUp();
-
-    file_unmanaged_copy(DRUPAL_ROOT . '/core/misc/druplicon.png', 'public://example.png');
-    $this->image = entity_create('file', array(
-      'uri' => 'public://example.png',
-    ));
-    $this->image->save();
-
-    file_put_contents('public://example.txt', $this->randomMachineName());
-    $this->file = entity_create('file', array(
-      'uri' => 'public://example.txt',
-    ));
-    $this->file->save();
+    $this->image = $this->getTestFile('image');
+    $this->file = $this->getTestFile('text');
   }
 
   /**

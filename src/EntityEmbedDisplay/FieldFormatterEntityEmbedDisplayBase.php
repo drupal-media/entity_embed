@@ -107,10 +107,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
 
     // Create the field definition, some might need more settings, it currently
     // doesn't load in the field type defaults. https://drupal.org/node/2116341
-    $definition = $this->getFieldDefinition();
-    // Ensure that the field name is unique each time this is run.
-    // @todo This probably shouldn't rely on the render cache token attribute.
-    $definition->setName('_entity_embed_' . $this->getAttributeValue('token'));
+    $definition = $this->getUniqueFieldDefinition();
 
     /* @var \Drupal\Core\Field\FieldItemListInterface $items $items */
     // Create a field item list object, 1 is the value, array('target_id' => 1)
@@ -163,12 +160,8 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    */
   protected function getFormatter(BaseFieldDefinition $definition = NULL) {
     if (!isset($definition)) {
-      $definition = $this->getFieldDefinition();
+      $definition = $this->getUniqueFieldDefinition();
     }
-
-    // Ensure that the field name is unique each time this is run.
-    // @todo This probably shouldn't rely on the render cache token attribute.
-    $definition->setName('_entity_embed_' . $this->getAttributeValue('token'));
 
     $display = array(
       'type' => $this->getDerivativeId(),
@@ -184,5 +177,16 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
       'view_mode' => '_entity_embed',
       'configuration' => $display,
     ));
+  }
+
+  /**
+   * @return \Drupal\Core\Field\BaseFieldDefinition $definition
+   */
+  public function getUniqueFieldDefinition() {
+    $definition = $this->getFieldDefinition();
+    //static $index = 0;
+    //$definition->setName('_entity_embed_' . $index++);
+    $definition->setName('_entity_embed');
+    return $definition;
   }
 }

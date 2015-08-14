@@ -8,6 +8,7 @@
 namespace Drupal\entity_embed\Tests;
 
 use Drupal\editor\Entity\Editor;
+use Drupal\file\Entity\File;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\simpletest\WebTestBase;
 
@@ -86,5 +87,23 @@ abstract class EntityEmbedTestBase extends WebTestBase {
     $settings['title'] = 'Embed Test Node';
     $settings['body'] = array('value' => 'This node is to be used for embedding in other nodes.', 'format' => 'custom_format');
     $this->node = $this->drupalCreateNode($settings);
+  }
+
+  /**
+   * Retrieves a sample file of the specified type.
+   *
+   * @return \Drupal\file\FileInterface
+   */
+  protected function getTestFile($type_name, $size = NULL) {
+    // Get a file to upload.
+    $file = current($this->drupalGetTestFiles($type_name, $size));
+
+    // Add a filesize property to files as would be read by
+    // \Drupal\file\Entity\File::load().
+    $file->filesize = filesize($file->uri);
+
+    $file = File::create((array) $file);
+    $file->save();
+    return $file;
   }
 }

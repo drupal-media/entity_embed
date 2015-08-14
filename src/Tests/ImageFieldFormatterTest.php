@@ -29,14 +29,14 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
   /**
    * Created file entity.
    *
-   * @var \Drupal\file\Entity\File
+   * @var \Drupal\file\FileInterface
    */
   protected $image;
 
   /**
    * Created file entity.
    *
-   * @var \Drupal\file\Entity\File
+   * @var \Drupal\file\FileInterface
    */
   protected $file;
 

@@ -29,7 +29,7 @@ class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase
    */
   public function getFieldDefinition() {
     if (!isset($this->fieldDefinition)) {
-      parent::getFieldDefinition();
+      $this->fieldDefinition = parent::getFieldDefinition();
       $this->fieldDefinition->setSetting('target_type', $this->getEntityTypeFromContext());
     }
     return $this->fieldDefinition;

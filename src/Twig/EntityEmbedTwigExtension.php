@@ -54,39 +54,23 @@ class EntityEmbedTwigExtension extends \Twig_Extension {
    * Return the render array for an entity.
    *
    * @param string $entity_type
-   *   The machine name of an entity_type like 'block'.
-   *
-   * The function is used in conjunction with Twig to be able to call in a Twig
-   * file something like {{ entity_embed('block', 'machine_name_of_block') }}
+   *   The machine name of an entity_type like 'node'.
    *
    * @param string $entity_id
-   *   The machine name of a block instance like 'poweredbydrupal_2' or
-   *   'views_block__content_recent_block_1' or an entity_id.
-   *
-   * @todo, Need to support uuid
+   *   The entity ID or entity UUID.
    *
    * @param string $view_mode
-   *   The machine name of an view mode like 'default' or 'teaser'.
+   *   (optional) The machine name of an view mode like 'default' or 'teaser'.
+   *
+   * @param string $langcode
+   *   (optional) For which language the entity should be rendered, defaults to
+   *   the current content language.
    *
    * @return array
    *   A render array from entity_view().
    */
-  public function getRenderArray($entity_type, $entity_id, $view_mode = 'default') {
-
-    // These lines are essentially entity_load() and entity_view() without
-    // the reset option(). The injected entityManager property is used
-    // instead of procedural functions for eventual unit-testability.
-    $controller = $this->entityManager->getStorage($entity_type);
+  public function getRenderArray($entity_type, $entity_id, $view_mode = 'default', $langcode = NULL) {
     $entity = $this->loadEntity($entity_type, $entity_id);
-
-    // @todo, handling for langcode variable.
-    $plugin_configuration = array(
-      'view_mode'=> $view_mode,
-    );
-    // @todo, handling for changing plugin_ids.
-    $plugin_id = 'default';
-    $build = $this->renderEntityEmbedDisplayPlugin($entity, $plugin_id, $plugin_configuration);
-
-    return $build;
+    return $this->renderEntity($entity, $view_mode, $langcode);
   }
 }

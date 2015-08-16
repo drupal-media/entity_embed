@@ -10,8 +10,13 @@
  */
 function entity_embed_twig_test_theme($existing, $type, $theme, $path) {
   $items['entity_embed_twig_test'] = array(
-    'variables' => array(),
     'template' => 'entity_embed_twig_test',
+    'variables' => array(
+      'entity_type' => '',
+      'id' => '',
+      'display_plugin' => 'default',
+      'display_settings' => array(),
+    ),
   );
   return $items;
 }

@@ -55,22 +55,25 @@ class EntityEmbedTwigExtension extends \Twig_Extension {
    *
    * @param string $entity_type
    *   The machine name of an entity_type like 'node'.
-   *
    * @param string $entity_id
    *   The entity ID or entity UUID.
-   *
-   * @param string $view_mode
-   *   (optional) The machine name of an view mode like 'default' or 'teaser'.
-   *
-   * @param string $langcode
-   *   (optional) For which language the entity should be rendered, defaults to
-   *   the current content language.
+   * @param string $display_plugin
+   *   (optional) The display plugin to be used to render the entity.
+   * @param array $display_settings
+   *   (optional) A list of settings for the display plugin.
    *
    * @return array
    *   A render array from entity_view().
    */
-  public function getRenderArray($entity_type, $entity_id, $view_mode = 'default', $langcode = NULL) {
+  public function getRenderArray($entity_type, $entity_id, $display_plugin = 'default', $display_settings = array()) {
     $entity = $this->loadEntity($entity_type, $entity_id);
-    return $this->renderEntity($entity, $view_mode, $langcode);
+    $context = array(
+      'data-entity-type' => $entity_type,
+      'data-entity-id' => $entity_id,
+      'data-entity-embed-display' => $display_plugin,
+      'data-entity-embed-settings' => $display_settings,
+    );
+    return $this->renderEntityEmbed($entity, $context);
   }
+
 }

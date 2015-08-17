@@ -1,6 +1,6 @@
 # Entity Embed Module
 
-[![Travis](https://img.shields.io/travis/drupal-media/entity_embed.svg)]() [![Scrutinizer](https://img.shields.io/scrutinizer/g/drupal-media/entity_embed.svg)]()
+[![Travis](https://img.shields.io/travis/drupal-media/entity_embed.svg)](https://travis-ci.org/drupal-media/entity_embed) [![Scrutinizer](https://img.shields.io/scrutinizer/g/drupal-media/entity_embed.svg)](https://scrutinizer-ci.com/g/drupal-media/entity_embed)
 
 Allows any entity to be embedded using a WYSIWYG and text format.
 

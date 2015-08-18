@@ -114,10 +114,3 @@ script:
 
 after_script:
   - drupal-ti after_script
-
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.net#drupal-media"
-    template:
-      - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} | Build details : %{build_url}"

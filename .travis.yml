@@ -106,7 +106,7 @@ install:
   - drupal-ti install
 
 before_script:
-  - drupal-ti --include scripts/dependencies.sh
+  - drupal-ti --include .drupal_ti/dependencies.sh
   - drupal-ti before_script
 
 script:

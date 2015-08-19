@@ -6,6 +6,7 @@ set -e $DRUPAL_TI_DEBUG
 # Note: This function is re-entrant.
 drupal_ti_ensure_drupal
 
-cd "$DRUPAL_TI_DRUPAL_DIR"
-drush dl embed --yes
-drush pm-enable embed --yes
+# Download dependencies
+mkdir -p "$DRUPAL_TI_DRUPAL_DIR/$DRUPAL_TI_MODULES_PATH"
+cd "$DRUPAL_TI_DRUPAL_DIR/$DRUPAL_TI_MODULES_PATH"
+git clone --depth 1 --branch 8.x-1.x https://github.com/drupal-media/embed.git

@@ -33,9 +33,8 @@ class EntityEmbedDialogTest extends EntityEmbedTestBase {
 
     // Ensure that the route is not accessible with text format without the
     // button configured.
-    // @todo Add coverage for an editor config that doesn't have the button.
     $this->getEmbedDialog('plain_text', 'node');
-    $this->assertResponse(403, 'Embed dialog is not accessible with a filter that does not have an editor configuration.');
+    $this->assertResponse(404, 'Embed dialog is not accessible with a filter that does not have an editor configuration.');
 
     // Add an empty configuration for the plain_text editor configuration.
     $editor = Editor::create([
@@ -66,18 +65,18 @@ class EntityEmbedDialogTest extends EntityEmbedTestBase {
    *
    * @param string $filter_format_id
    *   ID of the filter format.
-   * @param string $entity_embed_button_id
+   * @param string $embed_button_id
    *   ID of the embed button.
    *
    * @return string
    *   The retrieved HTML string.
    */
-  public function getEmbedDialog($filter_format_id = NULL, $entity_embed_button_id = NULL) {
+  public function getEmbedDialog($filter_format_id = NULL, $embed_button_id = NULL) {
     $url = 'entity-embed/dialog';
     if (!empty($filter_format_id)) {
       $url .= '/' . $filter_format_id;
-      if (!empty($entity_embed_button_id)) {
-        $url .= '/' . $entity_embed_button_id;
+      if (!empty($embed_button_id)) {
+        $url .= '/' . $embed_button_id;
       }
     }
     return $this->drupalGet($url);

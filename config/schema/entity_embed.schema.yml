@@ -1,27 +1,18 @@
 # Schema for the configuration files of the Entity Embed module.
 
-entity_embed.embed_button.*:
-  type: config_entity
-  label: 'Embed button config'
+embed.embed_type_settings.entity:
+  type: mapping
+  label: 'Schema for the entity embed type additions to an embed button entity'
   mapping:
-    label:
-      type: label
-      label: 'Name'
-    id:
-      type: string
-      label: 'Machine name'
     entity_type:
       type: string
       label: 'Entity type'
-    entity_type_bundles:
+    bundles:
       type: sequence
-      label: 'Entity type bundles'
+      label: 'Bundles'
       sequence:
         type: string
         label: 'Bundle'
-    button_icon_uuid:
-      type: string
-      label: 'Button image'
     display_plugins:
       type: sequence
       label: 'Allowed display plugins'

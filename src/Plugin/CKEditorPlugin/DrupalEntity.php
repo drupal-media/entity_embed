@@ -12,7 +12,7 @@ use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\editor\Entity\Editor;
-use Drupal\entity_embed\Entity\EmbedButton;
+use Drupal\embed\Entity\EmbedButton;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -27,14 +27,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class DrupalEntity extends CKEditorPluginBase implements ContainerFactoryPluginInterface {
 
   /**
-   * All embed button configuration entities.
+   * The embed button query.
    *
-   * An associative array that stores the description of all embed button
-   * configuration entities keyed by the button id.
-   *
-   * @var array
+   * @var \Drupal\Core\Entity\Query\QueryInterface
    */
-  protected $embedButtons;
+  protected $embedButtonQuery;
 
   /**
    * Constructs a Drupal\entity_embed\Plugin\CKEditorPlugin\DrupalEntity object.
@@ -50,8 +47,8 @@ class DrupalEntity extends CKEditorPluginBase implements ContainerFactoryPluginI
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, QueryInterface $embed_button_query) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-
-    $this->embedButtons = $embed_button_query->execute();
+    $this->embedButtonQuery = $embed_button_query;
+    $this->embedButtonQuery->condition('type_id', 'entity');
   }
 
   /**
@@ -62,9 +59,9 @@ class DrupalEntity extends CKEditorPluginBase implements ContainerFactoryPluginI
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity.query')->get('entity_embed_button')
-      );
-    }
+      $container->get('entity.query')->get('embed_button')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -72,15 +69,17 @@ class DrupalEntity extends CKEditorPluginBase implements ContainerFactoryPluginI
   public function getButtons() {
     $buttons = array();
 
-    foreach ($this->embedButtons as $embed_button) {
-      $button = EmbedButton::load($embed_button);
-      $buttons[$button->id()] = array(
-        'id' => SafeMarkup::checkPlain($button->id()),
-        'name' => SafeMarkup::checkPlain($button->label()),
-        'label' => SafeMarkup::checkPlain($button->label()),
-        'entity_type' => SafeMarkup::checkPlain($button->getEntityTypeMachineName()),
-        'image' => $button->getButtonImage(),
-      );
+    if ($ids = $this->embedButtonQuery->execute()) {
+      $embed_buttons = EmbedButton::loadMultiple($ids);
+      foreach ($embed_buttons as $button) {
+        $buttons[$button->id()] = array(
+          'id' => $button->id(),
+          'name' => SafeMarkup::checkPlain($button->label()),
+          'label' => SafeMarkup::checkPlain($button->label()),
+          'entity_type' => $button->getTypeSetting('entity_type'),
+          'image' => $button->getIconUrl(),
+        );
+      }
     }
 
     return $buttons;

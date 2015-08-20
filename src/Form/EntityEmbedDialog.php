@@ -7,19 +7,18 @@
 
 namespace Drupal\entity_embed\Form;
 
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\editor\Ajax\EditorDialogSave;
-use Drupal\editor\Entity\Editor;
+use Drupal\editor\EditorInterface;
+use Drupal\embed\EmbedButtonInterface;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Drupal\entity_embed\EntityHelperTrait;
-use Drupal\entity_embed\EmbedButtonInterface;
-use Drupal\filter\FilterFormatInterface;
 use Drupal\Component\Serialization\Json;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -69,18 +68,18 @@ class EntityEmbedDialog extends FormBase {
   /**
    * {@inheritdoc}
    *
-   * @param \Drupal\filter\FilterFormatInterface $filter_format
-   *   The filter format to which this dialog corresponds.
-   * @param \Drupal\entity_embed\EmbedButtonInterface $entity_embed_button
-   *   The embed button to which this dialog corresponds.
+   * @param \Drupal\editor\EditorInterface $editor
+   *   The editor to which this dialog corresponds.
+   * @param \Drupal\embed\EmbedButtonInterface $embed_button
+   *   The URL button to which this dialog corresponds.
    */
-  public function buildForm(array $form, FormStateInterface $form_state, FilterFormatInterface $filter_format = NULL, EmbedButtonInterface $entity_embed_button = NULL) {
-    $embed_button = $entity_embed_button;
+  public function buildForm(array $form, FormStateInterface $form_state, EditorInterface $editor = NULL, EmbedButtonInterface $embed_button = NULL) {
     $values = $form_state->getValues();
     $input = $form_state->getUserInput();
     // Set embed button element in form state, so that it can be used later in
     // validateForm() function.
     $form_state->set('embed_button', $embed_button);
+    $form_state->set('editor', $editor);
     // Initialize entity element with form attributes, if present.
     $entity_element = empty($values['attributes']) ? array() : $values['attributes'];
     // The default values are set directly from \Drupal::request()->request,
@@ -90,7 +89,7 @@ class EntityEmbedDialog extends FormBase {
     }
     $entity_element += $form_state->get('entity_element');
     $entity_element += array(
-      'data-entity-type' => $embed_button->getEntityTypeMachineName(),
+      'data-entity-type' => $embed_button->getTypeSetting('entity_type'),
       'data-entity-uuid' => '',
       'data-entity-id' => '',
       'data-entity-embed-display' => 'default',
@@ -98,7 +97,6 @@ class EntityEmbedDialog extends FormBase {
       'data-align' => '',
     );
     $form_state->set('entity_element', $entity_element);
-    $form_state->set('filter_format', $filter_format);
     $form_state->set('entity', $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']));
 
     if (!$form_state->get('step')) {
@@ -140,6 +138,7 @@ class EntityEmbedDialog extends FormBase {
    */
   public function buildSelectStep(array &$form, FormStateInterface $form_state) {
     $entity_element = $form_state->get('entity_element');
+    /** @var \Drupal\embed\EmbedButtonInterface $embed_button */
     $embed_button = $form_state->get('embed_button');
     $entity = $form_state->get('entity');
 
@@ -163,7 +162,7 @@ class EntityEmbedDialog extends FormBase {
       '#type' => 'entity_autocomplete',
       '#target_type' => $entity_element['data-entity-type'],
       '#selection_settings' => array(
-        'target_bundles' => $embed_button->getEntityTypeBundles(),
+        'target_bundles' => $embed_button->getTypeSetting('bundles'),
       ),
       '#title' => $label,
       '#default_value' => $entity,
@@ -206,8 +205,10 @@ class EntityEmbedDialog extends FormBase {
    */
   public function buildEmbedStep(array $form, FormStateInterface $form_state) {
     $entity_element = $form_state->get('entity_element');
+    /** @var \Drupal\embed\EmbedButtonInterface $embed_button */
     $embed_button = $form_state->get('embed_button');
-    $filter_format = $form_state->get('filter_format');
+    /** @var \Drupal\editor\EditorInterface $editor */
+    $editor = $form_state->get('editor');
     $entity = $form_state->get('entity');
     $values = $form_state->getValues();
 
@@ -240,12 +241,7 @@ class EntityEmbedDialog extends FormBase {
     );
 
     // Build the list of allowed display plugins.
-    $allowed_plugins = $embed_button->getAllowedDisplayPlugins();
-    $available_plugins = $this->displayPluginManager()->getDefinitionOptionsForEntity($entity);
-    // If list of allowed options is empty, it means that all plugins are
-    // allowed. Else, take the intersection of allowed and available
-    // plugins.
-    $display_plugin_options = empty($allowed_plugins) ? $available_plugins : array_intersect_key($available_plugins, $allowed_plugins);
+    $display_plugin_options = $this->getDisplayPluginOptions($embed_button, $entity);
 
     // If the currently selected display is not in the available options,
     // use the first from the list instead. This can happen if an alter
@@ -293,7 +289,7 @@ class EntityEmbedDialog extends FormBase {
 
     // When Drupal core's filter_align is being used, the text editor may
     // offer the ability to change the alignment.
-    if (isset($entity_element['data-align']) && $filter_format->filters('filter_align')->status) {
+    if (isset($entity_element['data-align']) && $editor->getFilterFormat()->filters('filter_align')->status) {
       $form['attributes']['data-align'] = array(
         '#title' => $this->t('Align'),
         '#type' => 'radios',
@@ -380,9 +376,7 @@ class EntityEmbedDialog extends FormBase {
           // Ensure that at least one display plugin is present before
           // proceeding to the next step. Rasie an error otherwise.
           $embed_button = $form_state->get('embed_button');
-          $allowed_plugins = $embed_button->getAllowedDisplayPlugins();
-          $available_plugins = $this->displayPluginManager()->getDefinitionOptionsForEntity($entity);
-          $display_plugin_options = empty($allowed_plugins) ? $available_plugins : array_intersect_key($available_plugins, $allowed_plugins);
+          $display_plugin_options = $this->getDisplayPluginOptions($embed_button, $entity);
           // If no plugin is available after taking the intersection,
           // raise error. Also log an exception.
           if (empty($display_plugin_options)) {
@@ -548,27 +542,24 @@ class EntityEmbedDialog extends FormBase {
   }
 
   /**
-   * Checks whether or not the embed button is enabled for given text format.
+   * Returns the allowed display plugins given an embed button and an entity.
    *
-   * Returns allowed if the editor toolbar contains the embed button and neutral
-   * otherwise.
+   * @param \Drupal\embed\EmbedButtonInterface $embed_button
+   *   The embed button.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity.
    *
-   * @param \Drupal\filter\FilterFormatInterface $filter_format
-   *   The filter format to which this dialog corresponds.
-   * @param \Drupal\entity_embed\EmbedButtonInterface $entity_embed_button
-   *   The embed button to which this dialog corresponds.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
+   * @return array
+   *   List of allowed display plugins.
    */
-  public function buttonIsEnabled(FilterFormatInterface $filter_format, EmbedButtonInterface $entity_embed_button) {
-    /** @var \Drupal\editor\EditorInterface $editor */
-    if ($editor = Editor::load($filter_format->id())) {
-      if ($entity_embed_button->isEnabledInEditor($editor)) {
-        return AccessResult::allowed();
-      }
+  public function getDisplayPluginOptions(EmbedButtonInterface $embed_button, EntityInterface $entity) {
+    $plugins = $this->displayPluginManager->getDefinitionOptionsForEntity($entity);
+
+    if ($allowed_plugins = $embed_button->getTypeSetting('display_plugins')) {
+      $plugins = array_intersect_key($plugins, array_flip($allowed_plugins));
     }
 
-    return AccessResult::neutral();
+    natsort($plugins);
+    return $plugins;
   }
 }

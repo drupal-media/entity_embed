@@ -109,7 +109,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             $entity_metadata = CacheableMetadata::createFromObject($entity);
             $result = $result->merge($entity_metadata)->merge($access_metadata);
 
-            $context = $this->getDomNodeAttributesAsArray($node);
+            $context = $this->getNodeAttributesAsArray($node);
             $context += array('data-langcode' => $langcode);
             $entity_output = $this->renderEntityEmbed($entity, $context);
 
@@ -153,32 +153,4 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
     }
   }
 
-  /**
-   * Convert the attributes on a DOMNode object to an array.
-   *
-   * This will also un-serialize any attribute values stored as JSON.
-   *
-   * @param \DOMNode $node
-   *   A DOMNode object.
-   *
-   * @return array
-   *   The attributes as an associative array, keyed by the attribute names.
-   */
-  public function getDomNodeAttributesAsArray(\DOMNode $node) {
-    $return = array();
-
-    // Convert the data attributes to the context array.
-    foreach ($node->attributes as $attribute) {
-      $key = $attribute->nodeName;
-      $return[$key] = $attribute->nodeValue;
-
-      // Check for JSON-encoded attributes.
-      $data = json_decode($return[$key], TRUE, 10);
-      if ($data !== NULL && json_last_error() === JSON_ERROR_NONE) {
-        $return[$key] = $data;
-      }
-    }
-
-    return $return;
-  }
 }

@@ -194,6 +194,8 @@ class EntityEmbedDialog extends FormBase {
   /**
    * Form constructor for the entity embedding step.
    *
+   * @todo Re-add caption attribute.
+   *
    * @param array $form
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
@@ -308,7 +310,6 @@ class EntityEmbedDialog extends FormBase {
       );
     }
 
-    // @todo Re-add caption attribute.
     $form['actions'] = array(
       '#type' => 'actions',
     );

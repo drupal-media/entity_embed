@@ -42,13 +42,6 @@ class EmbedButtonForm extends EntityForm {
   protected $ckeditorPluginManager;
 
   /**
-   * The entity_embed settings config object.
-   *
-   * @var \Drupal\Core\Config\Config
-   */
-  protected $entityEmbedConfig;
-
-  /**
    * Constructs a new EmbedButtonForm.
    *
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
@@ -64,7 +57,7 @@ class EmbedButtonForm extends EntityForm {
     $this->entityManager = $entity_manager;
     $this->displayPluginManager = $plugin_manager;
     $this->ckeditorPluginManager = $ckeditor_plugin_manager;
-    $this->entityEmbedConfig = $config_factory->get('entity_embed.settings');
+    $this->configFactory = $config_factory;
   }
 
   /**
@@ -94,8 +87,9 @@ class EmbedButtonForm extends EntityForm {
       $button_icon = array($file->id());
     }
 
-    $file_scheme = $this->entityEmbedConfig->get('file_scheme');
-    $upload_directory = $this->entityEmbedConfig->get('upload_directory');
+    $config = $this->config('embed.settings');
+    $file_scheme = $config->get('file_scheme');
+    $upload_directory = $config->get('upload_directory');
     $upload_location = $file_scheme . '://' . $upload_directory . '/';
 
     $form['label'] = array(

@@ -1,13 +1,4 @@
-entity_embed.settings:
-  type: config_object
-  label: 'Entity embed settings'
-  mapping:
-    file_scheme:
-      type: string
-      label: 'File scheme for button images'
-    upload_directory:
-      type: string
-      label: 'Upload directory for button images'
+# Schema for the configuration files of the Entity Embed module.
 
 entity_embed.embed_button.*:
   type: config_entity

@@ -1,5 +1,0 @@
-entity_embed_button.list:
-  title: 'Entity embed buttons'
-  parent: system.admin_config_content
-  description: 'Configure which entity embed buttons are available in the CKEditor configuration toolbar.'
-  route_name: entity_embed_button.list

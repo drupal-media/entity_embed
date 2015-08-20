@@ -7,4 +7,3 @@ dependencies:
   - editor
   - embed
   - filter
-configure: entity_embed_button.list

@@ -75,11 +75,10 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
     }
 
     // Check that the entity itself can be viewed by the user.
-    // This uses the accessEntity method on the helper trait instead of
-    // Entity::access() because there are bugs with file access.
-    if ($this->hasContextValue('entity')) {
-      return $this->accessEntity($this->getContextValue('entity'), 'view', $account);
+    if ($entity = $this->getEntityFromContext()) {
+      return $entity->access('view', $account);
     }
+
     return TRUE;
   }
 
@@ -238,7 +237,7 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
   }
 
   /**
-   * Gets the entity type from a defined context.
+   * Gets the entity type from the current context.
    *
    * @return string
    *   The entity type id.
@@ -249,6 +248,17 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
     }
     else {
       return $this->getContextValue('entity_type');
+    }
+  }
+
+  /**
+   * Gets the entity from the current context.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   */
+  public function getEntityFromContext() {
+    if ($this->hasContextValue('entity')) {
+      return $this->getContextValue('entity');
     }
   }
 

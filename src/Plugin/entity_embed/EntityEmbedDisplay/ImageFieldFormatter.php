@@ -89,11 +89,10 @@ class ImageFieldFormatter extends FileFieldFormatter {
       return FALSE;
     }
 
-    if ($this->hasContextValue('entity')) {
-      $uri = $this->getContextValue('entity')->getFileUri();
-      $image = $this->imageFactory->get($uri);
-      return $image->isValid();
+    if ($entity = $this->getEntityFromContext()) {
+      return $this->imageFactory->get($entity->getFileUri())->isValid();
     }
+
     return TRUE;
   }
 

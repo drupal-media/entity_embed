@@ -101,10 +101,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
               $node->setAttribute('data-entity-uuid', $uuid);
             }
 
-            // Do not use $entity->access() here because it does not work with
-            // public files. Uses EntityHelperTrait::accessEntity() instead.
-            // @see https://www.drupal.org/node/2533978
-            $access = $this->accessEntity($entity, 'view', NULL, TRUE);
+            $access = $entity->access('view', NULL, TRUE);
             $access_metadata = CacheableMetadata::createFromObject($access);
             $entity_metadata = CacheableMetadata::createFromObject($entity);
             $result = $result->merge($entity_metadata)->merge($access_metadata);

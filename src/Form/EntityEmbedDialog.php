@@ -361,7 +361,7 @@ class EntityEmbedDialog extends FormBase {
     if ($entity_type = $values['attributes']['data-entity-type']) {
       $id = trim($values['attributes']['data-entity-id']);
       if ($entity = $this->loadEntity($entity_type, $id)) {
-        if (!$this->accessEntity($entity, 'view')) {
+        if (!$entity->access('view')) {
           $form_state->setError($form['attributes']['data-entity-id'], $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
         }
         else {

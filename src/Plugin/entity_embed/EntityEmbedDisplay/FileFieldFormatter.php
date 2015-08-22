@@ -61,4 +61,13 @@ class FileFieldFormatter extends EntityReferenceFieldFormatter {
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   *
+   * @return \Drupal\file\FileInterface
+   */
+  public function getEntityFromContext() {
+    return parent::getEntityFromContext();
+  }
+
 }

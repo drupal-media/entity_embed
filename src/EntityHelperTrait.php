@@ -229,40 +229,6 @@ trait EntityHelperTrait {
   }
 
   /**
-   * Check access to an entity.
-   *
-   * @todo Remove when https://www.drupal.org/node/2533978 is fixed in core.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity object.
-   * @param string $op
-   *   (optional) The operation to be performed. Defaults to view.
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   (optional) The user for which to check access, or NULL to check access
-   *   for the current user. Defaults to NULL.
-   * @param bool $return_as_object
-   *   (optional) Defaults to FALSE.
-   *
-   * @return bool|\Drupal\Core\Access\AccessResultInterface
-   *   The access result. Returns a boolean if $return_as_object is FALSE (this
-   *   is the default) and otherwise an AccessResultInterface object.
-   *   When a boolean is returned, the result of AccessInterface::isAllowed() is
-   *   returned, i.e. TRUE means access is explicitly allowed, FALSE means
-   *   access is either explicitly forbidden or "no opinion".
-   */
-  protected function accessEntity(EntityInterface $entity, $op = 'view', AccountInterface $account = NULL, $return_as_object = FALSE) {
-    if ($entity->getEntityTypeId() === 'file') {
-      /** @var \Drupal\file\Entity\File $entity */
-      $uri = $entity->getFileUri();
-      if (\Drupal::service('file_system')->uriScheme($uri) === 'public') {
-        return $return_as_object ? AccessResult::allowed() : TRUE;
-      }
-    }
-
-    return $entity->access($op, $account, $return_as_object);
-  }
-
-  /**
    * Returns the entity manager.
    *
    * @return \Drupal\Core\Entity\EntityManagerInterface

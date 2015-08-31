@@ -65,7 +65,7 @@ class EntityEmbedTwigExtension extends \Twig_Extension {
    * @return array
    *   A render array from entity_view().
    */
-  public function getRenderArray($entity_type, $entity_id, $display_plugin = 'default', $display_settings = array()) {
+  public function getRenderArray($entity_type, $entity_id, $display_plugin = 'default', $display_settings = []) {
     $entity = $this->loadEntity($entity_type, $entity_id);
     $context = array(
       'data-entity-type' => $entity_type,

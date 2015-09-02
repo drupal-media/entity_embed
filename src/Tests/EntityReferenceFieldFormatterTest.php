@@ -23,7 +23,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
    *
    * @var array
    */
-  public static $modules = array('entity_embed', 'entity_reference', 'node');
+  public static $modules = array('entity_embed', 'node');
 
   /**
    * The test 'node' entity.

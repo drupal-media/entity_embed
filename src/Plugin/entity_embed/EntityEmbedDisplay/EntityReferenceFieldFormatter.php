@@ -18,8 +18,7 @@ use Drupal\entity_embed\EntityEmbedDisplay\FieldFormatterEntityEmbedDisplayBase;
  *   id = "entity_reference",
  *   label = @Translation("Entity Reference"),
  *   deriver = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
- *   field_type = "entity_reference",
- *   provider = "entity_reference"
+ *   field_type = "entity_reference"
  * )
  */
 class EntityReferenceFieldFormatter extends FieldFormatterEntityEmbedDisplayBase {

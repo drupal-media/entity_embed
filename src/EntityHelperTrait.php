@@ -164,7 +164,7 @@ trait EntityHelperTrait {
   protected function renderEntityEmbed(EntityInterface $entity, array $context = array()) {
     // Support the deprecated view-mode data attribute.
     if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-settings'])) {
-      $context['data-entity-embed-display'] = 'default';
+      $context['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
       $context['data-entity-embed-settings'] = ['view_mode' => &$context['data-view-mode']];
     }
 
@@ -172,7 +172,7 @@ trait EntityHelperTrait {
     $context += array(
       'data-entity-id' => $entity->id(),
       'data-entity-type' => $entity->getEntityTypeId(),
-      'data-entity-embed-display' => 'default',
+      'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
       'data-entity-embed-settings' => array(),
     );
 

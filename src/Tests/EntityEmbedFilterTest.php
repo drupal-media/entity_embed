@@ -66,7 +66,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertNoText($sample_node->body->value, 'Entity specifed with ID does not exists in the page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
 
-    // Test entity embed using 'default' display plugin.
+    // Test entity embed using deprecated 'default' display plugin.
     $content = '<div data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</div>';
     $settings = array();
     $settings['type'] = 'page';

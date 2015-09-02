@@ -92,7 +92,7 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-type' => $embed_button->getTypeSetting('entity_type'),
       'data-entity-uuid' => '',
       'data-entity-id' => '',
-      'data-entity-embed-display' => 'default',
+      'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
       'data-entity-embed-settings' => array(),
       'data-align' => '',
     );

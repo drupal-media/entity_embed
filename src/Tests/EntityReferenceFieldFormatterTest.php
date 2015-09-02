@@ -44,22 +44,10 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     // Ensure that entity reference field formatters are available as display
     // plugins.
     $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->node);
-    // Ensure that 'default' plugin is available.
-    $this->assertTrue(array_key_exists('default', $plugin_options), "The 'Default' plugin is available.");
     // Ensure that 'entity_reference' plugins are available.
     $this->assertTrue(array_key_exists('entity_reference:entity_reference_entity_id', $plugin_options), "The 'Entity ID' plugin is available.");
     $this->assertTrue(array_key_exists('entity_reference:entity_reference_entity_view', $plugin_options), "The 'Rendered entity' plugin is available.");
     $this->assertTrue(array_key_exists('entity_reference:entity_reference_label', $plugin_options), "The 'Label' plugin is available.");
-
-    // Ensure that correct form attributes are returned for 'default' plugin.
-    $form = array();
-    $form_state = new FormState();
-    $display = $this->displayPluginManager()->createInstance('default', array());
-    $display->setContextValue('entity', $this->node);
-    $conf_form = $display->buildConfigurationForm($form, $form_state);
-    $this->assertIdentical(array_keys($conf_form), array('view_mode'));
-    $this->assertIdentical($conf_form['view_mode']['#type'], 'select');
-    $this->assertIdentical($conf_form['view_mode']['#title'], 'View mode');
 
     // Ensure that correct form attributes are returned for
     // 'entity_reference:entity_reference_entity_id' plugin.

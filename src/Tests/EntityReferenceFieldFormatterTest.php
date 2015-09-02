@@ -19,13 +19,6 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
   use EntityHelperTrait;
 
   /**
-   * The test 'node' entity.
-   *
-   * @var \Drupal\Core\Entity\EntityInterface
-   */
-  protected $entity;
-
-  /**
    * The test 'menu' entity.
    *
    * @var \Drupal\Core\Menu\MenuInterface
@@ -34,8 +27,6 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
 
   protected function setUp() {
     parent::setUp();
-
-    $this->entity = $this->loadEntity('node', $this->node->uuid());
 
     // Add a new menu entity which does not has a view controller.
     $this->menu = entity_create('menu', array(
@@ -52,7 +43,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
   public function testEntityReferenceFieldFormatter() {
     // Ensure that entity reference field formatters are available as display
     // plugins.
-    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->entity);
+    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->node);
     // Ensure that 'default' plugin is available.
     $this->assertTrue(array_key_exists('default', $plugin_options), "The 'Default' plugin is available.");
     // Ensure that 'entity_reference' plugins are available.
@@ -64,7 +55,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     $form = array();
     $form_state = new FormState();
     $display = $this->displayPluginManager()->createInstance('default', array());
-    $display->setContextValue('entity', $this->entity);
+    $display->setContextValue('entity', $this->node);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
     $this->assertIdentical(array_keys($conf_form), array('view_mode'));
     $this->assertIdentical($conf_form['view_mode']['#type'], 'select');
@@ -75,7 +66,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     $form = array();
     $form_state = new FormState();
     $display = $this->displayPluginManager()->createInstance('entity_reference:entity_reference_entity_id', array());
-    $display->setContextValue('entity', $this->entity);
+    $display->setContextValue('entity', $this->node);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
     $this->assertIdentical(array_keys($conf_form), array());
 
@@ -84,7 +75,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     $form = array();
     $form_state = new FormState();
     $display = $this->displayPluginManager()->createInstance('entity_reference:entity_reference_entity_view', array());
-    $display->setContextValue('entity', $this->entity);
+    $display->setContextValue('entity', $this->node);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
     $this->assertIdentical($conf_form['view_mode']['#type'], 'select');
     $this->assertIdentical($conf_form['view_mode']['#title'], 'View mode');
@@ -94,7 +85,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     $form = array();
     $form_state = new FormState();
     $display = $this->displayPluginManager()->createInstance('entity_reference:entity_reference_label', array());
-    $display->setContextValue('entity', $this->entity);
+    $display->setContextValue('entity', $this->node);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
     $this->assertIdentical(array_keys($conf_form), array('link'));
     $this->assertIdentical($conf_form['link']['#type'], 'checkbox');

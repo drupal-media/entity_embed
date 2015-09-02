@@ -18,7 +18,7 @@ Allows any entity to be embedded using a WYSIWYG and text format.
 
 ## Technical details
 
-Users should be embedding entities using the CKEditor WYSIWYG button as described above. This section is more techincal about the HTML markup that is used to embed the actual entity.
+Users should be embedding entities using the CKEditor WYSIWYG button as described above. This section is more technical about the HTML markup that is used to embed the actual entity.
 
 ### Embed by UUID (recommended):
 ```html
@@ -37,7 +37,6 @@ Users should be embedding entities using the CKEditor WYSIWYG button as describe
 
 A more advanced use for embedding entities uses an entity embed display plugin, provided in the `data-entity-embed-display` attribute. By default we provide four different display plugins out of the box:
 
-- default: Renders the entity using entity_view().
 - entity_reference:_formatter_id_: Renders the entity using a specific Entity Reference field formatter. For example, entity_reference:entity_reference_label renders the entity using the "Label" formatter.
 - file:_formatter_id_: Renders the entity using a specific File field formatter. This will only work if the entity is a file entity type.
 - image:_formatter_id_: Renders the entity using a specific Image field formatter. This will only work if the entity is a file entity type, and the file is an image.

@@ -176,6 +176,12 @@ trait EntityHelperTrait {
       'data-entity-embed-settings' => array(),
     );
 
+    // The default display plugin has been deprecated by the rendered entity
+    // field formatter.
+    if ($context['data-entity-embed-display'] === 'default') {
+      $context['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
+    }
+
     // Allow modules to alter the entity prior to embed rendering.
     $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed_context", 'entity_embed_context'), $context, $entity);
 

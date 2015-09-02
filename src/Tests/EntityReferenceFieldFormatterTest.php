@@ -19,13 +19,6 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
   use EntityHelperTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = array('entity_embed', 'node');
-
-  /**
    * The test 'node' entity.
    *
    * @var \Drupal\Core\Entity\EntityInterface

@@ -14,13 +14,6 @@ namespace Drupal\entity_embed\Tests;
  */
 class EntityEmbedTwigTest extends EntityEmbedTestBase {
 
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = array('entity_embed', 'entity_embed_twig_test', 'entity_reference', 'node');
-
   protected function setUp() {
     parent::setUp();
     \Drupal::service('theme_handler')->install(array('test_theme'));

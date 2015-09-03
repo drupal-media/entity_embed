@@ -1,6 +1,0 @@
-name: 'Entity Embed twig test'
-type: module
-description: 'Support module for testing entity_embed twig extension.'
-core: 8.x
-package: Testing
-version: VERSION

@@ -24,20 +24,8 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
    */
   protected $state;
 
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = array(
-    'entity_embed',
-    'entity_embed_test',
-    'node',
-  );
-
   protected function setUp() {
     parent::setUp();
-
     $this->state = $this->container->get('state');
   }
 

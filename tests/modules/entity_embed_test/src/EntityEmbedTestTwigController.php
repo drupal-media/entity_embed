@@ -2,15 +2,15 @@
 
 /**
  * @file
- * Contains \Drupal\entity_embed_twig_test\EntityEmbedTwigTestController.
+ * Contains \Drupal\entity_embed_test\EntityEmbedTestTwigController.
  */
 
-namespace Drupal\entity_embed_twig_test;
+namespace Drupal\entity_embed_test;
 
 /**
  * Controller routines for Twig theme test routes.
  */
-class EntityEmbedTwigTestController {
+class EntityEmbedTestTwigController {
 
   /**
    * Menu callback for testing entity_embed twig extension using entity ID.

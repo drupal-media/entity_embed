@@ -92,7 +92,7 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-type' => $embed_button->getTypeSetting('entity_type'),
       'data-entity-uuid' => '',
       'data-entity-id' => '',
-      'data-entity-embed-display' => 'default',
+      'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
       'data-entity-embed-settings' => array(),
       'data-align' => '',
     );
@@ -249,6 +249,13 @@ class EntityEmbedDialog extends FormBase {
     if (!isset($display_plugin_options[$entity_element['data-entity-embed-display']])) {
       $entity_element['data-entity-embed-display'] = key($display_plugin_options);
     }
+
+    // The default display plugin has been deprecated by the rendered entity
+    // field formatter.
+    if ($entity_element['data-entity-embed-display'] === 'default') {
+      $entity_element['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
+    }
+
     $form['attributes']['data-entity-embed-display'] = array(
       '#type' => 'select',
       '#title' => $this->t('Display as'),

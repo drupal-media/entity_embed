@@ -30,7 +30,6 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
    * @var array
    */
   public static $modules = array(
-    'entity_reference',
     'entity_embed',
     'entity_embed_test',
     'node',

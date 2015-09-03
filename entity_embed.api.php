@@ -50,7 +50,7 @@ function hook_entity_embed_display_plugins_for_context_alter(array &$definitions
 
   // For nodes, use the default option.
   if ($entity instanceof \Drupal\node\NodeInterface) {
-    $definitions = array_intersect_key($definitions, array_flip(['default']));
+    $definitions = array_intersect_key($definitions, array_flip(['entity_reference:entity_reference_entity_view']));
   }
 }
 

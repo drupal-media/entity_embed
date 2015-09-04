@@ -22,7 +22,7 @@ abstract class EntityEmbedTestBase extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['entity_embed', 'node', 'ckeditor'];
+  public static $modules = ['entity_embed', 'entity_embed_test', 'node', 'ckeditor'];
 
   /**
    * The test user.

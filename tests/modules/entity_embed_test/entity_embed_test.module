@@ -8,6 +8,23 @@
 use Drupal\Core\Entity\EntityInterface;
 
 /**
+ * Implements hook_theme().
+ */
+function entity_embed_test_theme($existing, $type, $theme, $path) {
+  $items['entity_embed_twig_test'] = array(
+    'template' => 'entity_embed_twig_test',
+    'variables' => array(
+      'entity_type' => '',
+      'id' => '',
+      'display_plugin' => 'default',
+      'display_settings' => array(),
+    ),
+  );
+  return $items;
+}
+
+
+/**
  * Implements hook_entity_embed_display_plugins_alter().
  */
 function entity_embed_test_entity_embed_display_plugins_alter(&$info) {

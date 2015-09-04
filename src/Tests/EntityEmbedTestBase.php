@@ -112,6 +112,9 @@ abstract class EntityEmbedTestBase extends WebTestBase {
 
   public function assertAvailableDisplayPlugins(EntityInterface $entity, array $expected_plugins, $message = '') {
     $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($entity);
+    // @todo Remove the sorting so we can actually test return order.
+    ksort($plugin_options);
+    sort($expected_plugins);
     $this->assertEqual(array_keys($plugin_options), $expected_plugins, $message);
   }
 }

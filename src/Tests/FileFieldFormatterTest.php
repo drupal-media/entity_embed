@@ -43,12 +43,12 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
   public function testFileFieldFormatter() {
     // Ensure that file field formatters are available as plugins.
     $this->assertAvailableDisplayPlugins($this->file, [
-      'file:file_table',
-      'file:file_url_plain',
-      'file:file_default',
-      'entity_reference:entity_reference_entity_view',
       'entity_reference:entity_reference_label',
       'entity_reference:entity_reference_entity_id',
+      'entity_reference:entity_reference_entity_view',
+      'file:file_default',
+      'file:file_table',
+      'file:file_url_plain',
     ]);
 
     // Ensure that correct form attributes are returned for the file field

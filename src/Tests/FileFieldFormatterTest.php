@@ -55,7 +55,7 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
     $this->assertTrue(array_key_exists('entity_reference:entity_reference_label', $plugin_options), "The 'Label' plugin is available.");
     // Ensure that 'file' plugins are available.
     $this->assertTrue(array_key_exists('file:file_table', $plugin_options), "The 'Table of files' plugin is available.");
-    $this->assertTrue(array_key_exists('file:file_rss_enclosure', $plugin_options), "The 'RSS enclosure' plugin is available.");
+    $this->assertFalse(array_key_exists('file:file_rss_enclosure', $plugin_options), "The 'RSS enclosure' plugin is not available.");
     $this->assertTrue(array_key_exists('file:file_default', $plugin_options), "The 'Generic file' plugin is available.");
     $this->assertTrue(array_key_exists('file:file_url_plain', $plugin_options), "The 'URL to file' plugin is available.");
 
@@ -65,7 +65,6 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
     $form_state = new FormState();
     $plugins = array(
       'file:file_table',
-      'file:file_rss_enclosure',
       'file:file_default',
       'file:file_url_plain',
     );

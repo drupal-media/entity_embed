@@ -8,13 +8,11 @@
 namespace Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FormatterPluginManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Image\ImageFactory;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\TypedDataManager;
-use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

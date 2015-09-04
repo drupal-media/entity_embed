@@ -7,7 +7,6 @@
 
 namespace Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay;
 
-use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 
 /**

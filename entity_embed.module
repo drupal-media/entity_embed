@@ -5,3 +5,19 @@
  * Framework for allowing entities to be embedded using CKEditor plugin and text
  * format.
  */
+
+/**
+ * Implements hook_entity_embed_display_plugins_alter() on behalf of file.module.
+ */
+function file_entity_embed_display_plugins_alter(array &$plugins) {
+  // The RSS enclosure field formatter is not usable for Entity Embed.
+  unset($plugins['file:file_rss_enclosure']);
+}
+
+/**
+ * Implements hook_entity_embed_display_plugins_alter() on behalf of taxonomy.module.
+ */
+function taxonomy_entity_embed_display_plugins_alter(array &$plugins) {
+  // The RSS category field formatter is not usable for Entity Embed.
+  unset($plugins['entity_reference:entity_reference_rss_category']);
+}

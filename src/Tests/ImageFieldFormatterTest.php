@@ -58,6 +58,12 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->file);
     $this->assertFalse(array_key_exists('image:image', $plugin_options), "The 'Image' plugin is not available for text file.");
 
+    // Ensure that 'file' plugins are available for images too.
+    $this->assertTrue(array_key_exists('file:file_table', $plugin_options), "The 'Table of files' plugin is available.");
+    $this->assertFalse(array_key_exists('file:file_rss_enclosure', $plugin_options), "The 'RSS enclosure' plugin is not available.");
+    $this->assertTrue(array_key_exists('file:file_default', $plugin_options), "The 'Generic file' plugin is available.");
+    $this->assertTrue(array_key_exists('file:file_url_plain', $plugin_options), "The 'URL to file' plugin is available.");
+
     // Ensure that correct form attributes are returned for the image plugin.
     $form = array();
     $form_state = new FormState();

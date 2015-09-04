@@ -2,3 +2,6 @@ services:
   plugin.manager.entity_embed.display:
     class: Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler']
+  entity_embed:
+    class: Drupal\entity_embed\EntityEmbed
+    arguments: ['@entity.manager', '@module_handler', '@renderer', '@plugin.manager.entity_embed.display']

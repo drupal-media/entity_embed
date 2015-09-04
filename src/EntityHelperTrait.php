@@ -39,20 +39,6 @@ trait EntityHelperTrait {
   protected $moduleHandler;
 
   /**
-   * The display plugin manager.
-   *
-   * @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager.
-   */
-  protected $displayPluginManager;
-
-  /**
-   * The renderer.
-   *
-   * @var \Drupal\Core\Render\RendererInterface.
-   */
-  protected $renderer;
-
-  /**
    * Loads an entity from the database.
    *
    * @param string $entity_type
@@ -131,108 +117,6 @@ trait EntityHelperTrait {
   }
 
   /**
-   * Returns the render array for an entity.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity to be rendered.
-   * @param string $view_mode
-   *   The view mode that should be used to display the entity.
-   * @param string $langcode
-   *   (optional) For which language the entity should be rendered, defaults to
-   *   the current content language.
-   *
-   * @return array
-   *   A render array for the entity.
-   */
-  protected function renderEntity(EntityInterface $entity, $view_mode, $langcode = NULL) {
-    $render_controller = $this->entityManager()->getViewBuilder($entity->getEntityTypeId());
-    return $render_controller->view($entity, $view_mode, $langcode);
-  }
-
-  /**
-   * Renders an embedded entity.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity to be rendered.
-   * @param array $context
-   *   (optional) Array of context values, corresponding to the attributes on
-   *   the embed HTML tag.
-   *
-   * @return string
-   *   The HTML of the entity rendered with the display plugin.
-   */
-  protected function renderEntityEmbed(EntityInterface $entity, array $context = array()) {
-    // Support the deprecated view-mode data attribute.
-    if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-settings'])) {
-      $context['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
-      $context['data-entity-embed-settings'] = ['view_mode' => &$context['data-view-mode']];
-    }
-
-    // Merge in default attributes.
-    $context += array(
-      'data-entity-id' => $entity->id(),
-      'data-entity-type' => $entity->getEntityTypeId(),
-      'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
-      'data-entity-embed-settings' => array(),
-    );
-
-    // The default display plugin has been deprecated by the rendered entity
-    // field formatter.
-    if ($context['data-entity-embed-display'] === 'default') {
-      $context['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
-    }
-
-    // Allow modules to alter the entity prior to embed rendering.
-    $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed_context", 'entity_embed_context'), $context, $entity);
-
-    // Build and render the display plugin, allowing modules to alter the
-    // result before rendering.
-    $build = $this->renderEntityEmbedDisplayPlugin(
-      $entity,
-      $context['data-entity-embed-display'],
-      $context['data-entity-embed-settings'],
-      $context
-    );
-    // @todo Should this hook get invoked if $build is an empty array?
-    $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed", 'entity_embed'), $build, $entity, $context);
-    $entity_output = $this->renderer()->render($build);
-
-    return $entity_output;
-  }
-
-  /**
-   * Renders an entity using an EntityEmbedDisplay plugin.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity to be rendered.
-   * @param string $plugin_id
-   *   The EntityEmbedDisplay plugin ID.
-   * @param array $plugin_configuration
-   *   (optional) Array of plugin configuration values.
-   * @param array $context
-   *   (optional) Array of additional context values, usually the embed HTML
-   *   tag's attributes.
-   *
-   * @return array
-   *   A render array for the display plugin.
-   */
-  protected function renderEntityEmbedDisplayPlugin(EntityInterface $entity, $plugin_id, array $plugin_configuration = array(), array $context = array()) {
-    // Build the display plugin.
-    /** @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayBase $display */
-    $display = $this->displayPluginManager()->createInstance($plugin_id, $plugin_configuration);
-    $display->setContextValue('entity', $entity);
-    $display->setAttributes($context);
-
-    // Check if the display plugin is accessible. This also checks entity
-    // access, which is why we never call $entity->access() here.
-    if (!$display->access()) {
-      return array();
-    }
-
-    return $display->build();
-  }
-
-  /**
    * Returns the entity manager.
    *
    * @return \Drupal\Core\Entity\EntityManagerInterface
@@ -281,58 +165,6 @@ trait EntityHelperTrait {
    */
   public function setModuleHandler(ModuleHandlerInterface $module_handler) {
     $this->moduleHandler = $module_handler;
-    return $this;
-  }
-
-  /**
-   * Returns the display plugin manager.
-   *
-   * @return \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager
-   *   The display plugin manager.
-   */
-  protected function displayPluginManager() {
-    if (!isset($this->displayPluginManager)) {
-      $this->displayPluginManager = \Drupal::service('plugin.manager.entity_embed.display');
-    }
-    return $this->displayPluginManager;
-  }
-
-  /**
-   * Sets the display plugin manager service.
-   *
-   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $display_plugin_manager
-   *   The display plugin manager service.
-   *
-   * @return self
-   */
-  public function setDisplayPluginManager(EntityEmbedDisplayManager $display_plugin_manager) {
-    $this->displayPluginManager = $display_plugin_manager;
-    return $this;
-  }
-
-  /**
-   * Returns the renderer.
-   *
-   * @return \Drupal\Core\Render\RendererInterface
-   *   The renderer.
-   */
-  protected function renderer() {
-    if (!isset($this->renderer)) {
-      $this->renderer = \Drupal::service('renderer');
-    }
-    return $this->renderer;
-  }
-
-  /**
-   * Sets the renderer.
-   *
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer.
-   *
-   * @return self
-   */
-  public function setRenderer(RendererInterface $renderer) {
-    $this->renderer = $renderer;
     return $this;
   }
 }

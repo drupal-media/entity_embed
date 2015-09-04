@@ -12,6 +12,7 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\entity_embed\EntityEmbedInterface;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\entity_embed\Exception\EntityNotFoundException;
 use Drupal\entity_embed\Exception\RecursiveRenderingException;
@@ -35,6 +36,13 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   use DomHelperTrait;
 
   /**
+   * The entity embed service.
+   *
+   * @var \Drupal\entity_embed\EntityEmbedInterface.
+   */
+  protected $entityEmbed;
+
+  /**
    * Constructs a EntityEmbedFilter object.
    *
    * @param array $configuration
@@ -45,13 +53,13 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager service.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The Module Handler.
+   * @param \Drupal\entity_embed\EntityEmbedInterface $entity_embed
+   *   The entity embed service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, EntityEmbedInterface $entity_embed) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->setEntityManager($entity_manager);
-    $this->setModuleHandler($module_handler);
+    $this->entityEmbed = $entity_embed;
   }
 
   /**
@@ -63,7 +71,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       $plugin_id,
       $plugin_definition,
       $container->get('entity.manager'),
-      $container->get('module_handler')
+      $container->get('entity_embed')
     );
   }
 
@@ -108,7 +116,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
             $context = $this->getNodeAttributesAsArray($node);
             $context += array('data-langcode' => $langcode);
-            $entity_output = $this->renderEntityEmbed($entity, $context);
+            $entity_output = $this->entityEmbed->renderEntityEmbed($entity, $context);
 
             $depth--;
           }

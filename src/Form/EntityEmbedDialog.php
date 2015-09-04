@@ -18,6 +18,8 @@ use Drupal\editor\Ajax\EditorDialogSave;
 use Drupal\editor\EditorInterface;
 use Drupal\embed\EmbedButtonInterface;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
+use Drupal\entity_embed\EntityEmbedInterface;
+use Drupal\entity_embed\EntityEmbedService;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\Component\Serialization\Json;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -36,16 +38,23 @@ class EntityEmbedDialog extends FormBase {
   protected $formBuilder;
 
   /**
+   * The display plugin manager.
+   *
+   * @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager.
+   */
+  protected $displayPluginManager;
+
+  /**
    * Constructs a EntityEmbedDialog object.
    *
-   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
-   *   The Module Handler.
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
-   *   The Form Builder.
+   *   The form builder.
+   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $display_plugin_manager
+   *   The display plugin manager.
    */
-  public function __construct(EntityEmbedDisplayManager $plugin_manager, FormBuilderInterface $form_builder) {
-    $this->setDisplayPluginManager($plugin_manager);
+  public function __construct(FormBuilderInterface $form_builder, EntityEmbedDisplayManager $display_plugin_manager) {
     $this->formBuilder = $form_builder;
+    $this->displayPluginManager = $display_plugin_manager;
   }
 
   /**
@@ -53,8 +62,8 @@ class EntityEmbedDialog extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.entity_embed.display'),
-      $container->get('form_builder')
+      $container->get('form_builder'),
+      $container->get('plugin.manager.entity_embed.display')
     );
   }
 
@@ -92,7 +101,7 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-type' => $embed_button->getTypeSetting('entity_type'),
       'data-entity-uuid' => '',
       'data-entity-id' => '',
-      'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
+      'data-entity-embed-display' => EntityEmbedInterface::DEFAULT_DISPLAY_ID,
       'data-entity-embed-settings' => array(),
       'data-align' => '',
     );
@@ -253,7 +262,7 @@ class EntityEmbedDialog extends FormBase {
     // The default display plugin has been deprecated by the rendered entity
     // field formatter.
     if ($entity_element['data-entity-embed-display'] === 'default') {
-      $entity_element['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
+      $entity_element['data-entity-embed-display'] = EntityEmbedInterface::DEFAULT_DISPLAY_ID;
     }
 
     $form['attributes']['data-entity-embed-display'] = array(
@@ -288,7 +297,7 @@ class EntityEmbedDialog extends FormBase {
       if (is_string($entity_element['data-entity-embed-settings'])) {
         $entity_element['data-entity-embed-settings'] = Json::decode($entity_element['data-entity-embed-settings'], TRUE);
       }
-      $display = $this->displayPluginManager()->createInstance($plugin_id, $entity_element['data-entity-embed-settings']);
+      $display = $this->displayPluginManager->createInstance($plugin_id, $entity_element['data-entity-embed-settings']);
       $display->setContextValue('entity', $entity);
       $display->setAttributes($entity_element);
       $form['attributes']['data-entity-embed-settings'] += $display->buildConfigurationForm($form, $form_state);
@@ -412,7 +421,7 @@ class EntityEmbedDialog extends FormBase {
     $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid']);
     $plugin_id = $entity_element['data-entity-embed-display'];
     $plugin_settings = $entity_element['data-entity-embed-settings'] ?: array();
-    $display = $this->displayPluginManager()->createInstance($plugin_id, $plugin_settings);
+    $display = $this->displayPluginManager->createInstance($plugin_id, $plugin_settings);
     $display->setContextValue('entity', $entity);
     $display->setAttributes($entity_element);
     $display->validateConfigurationForm($form, $form_state);
@@ -520,7 +529,7 @@ class EntityEmbedDialog extends FormBase {
     $entity = $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid']);
     $plugin_id = $entity_element['data-entity-embed-display'];
     $plugin_settings = $entity_element['data-entity-embed-settings'] ?: array();
-    $display = $this->displayPluginManager()->createInstance($plugin_id, $plugin_settings);
+    $display = $this->displayPluginManager->createInstance($plugin_id, $plugin_settings);
     $display->setContextValue('entity', $entity);
     $display->setAttributes($entity_element);
     $display->submitConfigurationForm($form, $form_state);

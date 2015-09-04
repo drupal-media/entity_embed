@@ -15,7 +15,6 @@ use Drupal\entity_embed\EntityHelperTrait;
  * @group entity_embed
  */
 class EntityEmbedHooksTest extends EntityEmbedTestBase {
-  use EntityHelperTrait;
 
   /**
    * The state service.

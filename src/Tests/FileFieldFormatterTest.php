@@ -17,19 +17,13 @@ use Drupal\entity_embed\EntityHelperTrait;
  * @group entity_embed
  */
 class FileFieldFormatterTest extends EntityEmbedTestBase {
-  use EntityHelperTrait;
 
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = array(
-    'entity_reference',
-    'entity_embed',
-    'file',
-    'node',
-  );
+  public static $modules = ['file', 'image'];
 
   /**
    * Created file entity.
@@ -48,16 +42,14 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
    */
   public function testFileFieldFormatter() {
     // Ensure that file field formatters are available as plugins.
-    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->file);
-    // Ensure that 'entity_reference' plugins are available.
-    $this->assertTrue(array_key_exists('entity_reference:entity_reference_entity_id', $plugin_options), "The 'Entity ID' plugin is available.");
-    $this->assertTrue(array_key_exists('entity_reference:entity_reference_entity_view', $plugin_options), "The 'Rendered entity' plugin is available.");
-    $this->assertTrue(array_key_exists('entity_reference:entity_reference_label', $plugin_options), "The 'Label' plugin is available.");
-    // Ensure that 'file' plugins are available.
-    $this->assertTrue(array_key_exists('file:file_table', $plugin_options), "The 'Table of files' plugin is available.");
-    $this->assertTrue(array_key_exists('file:file_rss_enclosure', $plugin_options), "The 'RSS enclosure' plugin is available.");
-    $this->assertTrue(array_key_exists('file:file_default', $plugin_options), "The 'Generic file' plugin is available.");
-    $this->assertTrue(array_key_exists('file:file_url_plain', $plugin_options), "The 'URL to file' plugin is available.");
+    $this->assertAvailableDisplayPlugins($this->file, [
+      'entity_reference:entity_reference_label',
+      'entity_reference:entity_reference_entity_id',
+      'entity_reference:entity_reference_entity_view',
+      'file:file_default',
+      'file:file_table',
+      'file:file_url_plain',
+    ]);
 
     // Ensure that correct form attributes are returned for the file field
     // formatter plugins.
@@ -65,7 +57,6 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
     $form_state = new FormState();
     $plugins = array(
       'file:file_table',
-      'file:file_rss_enclosure',
       'file:file_default',
       'file:file_url_plain',
     );

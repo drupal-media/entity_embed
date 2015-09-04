@@ -79,6 +79,7 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
     });
     $definitions_for_context = array_intersect_key($definitions, array_flip($valid_ids));
     $this->moduleHandler->alter('entity_embed_display_plugins_for_context', $definitions_for_context, $contexts);
+    uasort($definitions_for_context, 'Drupal\Component\Utility\SortArray::sortByWeightElement');
     return $definitions_for_context;
   }
 

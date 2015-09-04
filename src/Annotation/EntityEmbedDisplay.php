@@ -44,4 +44,9 @@ class EntityEmbedDisplay extends Plugin {
    */
   public $entity_types = FALSE;
 
+  /**
+   * @var int
+   */
+  public $weight = 0;
+
 }

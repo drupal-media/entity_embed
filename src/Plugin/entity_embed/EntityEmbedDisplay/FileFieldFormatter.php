@@ -18,7 +18,8 @@ use Drupal\Core\Form\FormStateInterface;
  *   entity_types = {"file"},
  *   deriver = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "file",
- *   provider = "file"
+ *   provider = "file",
+ *   weight = -10
  * )
  */
 class FileFieldFormatter extends EntityReferenceFieldFormatter {

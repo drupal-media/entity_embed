@@ -566,7 +566,7 @@ class EntityEmbedDialog extends FormBase {
       $plugins = array_intersect_key($plugins, array_flip($allowed_plugins));
     }
 
-    natsort($plugins);
+    //natsort($plugins);
     return $plugins;
   }
 }

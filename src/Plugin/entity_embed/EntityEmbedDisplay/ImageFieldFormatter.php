@@ -24,7 +24,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   entity_types = {"file"},
  *   deriver = "Drupal\entity_embed\Plugin\Derivative\FieldFormatterDeriver",
  *   field_type = "image",
- *   provider = "image"
+ *   provider = "image",
+ *   weight = -20
  * )
  */
 class ImageFieldFormatter extends FileFieldFormatter {

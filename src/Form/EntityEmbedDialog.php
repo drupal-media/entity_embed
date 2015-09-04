@@ -76,10 +76,7 @@ class EntityEmbedDialog extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, EditorInterface $editor = NULL, EmbedButtonInterface $embed_button = NULL) {
     $values = $form_state->getValues();
     $input = $form_state->getUserInput();
-    // Set embed button element in form state, so that it can be used later in
-    // validateForm() function.
-    $form_state->set('embed_button', $embed_button);
-    $form_state->set('editor', $editor);
+
     // Initialize entity element with form attributes, if present.
     $entity_element = empty($values['attributes']) ? array() : $values['attributes'];
     // The default values are set directly from \Drupal::request()->request,
@@ -90,14 +87,14 @@ class EntityEmbedDialog extends FormBase {
     $entity_element += $form_state->get('entity_element');
     $entity_element += array(
       'data-entity-type' => $embed_button->getTypeSetting('entity_type'),
-      'data-entity-uuid' => '',
-      'data-entity-id' => '',
-      'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
-      'data-entity-embed-settings' => array(),
       'data-align' => '',
     );
-    $form_state->set('entity_element', $entity_element);
+    $this->prepareEmbedContext($entity_element, $form_state->get('entity'));
+
+    $form_state->set('embed_button', $embed_button);
+    $form_state->set('editor', $editor);
     $form_state->set('entity', $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']));
+    $form_state->set('entity_element', $entity_element);
 
     if (!$form_state->get('step')) {
       // If an entity has been selected, then always skip to the embed options.
@@ -248,12 +245,6 @@ class EntityEmbedDialog extends FormBase {
     // hook customizes the list based on the entity.
     if (!isset($display_plugin_options[$entity_element['data-entity-embed-display']])) {
       $entity_element['data-entity-embed-display'] = key($display_plugin_options);
-    }
-
-    // The default display plugin has been deprecated by the rendered entity
-    // field formatter.
-    if ($entity_element['data-entity-embed-display'] === 'default') {
-      $entity_element['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
     }
 
     $form['attributes']['data-entity-embed-display'] = array(

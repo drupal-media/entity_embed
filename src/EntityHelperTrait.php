@@ -162,25 +162,7 @@ trait EntityHelperTrait {
    *   The HTML of the entity rendered with the display plugin.
    */
   protected function renderEntityEmbed(EntityInterface $entity, array $context = array()) {
-    // Support the deprecated view-mode data attribute.
-    if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-settings'])) {
-      $context['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
-      $context['data-entity-embed-settings'] = ['view_mode' => &$context['data-view-mode']];
-    }
-
-    // Merge in default attributes.
-    $context += array(
-      'data-entity-id' => $entity->id(),
-      'data-entity-type' => $entity->getEntityTypeId(),
-      'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
-      'data-entity-embed-settings' => array(),
-    );
-
-    // The default display plugin has been deprecated by the rendered entity
-    // field formatter.
-    if ($context['data-entity-embed-display'] === 'default') {
-      $context['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
-    }
+    $this->prepareEmbedContext($context, $entity);
 
     // Allow modules to alter the entity prior to embed rendering.
     $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed_context", 'entity_embed_context'), $context, $entity);
@@ -198,6 +180,27 @@ trait EntityHelperTrait {
     $entity_output = $this->renderer()->render($build);
 
     return $entity_output;
+  }
+
+  protected function prepareEmbedContext(array &$context, EntityInterface $entity = null) {
+    // Merge in default attributes.
+    $context += array(
+      'data-entity-embed-display' => EntityEmbedDisplayManagerInterface::DEFAULT_PLUGIN_ID,
+      'data-entity-embed-settings' => array(),
+      'data-entity-id' => $entity ? $entity->id() : '',
+      'data-entity-uuid' => $entity ? $entity->uuid() : '',
+      'data-entity-type' => $entity ? $entity->getEntityTypeId() : '',
+    );
+
+    if ($context['data-entity-embed-display'] === 'default') {
+      // The default display plugin has been deprecated by the rendered entity
+      // field formatter.
+      $context['data-entity-embed-display'] = EntityEmbedDisplayManagerInterface::DEFAULT_PLUGIN_ID;
+    }
+    elseif ($context['data-entity-embed-display'] === EntityEmbedDisplayManagerInterface::DEFAULT_PLUGIN_ID && isset($context['data-view-mode']) && empty($context['data-entity-embed-settings'])) {
+      // Support the deprecated view-mode data attribute.
+      $context['data-entity-embed-settings']['view_mode'] = &$context['data-view-mode'];
+    }
   }
 
   /**

@@ -12,7 +12,7 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
+use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManagerInterface;
 
 /**
  * Wrapper methods for entity loading and rendering.
@@ -41,7 +41,7 @@ trait EntityHelperTrait {
   /**
    * The display plugin manager.
    *
-   * @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager.
+   * @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManagerInterface.
    */
   protected $displayPluginManager;
 
@@ -287,7 +287,7 @@ trait EntityHelperTrait {
   /**
    * Returns the display plugin manager.
    *
-   * @return \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager
+   * @return \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManagerInterface
    *   The display plugin manager.
    */
   protected function displayPluginManager() {
@@ -300,12 +300,12 @@ trait EntityHelperTrait {
   /**
    * Sets the display plugin manager service.
    *
-   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $display_plugin_manager
+   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManagerInterface $display_plugin_manager
    *   The display plugin manager service.
    *
    * @return self
    */
-  public function setDisplayPluginManager(EntityEmbedDisplayManager $display_plugin_manager) {
+  public function setDisplayPluginManager(EntityEmbedDisplayManagerInterface $display_plugin_manager) {
     $this->displayPluginManager = $display_plugin_manager;
     return $this;
   }

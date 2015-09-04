@@ -19,7 +19,7 @@ use Drupal\Component\Plugin\Exception\PluginException;
  * @see \Drupal\entity_embed\Annotation\EntityEmbedDisplay
  * @see \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayInterface
  */
-class EntityEmbedDisplayManager extends DefaultPluginManager {
+class EntityEmbedDisplayManager extends DefaultPluginManager implements EntityEmbedDisplayManagerInterface {
 
   /**
    * Constructs a new class instance.
@@ -52,16 +52,7 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
   }
 
   /**
-   * Determines plugins whose constraints are satisfied by a set of contexts.
-   *
-   * @param array $contexts
-   *   An array of contexts.
-   *
-   * @return array
-   *   An array of plugin definitions.
-   *
-   * @todo At some point convert this to use ContextAwarePluginManagerTrait
-   * @see https://drupal.org/node/2277981
+   * @{inheritdoc}
    */
   public function getDefinitionsForContexts(array $contexts = array()) {
     $definitions = $this->getDefinitions();
@@ -83,13 +74,7 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
   }
 
   /**
-   * Provides a list of plugins that can be used for a certain entity.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   An entity object.
-   *
-   * @return array
-   *   An array of valid plugin labels, keyed by plugin ID.
+   * @{inheritdoc}
    */
   public function getDefinitionOptionsForEntity(EntityInterface $entity) {
     $definitions = $this->getDefinitionsForContexts(array('entity' => $entity));
@@ -99,13 +84,7 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
   }
 
   /**
-   * Provides a list of plugins that can be used for a certain entity type.
-   *
-   * @param string $entity_type
-   *   The entity type id.
-   *
-   * @return array
-   *   An array of valid plugin labels, keyed by plugin ID.
+   * @{inheritdoc}
    */
   public function getDefinitionOptionsForEntityType($entity_type) {
     $definitions = $this->getDefinitionsForContexts(array('entity_type' => $entity_type));

@@ -17,7 +17,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\editor\Ajax\EditorDialogSave;
 use Drupal\editor\EditorInterface;
 use Drupal\embed\EmbedButtonInterface;
-use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
+use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManagerInterface;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\Component\Serialization\Json;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -38,12 +38,12 @@ class EntityEmbedDialog extends FormBase {
   /**
    * Constructs a EntityEmbedDialog object.
    *
-   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager $plugin_manager
-   *   The Module Handler.
+   * @param \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManagerInterface $plugin_manager
+   *   The display plugin manager.
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
-   *   The Form Builder.
+   *   The form builder.
    */
-  public function __construct(EntityEmbedDisplayManager $plugin_manager, FormBuilderInterface $form_builder) {
+  public function __construct(EntityEmbedDisplayManagerInterface $plugin_manager, FormBuilderInterface $form_builder) {
     $this->setDisplayPluginManager($plugin_manager);
     $this->formBuilder = $form_builder;
   }

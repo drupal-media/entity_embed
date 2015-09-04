@@ -118,6 +118,12 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
         '#description' => $this->t('If none are selected, all are allowed. Note that these are the plugins which are allowed for this entity type, all of these might not be available for the selected entity.'),
       );
       $form['display_plugins']['#access'] = !empty($form['display_plugins']['#options']);
+      $display_plugins = $this->displayPluginManager->getDefinitions();
+      foreach (array_keys($form['display_plugins']['#options']) as $plugin_id) {
+        if (!empty($display_plugins[$plugin_id]['description'])) {
+          $form['display_plugins'][$plugin_id]['#description'] = $display_plugins[$plugin_id]['description'];
+        }
+      }
     }
 
     return $form;

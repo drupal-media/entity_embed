@@ -57,9 +57,13 @@ class FieldFormatterDeriver extends DeriverBase implements ContainerDeriverInter
     if (!isset($base_plugin_definition['field_type'])) {
       throw new \LogicException("Undefined field_type definition in plugin {$base_plugin_definition['id']}.");
     }
+    $plugin_definitions = $this->formatterManager->getDefinitions();
     foreach ($this->formatterManager->getOptions($base_plugin_definition['field_type']) as $formatter => $label) {
       $this->derivatives[$formatter] = $base_plugin_definition;
       $this->derivatives[$formatter]['label'] = $label;
+      if (isset($plugin_definitions[$formatter]['description'])) {
+        $this->derivatives[$formatter]['description'] = $plugin_definitions[$formatter]['description'];
+      }
     }
     return $this->derivatives;
   }

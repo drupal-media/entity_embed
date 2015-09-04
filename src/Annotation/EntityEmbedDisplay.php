@@ -32,7 +32,16 @@ class EntityEmbedDisplay extends Plugin {
    *
    * @var \Drupal\Core\Annotation\Translation
    */
-  public $label = '';
+  public $label;
+
+  /**
+   * A short description of the display plugin.
+   *
+   * @ingroup plugin_translatable
+   *
+   * @var \Drupal\Core\Annotation\Translation
+   */
+  public $description;
 
   /**
    * The entity types the display can apply to.

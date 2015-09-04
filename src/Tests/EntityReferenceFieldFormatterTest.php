@@ -16,7 +16,6 @@ use Drupal\entity_embed\EntityHelperTrait;
  * @group entity_embed
  */
 class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
-  use EntityHelperTrait;
 
   /**
    * The test 'menu' entity.
@@ -41,13 +40,12 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
    * Tests entity reference field formatters.
    */
   public function testEntityReferenceFieldFormatter() {
-    // Ensure that entity reference field formatters are available as display
-    // plugins.
-    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->node);
-    // Ensure that 'entity_reference' plugins are available.
-    $this->assertTrue(array_key_exists('entity_reference:entity_reference_entity_id', $plugin_options), "The 'Entity ID' plugin is available.");
-    $this->assertTrue(array_key_exists('entity_reference:entity_reference_entity_view', $plugin_options), "The 'Rendered entity' plugin is available.");
-    $this->assertTrue(array_key_exists('entity_reference:entity_reference_label', $plugin_options), "The 'Label' plugin is available.");
+    // Ensure that entity reference field formatters are available as plugins.
+    $this->assertAvailableDisplayPlugins($this->node, [
+      'entity_reference:entity_reference_entity_view',
+      'entity_reference:entity_reference_label',
+      'entity_reference:entity_reference_entity_id',
+    ]);
 
     // Ensure that correct form attributes are returned for
     // 'entity_reference:entity_reference_entity_id' plugin.

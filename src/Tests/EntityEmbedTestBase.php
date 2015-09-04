@@ -7,7 +7,9 @@
 
 namespace Drupal\entity_embed\Tests;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\editor\Entity\Editor;
+use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\file\Entity\File;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\simpletest\WebTestBase;
@@ -16,6 +18,7 @@ use Drupal\simpletest\WebTestBase;
  * Base class for all entity_embed tests.
  */
 abstract class EntityEmbedTestBase extends WebTestBase {
+  use EntityHelperTrait;
 
   /**
    * Modules to enable.
@@ -105,5 +108,10 @@ abstract class EntityEmbedTestBase extends WebTestBase {
     $file = File::create((array) $file);
     $file->save();
     return $file;
+  }
+
+  public function assertAvailableDisplayPlugins(EntityInterface $entity, array $expected_plugins, $message = '') {
+    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($entity);
+    $this->assertEqual(array_keys($plugin_options), $expected_plugins, $message);
   }
 }

@@ -17,14 +17,13 @@ use Drupal\entity_embed\EntityHelperTrait;
  * @group entity_embed
  */
 class ImageFieldFormatterTest extends EntityEmbedTestBase {
-  use EntityHelperTrait;
 
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = array('entity_embed', 'file', 'image', 'node');
+  public static $modules = ['file', 'image', 'responsive_image'];
 
   /**
    * Created file entity.
@@ -50,19 +49,17 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
    * Tests image field formatter display plugin.
    */
   public function testImageFieldFormatter() {
-    // Ensure that image field formatters are available as display plugins.
-    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->image);
-    $this->assertTrue(array_key_exists('image:image', $plugin_options), "The 'Image' plugin is available.");
-
-    // Ensure that image plugin is not available to files other than images.
-    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->file);
-    $this->assertFalse(array_key_exists('image:image', $plugin_options), "The 'Image' plugin is not available for text file.");
-
-    // Ensure that 'file' plugins are available for images too.
-    $this->assertTrue(array_key_exists('file:file_table', $plugin_options), "The 'Table of files' plugin is available.");
-    $this->assertFalse(array_key_exists('file:file_rss_enclosure', $plugin_options), "The 'RSS enclosure' plugin is not available.");
-    $this->assertTrue(array_key_exists('file:file_default', $plugin_options), "The 'Generic file' plugin is available.");
-    $this->assertTrue(array_key_exists('file:file_url_plain', $plugin_options), "The 'URL to file' plugin is available.");
+    // Ensure that image field formatters are available as plugins.
+    $this->assertAvailableDisplayPlugins($this->image, [
+      'file:file_table',
+      'file:file_url_plain',
+      'file:file_default',
+      'entity_reference:entity_reference_entity_view',
+      'entity_reference:entity_reference_label',
+      'entity_reference:entity_reference_entity_id',
+      'image:responsive_image',
+      'image:image',
+    ]);
 
     // Ensure that correct form attributes are returned for the image plugin.
     $form = array();

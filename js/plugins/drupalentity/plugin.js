@@ -8,23 +8,21 @@
   "use strict";
 
   CKEDITOR.plugins.add('drupalentity', {
-    // This plugin requires the Widgets System defined in the 'widget' plugin.
     requires: 'widget',
 
-    // The plugin initialization logic goes inside this method.
     beforeInit: function (editor) {
       // Configure CKEditor DTD for custom drupal-entity element.
       // @see https://www.drupal.org/node/2448449#comment-9717735
-      var dtd = CKEDITOR.dtd, tagName;
-      dtd['drupal-entity'] = {'#': 1};
-      // Register drupal-entity element as allowed child, in each tag that can
-      // contain a div element.
-      for (tagName in dtd) {
-        if (dtd[tagName].div) {
-          dtd[tagName]['drupal-entity'] = 1;
-        }
-      }
+      CKEDITOR.dtd['drupal-entity'] = {'#': 1};
+      CKEDITOR.dtd.$block['drupal-entity'] = 1;
+      CKEDITOR.dtd.$blockLimit['drupal-entity'] = 1;
+      // @todo It should be possible to display embedded entities inline...
+      //CKEDITOR.dtd.$inline['drupal-entity'] = 1;
+      CKEDITOR.dtd.$nonEditable['drupal-entity'] = 1;
+      CKEDITOR.dtd.$object['drupal-entity'] = 1;
+    },
 
+    init: function (editor) {
       // Generic command for adding/editing entities of all types.
       editor.addCommand('editdrupalentity', {
         allowedContent: 'drupal-entity[*]',

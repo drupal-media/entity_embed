@@ -206,7 +206,7 @@
    * @param {CKEDITOR.htmlParser.element} element
    */
   function isEditableEntityWidget (editor, element) {
-    return isEmbeddedEntityWidget(editor, element) && element.$.firstChild.attributes.hasOwnProperty('data-embed-button');
+    return isEmbeddedEntityWidget(editor, element); //&& element.$.firstChild.attributes.hasOwnProperty('data-embed-button');
   }
 
   /**

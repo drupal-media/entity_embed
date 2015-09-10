@@ -25,8 +25,8 @@
     init: function (editor) {
       // Generic command for adding/editing entities of all types.
       editor.addCommand('editdrupalentity', {
-        allowedContent: 'drupal-entity[*]',
-        requiredContent: 'drupal-entity[*]',
+        allowedContent: 'drupal-entity[alt,title,data-*]',
+        requiredContent: 'drupal-entity[data-entity-type,data-embed-button]',
         modes: { wysiwyg : 1 },
         canUndo: true,
         exec: function (editor, data) {
@@ -81,9 +81,8 @@
 
       // Register the entity embed widget.
       editor.widgets.add('drupalentity', {
-        // Minimum HTML which is required by this widget to work.
-        allowedContent: 'drupal-entity[*]',
-        requiredContent: 'drupal-entity[*]',
+        allowedContent: 'drupal-entity[alt,title,data-*]',
+        requiredContent: 'drupal-entity[data-entity-type]',
 
         // Simply recognize the element as our own. The inner markup if fetched
         // and inserted the init() callback, since it requires the actual DOM

@@ -154,7 +154,7 @@
         });
 
         editor.contextMenu.addListener(function(element) {
-          if (isEmbeddedEntityWidget(editor, element)) {
+          if (isEditableEntityWidget(editor, element)) {
             return { drupalentity: CKEDITOR.TRISTATE_OFF };
           }
         });
@@ -164,7 +164,7 @@
       editor.on('doubleclick', function (evt) {
         var element = getSelectedEmbeddedEntity(editor) || evt.data.element;
 
-        if (isEmbeddedEntityWidget(editor, element)) {
+        if (isEditableEntityWidget(editor, element)) {
           editor.execCommand('editdrupalentity');
         }
       });
@@ -195,6 +195,18 @@
   function isEmbeddedEntityWidget (editor, element) {
     var widget = editor.widgets.getByElement(element, true);
     return widget && widget.name === 'drupalentity';
+  }
+
+  /**
+   * Returns whether or not the given element is a editable drupalentity widget.
+   *
+   * This requires the widget to have the data-embed-button attribute present.
+   *
+   * @param {CKEDITOR.editor} editor
+   * @param {CKEDITOR.htmlParser.element} element
+   */
+  function isEditableEntityWidget (editor, element) {
+    return isEmbeddedEntityWidget(editor, element) && element.$.firstChild.attributes.hasOwnProperty('data-embed-button');
   }
 
   /**

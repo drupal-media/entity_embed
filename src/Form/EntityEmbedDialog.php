@@ -82,6 +82,7 @@ class EntityEmbedDialog extends FormBase {
     $form_state->set('editor', $editor);
     // Initialize entity element with form attributes, if present.
     $entity_element = empty($values['attributes']) ? array() : $values['attributes'];
+    $entity_element += empty($input['attributes']) ? array() : $input['attributes'];
     // The default values are set directly from \Drupal::request()->request,
     // provided by the editor plugin opening the dialog.
     if (!$form_state->get('entity_element')) {
@@ -228,15 +229,15 @@ class EntityEmbedDialog extends FormBase {
       '#markup' => $entity_label,
     );
     $form['attributes']['data-entity-type'] = array(
-      '#type' => 'value',
+      '#type' => 'hidden',
       '#value' => $entity_element['data-entity-type'],
     );
     $form['attributes']['data-entity-id'] = array(
-      '#type' => 'value',
+      '#type' => 'hidden',
       '#value' => $entity_element['data-entity-id'],
     );
     $form['attributes']['data-entity-uuid'] = array(
-      '#type' => 'value',
+      '#type' => 'hidden',
       '#value' => $entity_element['data-entity-uuid'],
     );
 

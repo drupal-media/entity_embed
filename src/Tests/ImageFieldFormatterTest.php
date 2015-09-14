@@ -53,7 +53,6 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     $this->assertAvailableDisplayPlugins($this->image, [
       'entity_reference:entity_reference_label',
       'entity_reference:entity_reference_entity_id',
-      'entity_reference:entity_reference_entity_view',
       'file:file_default',
       'file:file_table',
       'file:file_url_plain',

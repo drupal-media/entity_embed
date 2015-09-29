@@ -10,6 +10,7 @@ namespace Drupal\entity_embed\EntityEmbedDisplay;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Session\AccountInterface;
@@ -296,5 +297,18 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
   public function getAttributeValue($name, $default = NULL) {
     $attributes = $this->getAttributeValues();
     return array_key_exists($name, $attributes) ? $attributes[$name] : $default;
+  }
+
+  /**
+   * Gets the current language code.
+   *
+   * @return string
+   */
+  public function getLangcode() {
+    $langcode = $this->getAttributeValue('data-langcode');
+    if (empty($langcode)) {
+      $langcode = \Drupal::languageManager()->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
+    }
+    return $langcode;
   }
 }

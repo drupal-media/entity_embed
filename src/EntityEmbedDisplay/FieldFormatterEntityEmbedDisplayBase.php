@@ -138,14 +138,10 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
       $node->getTypedData()
     );
 
-    if ($langcode = $this->getAttributeValue('data-langcode')) {
-      $items->setLangcode($langcode);
-    }
-
     // Prepare, expects an array of items, keyed by parent entity ID.
     $formatter = $this->getFieldFormatter();
     $formatter->prepareView(array($node->id() => $items));
-    $build = $formatter->viewElements($items);
+    $build = $formatter->viewElements($items, $this->getLangcode());
     // For some reason $build[0]['#printed'] is TRUE, which means it will fail
     // to render later. So for now we manually fix that.
     // @todo Investigate why this is needed.

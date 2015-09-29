@@ -64,7 +64,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     $display->setContextValue('entity', $this->node);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
     $this->assertIdentical($conf_form['view_mode']['#type'], 'select');
-    $this->assertIdentical($conf_form['view_mode']['#title'], 'View mode');
+    $this->assertIdentical((string) $conf_form['view_mode']['#title'], 'View mode');
 
     // Ensure that correct form attributes are returned for
     // 'entity_reference:entity_reference_label' plugin.
@@ -75,7 +75,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     $conf_form = $display->buildConfigurationForm($form, $form_state);
     $this->assertIdentical(array_keys($conf_form), array('link'));
     $this->assertIdentical($conf_form['link']['#type'], 'checkbox');
-    $this->assertIdentical($conf_form['link']['#title'], 'Link label to the referenced entity');
+    $this->assertIdentical((string) $conf_form['link']['#title'], 'Link label to the referenced entity');
 
     // Ensure that 'Rendered Entity' plugin is not available for an entity not
     // having a view controller.

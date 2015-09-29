@@ -73,13 +73,13 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
       'title',
     ));
     $this->assertIdentical($conf_form['image_style']['#type'], 'select');
-    $this->assertIdentical($conf_form['image_style']['#title'], 'Image style');
+    $this->assertIdentical((string) $conf_form['image_style']['#title'], 'Image style');
     $this->assertIdentical($conf_form['image_link']['#type'], 'select');
-    $this->assertIdentical($conf_form['image_link']['#title'], 'Link image to');
+    $this->assertIdentical((string) $conf_form['image_link']['#title'], 'Link image to');
     $this->assertIdentical($conf_form['alt']['#type'], 'textfield');
-    $this->assertIdentical($conf_form['alt']['#title'], 'Alternate text');
+    $this->assertIdentical((string) $conf_form['alt']['#title'], 'Alternate text');
     $this->assertIdentical($conf_form['title']['#type'], 'textfield');
-    $this->assertIdentical($conf_form['title']['#title'], 'Title');
+    $this->assertIdentical((string) $conf_form['title']['#title'], 'Title');
 
     // Test entity embed using 'Image' display plugin.
     $alt_text = "This is sample description";

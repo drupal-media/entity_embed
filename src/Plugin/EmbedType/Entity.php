@@ -146,25 +146,20 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
    *   An array of entity type labels, keyed by entity type name.
    */
   protected function getEntityTypeOptions() {
-    $options = array();
-    $definitions = $this->entityManager->getDefinitions();
+    $options = $this->entityManager->getEntityTypeLabels(TRUE);
 
-    foreach ($definitions as $entity_type_id => $definition) {
-      // Don't include configuration entities which do not have a view builder.
-      if ($definition->getGroup() != 'configuration' || $definition->hasViewBuilderClass()) {
-        $options[$definition->getGroupLabel()][$entity_type_id] = $definition->getLabel();
+    foreach ($options as $group => $group_types) {
+      foreach (array_keys($group_types) as $entity_type_id) {
+        // Filter out entity types that do not have a view builder class.
+        if (!$this->entityManager->getDefinition($entity_type_id)->hasViewBuilderClass()) {
+          unset($options[$group][$entity_type_id]);
+        }
+        // Filter out entity types that would not have any display plugins.
+        if (!$this->displayPluginManager->getDefinitionOptionsForEntityType($entity_type_id)) {
+          unset($options[$group][$entity_type_id]);
+        }
       }
     }
-
-    // Group entity type labels.
-    foreach ($options as &$group_options) {
-      // Sort the list alphabetically by group label.
-      array_multisort($group_options, SORT_ASC, SORT_NATURAL);
-    }
-
-    // Make sure that the 'Content' group is situated at the top.
-    $content = $this->t('Content', array(), array('context' => 'Entity type group'));
-    $options = array($content => $options[$content]) + $options;
 
     return $options;
   }

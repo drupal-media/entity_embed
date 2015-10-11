@@ -170,6 +170,21 @@ class EntityEmbedDialog extends FormBase {
       '#required' => TRUE,
       '#description' => $this->t('Type label and pick the right one from suggestions. Note that the unique ID will be saved.'),
     );
+
+    if ($entity_type->id() === 'file') {
+      $form['file_upload'] = array(
+        '#title' => $this->t('Upload'),
+        '#type' => 'managed_file',
+        '#default_value' => $entity ? array($entity->id()) : NULL,
+        '#upload_location' => 'public://entity-embed-files',
+        '#upload_validators' => array(
+          'file_validate_extensions' => array('gif png jpg jpeg'),
+        ),
+        '#required' => TRUE,
+      );
+      $form['attributes']['data-entity-id']['#access'] = FALSE;
+    }
+
     $form['attributes']['data-entity-uuid'] = array(
       '#type' => 'value',
       '#title' => $entity_element['data-entity-uuid'],
@@ -364,7 +379,13 @@ class EntityEmbedDialog extends FormBase {
    *   The current state of the form.
    */
   public function validateSelectStep(array $form, FormStateInterface $form_state) {
-    $values = $form_state->getValues();
+    $values = &$form_state->getValues();
+
+    $fid = $form_state->getValue(array('file_upload', 0));
+    if (!empty($fid) && $file = $this->loadEntity('file', $fid)) {
+      $form_state->setValue(array('attributes', 'data-entity-id'), $file->id());
+      $form_state->setValue(array('attributes', 'data-entity-uuid'), $file->uuid());
+    }
 
     if ($entity_type = $values['attributes']['data-entity-type']) {
       $id = trim($values['attributes']['data-entity-id']);

@@ -162,14 +162,15 @@ class EntityEmbedDialog extends FormBase {
     $form['attributes']['data-entity-id'] = array(
       '#type' => 'entity_autocomplete',
       '#target_type' => $entity_element['data-entity-type'],
-      '#selection_settings' => array(
-        'target_bundles' => $embed_button->getTypeSetting('bundles'),
-      ),
       '#title' => $label,
       '#default_value' => $entity,
       '#required' => TRUE,
       '#description' => $this->t('Type label and pick the right one from suggestions. Note that the unique ID will be saved.'),
     );
+    if ($bundles = $embed_button->getTypeSetting('bundles')) {
+      $form['attributes']['data-entity-id']['#selection_settings']['target_bundles'] = $bundles;
+    }
+
     $form['attributes']['data-entity-uuid'] = array(
       '#type' => 'value',
       '#title' => $entity_element['data-entity-uuid'],

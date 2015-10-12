@@ -81,8 +81,7 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form_object = $form_state->getFormObject();
-
+    $embed_button = $form_state->getTemporaryValue('embed_button');
     $entity_type_id = $this->getConfigurationValue('entity_type');
 
     $form['entity_type'] = array(
@@ -93,9 +92,10 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
       '#description' => $this->t("Entity type for which this button is to enabled."),
       '#required' => TRUE,
       '#ajax' => array(
-        'callback' => array($form_object, 'updateTypeSettings'),
+        'callback' => array($form_state->getFormObject(), 'updateTypeSettings'),
         'effect' => 'fade',
       ),
+      '#disabled' => !$embed_button->isNew(),
     );
 
     if ($entity_type_id) {

@@ -154,7 +154,7 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
         if (!$this->entityManager->getDefinition($entity_type_id)->hasViewBuilderClass()) {
           unset($options[$group][$entity_type_id]);
         }
-        // Filter out entity types that would not have any display plugins.
+        // Filter out entity types that will not have any display plugins.
         if (!$this->displayPluginManager->getDefinitionOptionsForEntityType($entity_type_id)) {
           unset($options[$group][$entity_type_id]);
         }

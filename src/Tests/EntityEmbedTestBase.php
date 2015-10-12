@@ -9,6 +9,7 @@ namespace Drupal\entity_embed\Tests;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\editor\Entity\Editor;
+use Drupal\embed\Tests\EmbedTestBase;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\file\Entity\File;
 use Drupal\filter\Entity\FilterFormat;
@@ -17,7 +18,7 @@ use Drupal\simpletest\WebTestBase;
 /**
  * Base class for all entity_embed tests.
  */
-abstract class EntityEmbedTestBase extends WebTestBase {
+abstract class EntityEmbedTestBase extends EmbedTestBase {
   use EntityHelperTrait;
 
   /**
@@ -25,7 +26,7 @@ abstract class EntityEmbedTestBase extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['entity_embed', 'entity_embed_test', 'node', 'ckeditor'];
+  public static $modules = ['entity_embed', 'entity_embed_test', 'node'];
 
   /**
    * The test user.
@@ -90,24 +91,6 @@ abstract class EntityEmbedTestBase extends WebTestBase {
     $settings['title'] = 'Embed Test Node';
     $settings['body'] = array('value' => 'This node is to be used for embedding in other nodes.', 'format' => 'custom_format');
     $this->node = $this->drupalCreateNode($settings);
-  }
-
-  /**
-   * Retrieves a sample file of the specified type.
-   *
-   * @return \Drupal\file\FileInterface
-   */
-  protected function getTestFile($type_name, $size = NULL) {
-    // Get a file to upload.
-    $file = current($this->drupalGetTestFiles($type_name, $size));
-
-    // Add a filesize property to files as would be read by
-    // \Drupal\file\Entity\File::load().
-    $file->filesize = filesize($file->uri);
-
-    $file = File::create((array) $file);
-    $file->save();
-    return $file;
   }
 
   public function assertAvailableDisplayPlugins(EntityInterface $entity, array $expected_plugins, $message = '') {

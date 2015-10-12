@@ -11,12 +11,14 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FormatterPluginManager;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\PluginDependencyTrait;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\TypedDataManager;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBase {
+  use PluginDependencyTrait;
 
   /**
    * The field formatter plugin manager.
@@ -206,4 +208,19 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     $definition->setName('_entity_embed_' . $index++);
     return $definition;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateDependencies() {
+    $this->addDependencies(parent::calculateDependencies());
+
+    $definition = $this->formatterPluginManager->getDefinition($this->getDerivativeId());
+    $this->addDependency('module', $definition['provider']);
+    // @todo Investigate why this does not work currently.
+    //$this->calculatePluginDependencies($this->getFieldFormatter());
+
+    return $this->dependencies;
+  }
+
 }

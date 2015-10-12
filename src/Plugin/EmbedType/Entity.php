@@ -11,6 +11,7 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Plugin\PluginDependencyTrait;
 use Drupal\embed\EmbedType\EmbedTypeBase;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -24,6 +25,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
+  use PluginDependencyTrait;
 
   /**
    * The entity manager service.
@@ -191,4 +193,30 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
   public function getDefaultIconUrl() {
     return file_create_url(drupal_get_path('module', 'entity_embed') . '/js/plugins/drupalentity/entity.png');
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateDependencies() {
+    $this->addDependencies(parent::calculateDependencies());
+
+    $entity_type_id = $this->getConfigurationValue('entity_type');
+    $entity_type = $this->entityManager->getDefinition($entity_type_id);
+    $this->addDependency('module', $entity_type->getProvider());
+
+    // Calculate bundle dependencies.
+    foreach ($this->getConfigurationValue('bundles') as $bundle) {
+      $bundle_dependency = $entity_type->getBundleConfigDependency($bundle);
+      $this->addDependency($bundle_dependency['type'], $bundle_dependency['name']);
+    }
+
+    // Calculate display plugin dependencies.
+    foreach ($this->getConfigurationValue('display_plugins') as $display_plugin) {
+      $instance = $this->displayPluginManager->createInstance($display_plugin);
+      $this->calculatePluginDependencies($instance);
+    }
+
+    return $this->dependencies;
+  }
+
 }

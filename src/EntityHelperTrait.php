@@ -158,8 +158,8 @@ trait EntityHelperTrait {
    *   (optional) Array of context values, corresponding to the attributes on
    *   the embed HTML tag.
    *
-   * @return string
-   *   The HTML of the entity rendered with the display plugin.
+   * @return array
+   *   A render array from entity_view().
    */
   protected function renderEntityEmbed(EntityInterface $entity, array $context = array()) {
     // Support the deprecated view-mode data attribute.
@@ -185,8 +185,8 @@ trait EntityHelperTrait {
     // Allow modules to alter the entity prior to embed rendering.
     $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed_context", 'entity_embed_context'), $context, $entity);
 
-    // Build and render the display plugin, allowing modules to alter the
-    // result before rendering.
+    // Build the display plugin, allowing modules to alter the result before
+    // rendering.
     $build = $this->renderEntityEmbedDisplayPlugin(
       $entity,
       $context['data-entity-embed-display'],
@@ -195,9 +195,7 @@ trait EntityHelperTrait {
     );
     // @todo Should this hook get invoked if $build is an empty array?
     $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed", 'entity_embed'), $build, $entity, $context);
-    $entity_output = $this->renderer()->render($build);
-
-    return $entity_output;
+    return $build;
   }
 
   /**

@@ -12,6 +12,8 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Render\RenderContext;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\entity_embed\Exception\EntityNotFoundException;
 use Drupal\entity_embed\Exception\RecursiveRenderingException;
@@ -102,13 +104,24 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             }
 
             $access = $entity->access('view', NULL, TRUE);
-            $access_metadata = CacheableMetadata::createFromObject($access);
-            $entity_metadata = CacheableMetadata::createFromObject($entity);
-            $result = $result->merge($entity_metadata)->merge($access_metadata);
+            $result->addCacheableDependency($access);
 
             $context = $this->getNodeAttributesAsArray($node);
             $context += array('data-langcode' => $langcode);
-            $entity_output = $this->renderEntityEmbed($entity, $context);
+            $build = $this->renderEntityEmbed($entity, $context);
+            // We need to render the embedded entity:
+            // - without replacing placeholders, so that the placeholders are
+            //   only replaced at the last possible moment. Hence we cannot use
+            //   either renderPlain() or renderRoot(), so we must use render().
+            // - without bubbling beyond this filter, because filters must
+            //   ensure that the bubbleable metadata for the changes they make
+            //   when filtering text makes it onto the FilterProcessResult
+            //   object that they return ($result). To prevent that bubbling, we
+            //   must wrap the call to render() in a render context.
+            $entity_output = $this->renderer()->executeInRenderContext(new RenderContext(), function () use (&$build) {
+              return $this->renderer()->render($build);
+            });
+            $result = $result->merge(BubbleableMetadata::createFromRenderArray($build));
 
             $depth--;
           }

@@ -33,6 +33,9 @@
       event.preventDefault();
       $(this).attr('target', '_blank');
       window.open(this.href, 'entityPreview', 'toolbar=0,scrollbars=1,location=1,statusbar=1,menubar=0,resizable=1');
+    },
+    selectionCompleted: function(event, uuid, entities) {
+      $('.entity-select-dialog .js-button-next').click();
     }
   };
 

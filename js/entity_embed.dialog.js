@@ -23,6 +23,17 @@
   };
 
   /**
+   * Behaviors for the entityEmbedDialog iframe.
+   */
+  Drupal.behaviors.entityEmbedDialog = {
+    attach: function (context, settings) {
+      $('body').once('js-entity-embed-dialog').on('entityBrowserIFrameAppend', function () {
+        $('.entity-select-dialog').trigger('resize');
+      });
+    }
+  };
+
+  /**
    * Entity Embed dialog utility functions.
    */
   Drupal.entityEmbedDialog = Drupal.entityEmbedDialog || {

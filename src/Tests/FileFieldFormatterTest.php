@@ -71,7 +71,7 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
 
     // Test entity embed using 'Generic file' display plugin.
     $embed_settings = array('description' => "This is sample description");
-    $content = '<div data-entity-type="file" data-entity-uuid="' . $this->file->uuid() . '" data-entity-embed-display="file:file_default" data-entity-embed-settings=\'' . Json::encode($embed_settings) . '\'>This placeholder should not be rendered.</div>';
+    $content = '<drupal-entity data-entity-type="file" data-entity-uuid="' . $this->file->uuid() . '" data-entity-embed-display="file:file_default" data-entity-embed-settings=\'' . Json::encode($embed_settings) . '\'>This placeholder should not be rendered.</drupal-entity>';
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with file:file_default';

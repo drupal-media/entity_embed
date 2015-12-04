@@ -124,7 +124,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
         if ($node->tagName == 'drupal-entity') {
           $this->changeNodeName($node, 'div');
         }
-        $this->setNodeContent($node, $entity_output);
+        $this->replaceNodeContent($node, $entity_output);
       }
 
       $result->setProcessedText(Html::serialize($dom));

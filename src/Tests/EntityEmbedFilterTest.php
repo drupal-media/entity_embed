@@ -29,6 +29,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
+    $this->assertNoRaw('<div data-entity-type="node" data-entity');
     $this->assertText($this->node->body->value, 'Embedded node exists in page');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
 
@@ -40,6 +41,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
+    $this->assertNoRaw('<div data-entity-type="node" data-entity');
     $this->assertText($this->node->body->value, 'Embedded node exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
 
@@ -51,6 +53,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
+    $this->assertNoRaw('<div data-entity-type="node" data-entity');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is unsuccessful.');
 
     // Ensure that UUID is preferred over ID when both attributes are present.
@@ -62,6 +65,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
+    $this->assertNoRaw('<div data-entity-type="node" data-entity');
     $this->assertText($this->node->body->value, 'Entity specifed with UUID exists in the page.');
     $this->assertNoText($sample_node->body->value, 'Entity specifed with ID does not exists in the page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
@@ -102,6 +106,9 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
 
     // Test that tag of container element is not replaced when it's not
     // 'drupal-entity'.
+    // @todo This does NOT actually work, despite the test comment having
+    //   claimed otherwise for more than a year. The test is simply wrong. It
+    //   will be fixed in https://www.drupal.org/node/2628358
     $content = '<not-drupal-entity data-entity-type="node" data-entity-id="' . $this->node->id() . '" data-view-mode="teaser">this placeholder should not be rendered.</not-drupal-entity>';
     $settings = array();
     $settings['type'] = 'page';
@@ -109,8 +116,8 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalget('node/' . $node->id());
-    $this->asserttext($this->node->body->value, 'embedded node exists in page');
-    $this->assertRaw('</not-drupal-entity>');
+    $this->assertText($this->node->body->value, 'embedded node exists in page');
+    $this->assertNoRaw('</not-drupal-entity>');
   }
 
 }

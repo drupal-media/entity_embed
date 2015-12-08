@@ -51,7 +51,7 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
   protected $entityTypeBundleInfo;
 
   /**
-   * The display plugin manager.
+   * The Entity Embed Display plugin manager.
    *
    * @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager
    */
@@ -143,10 +143,10 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
       );
       $form['bundles']['#access'] = !empty($form['bundles']['#options']);
 
-      // Allow option to limit display plugins.
+      // Allow option to limit Entity Embed Display plugins.
       $form['display_plugins'] = array(
         '#type' => 'checkboxes',
-        '#title' => $this->t('Allowed display plugins'),
+        '#title' => $this->t('Allowed Entity Embed Display plugins'),
         '#options' => $this->displayPluginManager->getDefinitionOptionsForEntityType($entity_type_id),
         '#default_value' => $this->getConfigurationValue('display_plugins'),
         '#description' => $this->t('If none are selected, all are allowed. Note that these are the plugins which are allowed for this entity type, all of these might not be available for the selected entity.'),
@@ -202,7 +202,7 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    // Filter down the bundles and allowed display plugins.
+    // Filter down the bundles and allowed Entity Embed Display plugins.
     $bundles = $form_state->getValue('bundles');
     $form_state->setValue('bundles', array_keys(array_filter($bundles)));
     $display_plugins = $form_state->getValue('display_plugins');
@@ -232,7 +232,8 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
         if (!$this->entityTypeManager->getDefinition($entity_type_id)->hasViewBuilderClass()) {
           unset($options[$group][$entity_type_id]);
         }
-        // Filter out entity types that will not have any display plugins.
+        // Filter out entity types that will not have any Entity Embed Display
+        // plugins.
         if (!$this->displayPluginManager->getDefinitionOptionsForEntityType($entity_type_id)) {
           unset($options[$group][$entity_type_id]);
         }
@@ -286,7 +287,7 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
       $this->addDependency($bundle_dependency['type'], $bundle_dependency['name']);
     }
 
-    // Calculate display plugin dependencies.
+    // Calculate display Entity Embed Display dependencies.
     foreach ($this->getConfigurationValue('display_plugins') as $display_plugin) {
       $instance = $this->displayPluginManager->createInstance($display_plugin);
       $this->calculatePluginDependencies($instance);

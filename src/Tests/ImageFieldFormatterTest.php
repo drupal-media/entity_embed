@@ -46,7 +46,7 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
   }
 
   /**
-   * Tests image field formatter display plugin.
+   * Tests image field formatter Entity Embed Display plugin.
    */
   public function testImageFieldFormatter() {
     // Ensure that image field formatters are available as plugins.
@@ -81,7 +81,7 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     $this->assertIdentical($conf_form['title']['#type'], 'textfield');
     $this->assertIdentical((string) $conf_form['title']['#title'], 'Title');
 
-    // Test entity embed using 'Image' display plugin.
+    // Test entity embed using 'Image' Entity Embed Display plugin.
     $alt_text = "This is sample description";
     $title = "This is sample title";
     $embed_settings = array('image_link' => 'file');

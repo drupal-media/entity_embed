@@ -57,7 +57,7 @@ class EntityEmbedDialogTest extends EntityEmbedTestBase {
     // $edit = ['attributes[data-entity-id]' => $this->node->id()];
     // $this->drupalPostAjaxForm(NULL, $edit, 'op');
     // Ensure form structure of the 'embed' step and submit form.
-    // $this->assertFieldByName('attributes[data-entity-embed-display]', 'Display plugin field is present.');
+    // $this->assertFieldByName('attributes[data-entity-embed-display]', 'Entity Embed Display plugin field is present.');
   }
 
   /**

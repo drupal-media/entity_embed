@@ -15,10 +15,10 @@ embed.embed_type_settings.entity:
         label: 'Bundle'
     display_plugins:
       type: sequence
-      label: 'Allowed display plugins'
+      label: 'Allowed Entity Embed Display plugins'
       sequence:
         type: string
-        label: 'Display plugin'
+        label: 'Entity Embed Display plugin'
     entity_browser:
       type: string
       label: 'Entity browser'

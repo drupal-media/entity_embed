@@ -70,7 +70,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertNoText($sample_node->body->value, 'Entity specifed with ID does not exists in the page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
 
-    // Test entity embed using deprecated 'default' display plugin.
+    // Test deprecated 'default' Entity Embed Display plugin.
     $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</drupal-entity>';
     $settings = array();
     $settings['type'] = 'page';
@@ -81,8 +81,8 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertText($this->node->body->value, 'Embedded node exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
 
-    // Ensure that display plugin is preferred over view mode when both
-    // attributes are present.
+    // Ensure that Entity Embed Display plugin is preferred over view mode when
+    // both attributes are present.
     $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\' data-view-mode="some-invalid-view-mode">This placeholder should not be rendered.</drupal-entity>';
     $settings = array();
     $settings['type'] = 'page';

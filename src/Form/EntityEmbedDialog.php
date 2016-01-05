@@ -249,6 +249,7 @@ class EntityEmbedDialog extends FormBase {
     $form['actions']['save_modal'] = array(
       '#type' => 'submit',
       '#value' => $this->t('Next'),
+      '#button_type' => 'primary',
       // No regular submit-handler. This form only works via JavaScript.
       '#submit' => array(),
       '#ajax' => array(
@@ -302,6 +303,7 @@ class EntityEmbedDialog extends FormBase {
     $form['actions']['save_modal'] = array(
       '#type' => 'submit',
       '#value' => $this->t('Next'),
+      '#button_type' => 'primary',
       // No regular submit-handler. This form only works via JavaScript.
       '#submit' => array(),
       '#ajax' => array(
@@ -457,6 +459,7 @@ class EntityEmbedDialog extends FormBase {
     $form['actions']['save_modal'] = array(
       '#type' => 'submit',
       '#value' => $this->t('Embed'),
+      '#button_type' => 'primary',
       // No regular submit-handler. This form only works via JavaScript.
       '#submit' => array(),
       '#ajax' => array(

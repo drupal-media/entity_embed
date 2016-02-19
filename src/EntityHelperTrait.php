@@ -193,6 +193,15 @@ trait EntityHelperTrait {
       $context['data-entity-embed-settings'],
       $context
     );
+
+    // Maintain data-align if it is there
+    if (isset($context['data-align'])) {
+      $build['#attributes']['data-align'] = $context['data-align'];
+    }
+    elseif ((isset($context['class']))) {
+      $build['#attributes']['class'][] = $context['class'];
+    }
+
     // @todo Should this hook get invoked if $build is an empty array?
     $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed", 'entity_embed'), $build, $entity, $context);
     $entity_output = $this->renderer()->render($build);

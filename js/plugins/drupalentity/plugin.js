@@ -27,8 +27,8 @@
 
       // Generic command for adding/editing entities of all types.
       editor.addCommand('editdrupalentity', {
-        allowedContent: 'drupal-entity[data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings]',
-        requiredContent: 'drupal-entity[data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings]',
+        allowedContent: 'drupal-entity[data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings,data-align]',
+        requiredContent: 'drupal-entity[data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings,data-align]',
         modes: { wysiwyg : 1 },
         canUndo: true,
         exec: function (editor, data) {
@@ -66,6 +66,7 @@
             for (var key in attributes) {
               entityElement.setAttribute(key, attributes[key]);
             }
+
             editor.insertHtml(entityElement.getOuterHtml());
             if (existingElement) {
               // Detach the behaviors that were attached when the entity content
@@ -83,8 +84,8 @@
       // Register the entity embed widget.
       editor.widgets.add('drupalentity', {
         // Minimum HTML which is required by this widget to work.
-        allowedContent: 'drupal-entity[data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings]',
-        requiredContent: 'drupal-entity[data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings]',
+        allowedContent: 'drupal-entity[data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings,data-align]',
+        requiredContent: 'drupal-entity[data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings,data-align]',
 
         // Simply recognize the element as our own. The inner markup if fetched
         // and inserted the init() callback, since it requires the actual DOM

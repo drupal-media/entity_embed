@@ -20,7 +20,7 @@ Entity Embed can be installed via the [standard Drupal installation process](htt
 * Go to the 'Text formats and editors' configuration page: `/admin/config/content/formats`, and for each text format/editor combo where you want to embed entities, do the following:
   * Enable the 'Display embedded entities' filter.
   * Drag and drop the 'E' button into the Active toolbar.
-  * If the text format uses the 'Limit allowed HTML tags and correct faulty HTML' filter, ensure the necessary tags and attributes are whitelisted: add ```<drupal-entity data-entity-type data-entity-uuid data-entity-id data-view-mode data-entity-embed-display data-entity-embed-settings data-align>``` to the 'Allowed HTML tags' setting. (Will happen automatically after https://www.drupal.org/node/2554687.)
+  * If the text format uses the 'Limit allowed HTML tags and correct faulty HTML' filter, ensure the necessary tags and attributes are whitelisted: add ```<drupal-entity data-entity-type data-entity-uuid data-entity-id data-view-mode data-entity-embed-display data-entity-embed-settings data-align data-caption>``` to the 'Allowed HTML tags' setting. (Will happen automatically after https://www.drupal.org/node/2554687.)
 
 ## Usage
 

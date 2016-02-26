@@ -134,6 +134,7 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
       'data-entity-embed-settings' => array(),
       'data-align' => '',
+      'data-caption' => '',
     );
     $form_state->set('entity_element', $entity_element);
     $form_state->set('entity', $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']));
@@ -323,8 +324,6 @@ class EntityEmbedDialog extends FormBase {
   /**
    * Form constructor for the entity embedding step.
    *
-   * @todo Re-add caption attribute.
-   *
    * @param array $form
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
@@ -440,6 +439,19 @@ class EntityEmbedDialog extends FormBase {
         '#wrapper_attributes' => array('class' => array('container-inline')),
         '#attributes' => array('class' => array('container-inline')),
         '#parents' => array('attributes', 'data-align'),
+      );
+    }
+
+    // When Drupal core's filter_caption is being used, the text editor may
+    // offer the ability to add a caption.
+    if (isset($entity_element['data-caption']) && $editor->getFilterFormat()->filters('filter_caption')->status) {
+      $form['attributes']['data-caption'] = array(
+        '#title' => $this->t('Caption'),
+        '#type' => 'textfield',
+        '#default_value' => $entity_element['data-caption'] === '' ? '' : $entity_element['data-caption'],
+        '#wrapper_attributes' => array('class' => array('container-inline')),
+        '#attributes' => array('class' => array('container-inline')),
+        '#parents' => array('attributes', 'data-caption'),
       );
     }
 

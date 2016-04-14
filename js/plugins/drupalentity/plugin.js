@@ -28,7 +28,7 @@
       // Generic command for adding/editing entities of all types.
       editor.addCommand('editdrupalentity', {
         allowedContent: 'drupal-entity[data-embed-button,data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings,data-align,data-caption]',
-        requiredContent: 'drupal-entity[data-embed-button,data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings,data-align,data-caption]',
+        requiredContent: 'drupal-entity[data-embed-button,data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings]',
         modes: { wysiwyg : 1 },
         canUndo: true,
         exec: function (editor, data) {
@@ -85,7 +85,7 @@
       editor.widgets.add('drupalentity', {
         // Minimum HTML which is required by this widget to work.
         allowedContent: 'drupal-entity[data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings,data-align,data-caption]',
-        requiredContent: 'drupal-entity[data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings,data-align,data-caption]',
+        requiredContent: 'drupal-entity[data-entity-type,data-entity-id,data-entity-uuid,data-entity-embed-display,data-entity-embed-settings]',
 
         // Simply recognize the element as our own. The inner markup if fetched
         // and inserted the init() callback, since it requires the actual DOM

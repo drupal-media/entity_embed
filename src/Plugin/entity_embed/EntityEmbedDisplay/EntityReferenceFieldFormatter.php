@@ -7,8 +7,6 @@
 
 namespace Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay;
 
-use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\entity_embed\EntityEmbedDisplay\FieldFormatterEntityEmbedDisplayBase;
 
 /**

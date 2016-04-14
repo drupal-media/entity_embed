@@ -9,7 +9,6 @@ namespace Drupal\entity_embed\Tests;
 
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Form\FormState;
-use Drupal\entity_embed\EntityHelperTrait;
 
 /**
  * Tests the image field formatter provided by entity_embed.

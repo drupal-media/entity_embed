@@ -7,8 +7,6 @@
 
 namespace Drupal\entity_embed\Tests;
 
-use Drupal\entity_embed\EntityHelperTrait;
-
 /**
  * Tests the hooks provided by entity_embed module.
  *

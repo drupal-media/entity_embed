@@ -8,7 +8,6 @@
 namespace Drupal\entity_embed\Tests;
 
 use Drupal\Core\Form\FormState;
-use Drupal\entity_embed\EntityHelperTrait;
 
 /**
  * Tests the entity reference field formatters provided by entity_embed.

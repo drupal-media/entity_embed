@@ -8,6 +8,7 @@
 namespace Drupal\entity_embed\Form;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
@@ -135,8 +136,6 @@ class EntityEmbedDialog extends FormBase {
       'data-entity-id' => '',
       'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
       'data-entity-embed-settings' => array(),
-      'data-align' => '',
-      'data-caption' => '',
     );
     $form_state->set('entity_element', $entity_element);
     $form_state->set('entity', $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']));
@@ -430,17 +429,17 @@ class EntityEmbedDialog extends FormBase {
 
     // When Drupal core's filter_align is being used, the text editor may
     // offer the ability to change the alignment.
-    if (isset($entity_element['data-align']) && $editor->getFilterFormat()->filters('filter_align')->status) {
+    if ($editor->getFilterFormat()->filters('filter_align')->status) {
       $form['attributes']['data-align'] = array(
         '#title' => $this->t('Align'),
         '#type' => 'radios',
         '#options' => array(
-          'none' => $this->t('None'),
+          '' => $this->t('None'),
           'left' => $this->t('Left'),
           'center' => $this->t('Center'),
           'right' => $this->t('Right'),
         ),
-        '#default_value' => $entity_element['data-align'] === '' ? 'none' : $entity_element['data-align'],
+        '#default_value' => isset($entity_element['data-align']) ? $entity_element['data-align'] : '',
         '#wrapper_attributes' => array('class' => array('container-inline')),
         '#attributes' => array('class' => array('container-inline')),
       );
@@ -448,11 +447,11 @@ class EntityEmbedDialog extends FormBase {
 
     // When Drupal core's filter_caption is being used, the text editor may
     // offer the ability to add a caption.
-    if (isset($entity_element['data-caption']) && $editor->getFilterFormat()->filters('filter_caption')->status) {
+    if ($editor->getFilterFormat()->filters('filter_caption')->status) {
       $form['attributes']['data-caption'] = array(
         '#title' => $this->t('Caption'),
         '#type' => 'textfield',
-        '#default_value' => Html::decodeEntities($entity_element['data-caption']),
+        '#default_value' => isset($entity_element['data-caption']) ? Html::decodeEntities($entity_element['data-caption']) : '',
         '#element_validate' => array('::escapeValue'),
       );
     }
@@ -736,6 +735,11 @@ class EntityEmbedDialog extends FormBase {
       if (!empty($values['attributes']['data-entity-embed-settings'])) {
         $values['attributes']['data-entity-embed-settings'] = Json::encode($values['attributes']['data-entity-embed-settings']);
       }
+
+      // Filter out empty attributes.
+      $values['attributes'] = array_filter($values['attributes'], function($value) {
+        return (bool) Unicode::strlen((string) $value);
+      });
 
       // Allow other modules to alter the values before getting submitted to the WYSIWYG.
       $this->moduleHandler()->alter('entity_embed_values', $values, $entity, $display, $form_state);

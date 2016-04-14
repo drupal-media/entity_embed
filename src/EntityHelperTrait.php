@@ -171,8 +171,8 @@ trait EntityHelperTrait {
 
     // Merge in default attributes.
     $context += array(
-      'data-entity-id' => $entity->id(),
       'data-entity-type' => $entity->getEntityTypeId(),
+      'data-entity-uuid' => $entity->uuid(),
       'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
       'data-entity-embed-settings' => array(),
     );

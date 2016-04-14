@@ -132,14 +132,13 @@ class EntityEmbedDialog extends FormBase {
     $entity_element += array(
       'data-entity-type' => $embed_button->getTypeSetting('entity_type'),
       'data-entity-uuid' => '',
-      'data-entity-id' => '',
       'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
       'data-entity-embed-settings' => array(),
       'data-align' => '',
       'data-caption' => '',
     );
     $form_state->set('entity_element', $entity_element);
-    $form_state->set('entity', $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid'] ?: $entity_element['data-entity-id']));
+    $form_state->set('entity', $this->loadEntity($entity_element['data-entity-type'], $entity_element['data-entity-uuid']));
 
     if (!$form_state->get('step')) {
       // If an entity has been selected, then always skip to the embed options.
@@ -369,10 +368,6 @@ class EntityEmbedDialog extends FormBase {
       '#type' => 'hidden',
       '#value' => $entity_element['data-entity-type'],
     );
-    $form['attributes']['data-entity-id'] = array(
-      '#type' => 'hidden',
-      '#value' => $entity_element['data-entity-id'],
-    );
     $form['attributes']['data-entity-uuid'] = array(
       '#type' => 'hidden',
       '#value' => $entity_element['data-entity-uuid'],
@@ -514,36 +509,34 @@ class EntityEmbedDialog extends FormBase {
 
     $values = $form_state->getValues();
 
-    if ($entity_type = $values['attributes']['data-entity-type']) {
-      $id = trim($values['attributes']['data-entity-id']);
-      if ($entity = $this->loadEntity($entity_type, $id)) {
-        if (!$entity->access('view')) {
-          $form_state->setError($form['attributes']['data-entity-id'], $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
-        }
-        else {
-          $form_state->setValueForElement($form['attributes']['data-entity-id'], $entity->id());
-          if ($uuid = $entity->uuid()) {
-            $form_state->setValueForElement($form['attributes']['data-entity-uuid'], $uuid);
-          }
-          else {
-            $form_state->setValueForElement($form['attributes']['data-entity-uuid'], '');
-          }
-
-          // Ensure that at least one Entity Embed Display plugin is present
-          // before proceeding to the next step. Rasie an error otherwise.
-          $embed_button = $form_state->get('embed_button');
-          $display_plugin_options = $this->getDisplayPluginOptions($embed_button, $entity);
-          // If no plugin is available after taking the intersection,
-          // raise error. Also log an exception.
-          if (empty($display_plugin_options)) {
-            $form_state->setError($form['attributes']['data-entity-id'], $this->t('No display options available for the selected entity. Please select another entity.'));
-            $this->logger('entity_embed')->warning('No display options available for "@type:" entity "@id" while embedding using button "@button". Please ensure that at least one Entity Embed Display plugin is allowed for this embed button which is available for this entity.', array('@type' => $entity_type, '@id' => $entity->id(), '@button' => $embed_button->id()));
-          }
-        }
+    $entity_type = $values['attributes']['data-entity-type'];
+    $id = trim($values['attributes']['data-entity-id']);
+    if ($entity = $this->loadEntity($entity_type, $id)) {
+      if (!$entity->access('view')) {
+        $form_state->setError($form['attributes']['data-entity-id'], $this->t('Unable to access @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
       }
       else {
-        $form_state->setError($form['attributes']['data-entity-id'], $this->t('Unable to load @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
+        if ($uuid = $entity->uuid()) {
+          $form_state->setValueForElement($form['attributes']['data-entity-uuid'], $uuid);
+        }
+        else {
+          $form_state->setError($form['attributes']['data-entity-id'], $this->t('Cannot embed @type entity @id because it does not have a UUID.', array('@type' => $entity_type, '@id' => $id)));
+        }
+
+        // Ensure that at least one Entity Embed Display plugin is present
+        // before proceeding to the next step. Rasie an error otherwise.
+        $embed_button = $form_state->get('embed_button');
+        $display_plugin_options = $this->getDisplayPluginOptions($embed_button, $entity);
+        // If no plugin is available after taking the intersection,
+        // raise error. Also log an exception.
+        if (empty($display_plugin_options)) {
+          $form_state->setError($form['attributes']['data-entity-id'], $this->t('No display options available for the selected entity. Please select another entity.'));
+          $this->logger('entity_embed')->warning('No display options available for "@type:" entity "@id" while embedding using button "@button". Please ensure that at least one Entity Embed Display plugin is allowed for this embed button which is available for this entity.', array('@type' => $entity_type, '@id' => $entity->id(), '@button' => $embed_button->id()));
+        }
       }
+    }
+    else {
+      $form_state->setError($form['attributes']['data-entity-id'], $this->t('Unable to load @type entity @id.', array('@type' => $entity_type, '@id' => $id)));
     }
   }
 

@@ -11,6 +11,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\SetDialogTitleCommand;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
@@ -205,6 +206,8 @@ class EntityEmbedDialog extends FormBase {
       }
     }
 
+    $form['#title'] = $this->t('Select @type to embed', array('@type' => $entity_type->getLowercaseLabel()));
+
     if ($this->entityBrowser) {
       $this->eventDispatcher->addListener(Events::REGISTER_JS_CALLBACKS, [$this, 'registerJSCallback']);
 
@@ -280,8 +283,10 @@ class EntityEmbedDialog extends FormBase {
    *   The form structure.
    */
   public function buildReviewStep(array &$form, FormStateInterface $form_state) {
-    /** @var \Drupal\embed\EmbedButtonInterface $embed_button */
+    /** @var \Drupal\Core\Entity\EntityInterface $entity */
     $entity = $form_state->get('entity');
+
+    $form['#title'] = $this->t('Review selected @type', array('@type' => $entity->getEntityType()->getLowercaseLabel()));
 
     $form['selection'] = [
       '#markup' => $entity->label()
@@ -339,8 +344,11 @@ class EntityEmbedDialog extends FormBase {
     $embed_button = $form_state->get('embed_button');
     /** @var \Drupal\editor\EditorInterface $editor */
     $editor = $form_state->get('editor');
+    /** @var \Drupal\Core\Entity\EntityInterface $entity */
     $entity = $form_state->get('entity');
     $values = $form_state->getValues();
+
+    $form['#title'] = $this->t('Embed @type', array('@type' => $entity->getEntityType()->getLowercaseLabel()));
 
     $entity_label = '';
     try {
@@ -408,10 +416,6 @@ class EntityEmbedDialog extends FormBase {
     $form['attributes']['data-embed-button'] = array(
       '#type' => 'value',
       '#value' => $embed_button->id(),
-    );
-    $form['attributes']['data-entity-label'] = array(
-      '#type' => 'value',
-      '#value' => $embed_button->label(),
     );
     $plugin_id = !empty($values['attributes']['data-entity-embed-display']) ? $values['attributes']['data-entity-embed-display'] : $entity_element['data-entity-embed-display'];
     if (!empty($plugin_id)) {
@@ -599,6 +603,7 @@ class EntityEmbedDialog extends FormBase {
     $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
     unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
     $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $rebuild_form));
+    $response->addCommand(new SetDialogTitleCommand('', $rebuild_form['#title']));
 
     return $response;
   }
@@ -636,6 +641,7 @@ class EntityEmbedDialog extends FormBase {
       $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
       unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
       $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $rebuild_form));
+      $response->addCommand(new SetDialogTitleCommand('', $rebuild_form['#title']));
     }
 
     return $response;

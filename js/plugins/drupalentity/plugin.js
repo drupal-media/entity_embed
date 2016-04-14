@@ -51,11 +51,9 @@
             }
           }
 
-          var entity_label = data.label ? data.label : existingValues['data-entity-label'];
           var embed_button_id = data.id ? data.id : existingValues['data-embed-button'];
 
           var dialogSettings = {
-            title: existingElement ? 'Edit ' + entity_label : 'Insert ' + entity_label,
             dialogClass: 'entity-select-dialog',
             resizable: false
           };

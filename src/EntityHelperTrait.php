@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityStorageException;
@@ -180,6 +181,11 @@ trait EntityHelperTrait {
     // rendered entity field formatter.
     if ($context['data-entity-embed-display'] === 'default') {
       $context['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
+    }
+
+    // The caption text is double-encoded, so decode it here.
+    if (isset($context['data-caption'])) {
+      $context['data-caption'] = Html::decodeEntities($context['data-caption']);
     }
 
     // Allow modules to alter the entity prior to embed rendering.

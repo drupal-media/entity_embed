@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
@@ -438,7 +439,6 @@ class EntityEmbedDialog extends FormBase {
         '#default_value' => $entity_element['data-align'] === '' ? 'none' : $entity_element['data-align'],
         '#wrapper_attributes' => array('class' => array('container-inline')),
         '#attributes' => array('class' => array('container-inline')),
-        '#parents' => array('attributes', 'data-align'),
       );
     }
 
@@ -448,10 +448,8 @@ class EntityEmbedDialog extends FormBase {
       $form['attributes']['data-caption'] = array(
         '#title' => $this->t('Caption'),
         '#type' => 'textfield',
-        '#default_value' => $entity_element['data-caption'] === '' ? '' : $entity_element['data-caption'],
-        '#wrapper_attributes' => array('class' => array('container-inline')),
-        '#attributes' => array('class' => array('container-inline')),
-        '#parents' => array('attributes', 'data-caption'),
+        '#default_value' => Html::decodeEntities($entity_element['data-caption']),
+        '#element_validate' => array('::escapeValue'),
       );
     }
 
@@ -733,11 +731,26 @@ class EntityEmbedDialog extends FormBase {
         $values['attributes']['data-entity-embed-settings'] = Json::encode($values['attributes']['data-entity-embed-settings']);
       }
 
+      // Allow other modules to alter the values before getting submitted to the WYSIWYG.
+      $this->moduleHandler()->alter('entity_embed_values', $values, $entity, $display, $form_state);
+
       $response->addCommand(new EditorDialogSave($values));
       $response->addCommand(new CloseModalDialogCommand());
     }
 
     return $response;
+  }
+
+  /**
+   * Form element validation handler; Escapes the value an element.
+   *
+   * This should be used for any element in the embed form which may contain
+   * HTML that should be serialized as an attribute element on the embed.
+   */
+  public static function escapeValue($element, FormStateInterface $form_state) {
+    if ($value = trim($element['#value'])) {
+      $form_state->setValueForElement($element, Html::escape($value));
+    }
   }
 
   /**

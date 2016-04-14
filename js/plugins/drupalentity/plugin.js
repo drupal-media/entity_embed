@@ -107,9 +107,9 @@
           var $element = $(element.$);
           // Use the Ajax framework to fetch the HTML, so that we can retrieve
           // out-of-band assets (JS, CSS...).
-          var entityEmbedPreview = new Drupal.ajax({
+          var entityEmbedPreview = Drupal.ajax({
             base: $element.attr('id'),
-            element: $element,
+            element: $element.get(0),
             url: Drupal.url('embed/preview/' + editor.config.drupal.format + '?' + $.param({
               value: element.getOuterHtml()
             })),

@@ -524,7 +524,7 @@ class EntityEmbedDialog extends FormBase {
         }
 
         // Ensure that at least one Entity Embed Display plugin is present
-        // before proceeding to the next step. Rasie an error otherwise.
+        // before proceeding to the next step. Raise an error otherwise.
         $embed_button = $form_state->get('embed_button');
         $display_plugin_options = $this->getDisplayPluginOptions($embed_button, $entity);
         // If no plugin is available after taking the intersection,

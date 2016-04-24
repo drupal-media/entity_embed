@@ -213,6 +213,11 @@ trait EntityHelperTrait {
       $build['#attributes']['data-caption'] = $context['data-caption'];
     }
 
+    // If this is an image, the image_formatter template expects #item_attributes.
+    if (!empty($build['#theme']) && !empty($build['#attributes']) && $build['#theme'] == 'image_formatter') {
+      $build['#item_attributes'] =  $build['#attributes'];
+    }
+
     // @todo Should this hook get invoked if $build is an empty array?
     $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed", 'entity_embed'), $build, $entity, $context);
     $entity_output = $this->renderer()->render($build);

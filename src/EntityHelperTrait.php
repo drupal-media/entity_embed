@@ -14,6 +14,7 @@ use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
+use Drupal\Core\Render\BubbleableMetadata;
 
 /**
  * Wrapper methods for entity loading and rendering.
@@ -163,7 +164,16 @@ trait EntityHelperTrait {
    *   A render array of the entity rendered with the Entity Embed Display
    *   plugin.
    */
-  protected function renderEntityEmbed(EntityInterface $entity, array $context = array()) {
+  protected function renderEntityEmbed(EntityInterface $entity, array $context = array(), BubbleableMetadata $bubbleable_metadata = NULL) {
+    // Check if the user has access to the entity first.
+    $access = $entity->access('view', NULL, TRUE);
+    if (isset($bubbleable_metadata)) {
+      $bubbleable_metadata->addCacheableDependency($access);
+    }
+    if (!$access->isAllowed()) {
+      return array();
+    }
+
     // Support the deprecated view-mode data attribute.
     if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-settings'])) {
       $context['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
@@ -176,6 +186,7 @@ trait EntityHelperTrait {
       'data-entity-type' => $entity->getEntityTypeId(),
       'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
       'data-entity-embed-settings' => array(),
+      'bubbleable_metadata' => $bubbleable_metadata,
     );
 
     // The default Entity Embed Display plugin has been deprecated by the
@@ -219,6 +230,10 @@ trait EntityHelperTrait {
       $build['#item_attributes'] =  $build['#attributes'];
     }
 
+    if (isset($bubbleable_metadata)) {
+      $bubbleable_metadata = $bubbleable_metadata->merge(BubbleableMetadata::createFromRenderArray($build));
+    }
+
     // @todo Should this hook get invoked if $build is an empty array?
     $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed", 'entity_embed'), $build, $entity, $context);
     return $build;
@@ -246,14 +261,7 @@ trait EntityHelperTrait {
     $display = $this->displayPluginManager()->createInstance($plugin_id, $plugin_configuration);
     $display->setContextValue('entity', $entity);
     $display->setAttributes($context);
-
-    // Check if the Entity Embed Display plugin is accessible. This also checks
-    // entity access, which is why we never call $entity->access() here.
-    if (!$display->access()) {
-      return array();
-    }
-
-    return $display->build();
+    return $display->access() ? $display->build() : array();
   }
 
   /**

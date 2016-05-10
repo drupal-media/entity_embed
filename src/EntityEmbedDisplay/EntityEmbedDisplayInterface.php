@@ -59,7 +59,7 @@ interface EntityEmbedDisplayInterface extends ConfigurablePluginInterface, Plugi
    *   for the current user. Defaults to NULL.
    *
    * @return bool
-   *   TRUE if this Entity Embed Display plugin can be used, or FALSE otherwise.
+   *   The access result.
    */
   public function access(AccountInterface $account = NULL);
 

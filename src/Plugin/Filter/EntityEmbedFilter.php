@@ -103,25 +103,23 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
               $node->setAttribute('data-entity-uuid', $uuid);
             }
 
-            $access = $entity->access('view', NULL, TRUE);
-            $result->addCacheableDependency($access);
-
             $context = $this->getNodeAttributesAsArray($node);
             $context += array('data-langcode' => $langcode);
-            $build = $this->renderEntityEmbed($entity, $context);
-            // We need to render the embedded entity:
-            // - without replacing placeholders, so that the placeholders are
-            //   only replaced at the last possible moment. Hence we cannot use
-            //   either renderPlain() or renderRoot(), so we must use render().
-            // - without bubbling beyond this filter, because filters must
-            //   ensure that the bubbleable metadata for the changes they make
-            //   when filtering text makes it onto the FilterProcessResult
-            //   object that they return ($result). To prevent that bubbling, we
-            //   must wrap the call to render() in a render context.
-            $entity_output = $this->renderer()->executeInRenderContext(new RenderContext(), function () use (&$build) {
-              return $this->renderer()->render($build);
-            });
-            $result = $result->merge(BubbleableMetadata::createFromRenderArray($build));
+            if ($build = $this->renderEntityEmbed($entity, $context, $result)) {
+              // We need to render the embedded entity:
+              // - without replacing placeholders, so that the placeholders are
+              //   only replaced at the last possible moment. Hence we cannot use
+              //   either renderPlain() or renderRoot(), so we must use render().
+              // - without bubbling beyond this filter, because filters must
+              //   ensure that the bubbleable metadata for the changes they make
+              //   when filtering text makes it onto the FilterProcessResult
+              //   object that they return ($result). To prevent that bubbling, we
+              //   must wrap the call to render() in a render context.
+              $entity_output = $this->renderer()
+                ->executeInRenderContext(new RenderContext(), function () use (&$build) {
+                  return $this->renderer()->render($build);
+                });
+            }
 
             $depth--;
           }

@@ -76,16 +76,7 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
 
     // Check that the plugin's registered entity types matches the current
     // entity type.
-    if (!$this->isValidEntityType()) {
-      return FALSE;
-    }
-
-    // Check that the entity itself can be viewed by the user.
-    if ($entity = $this->getEntityFromContext()) {
-      return $entity->access('view', $account);
-    }
-
-    return TRUE;
+    return $this->isValidEntityType();
   }
 
   /**

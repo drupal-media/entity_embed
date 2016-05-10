@@ -33,6 +33,19 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertText($this->node->body->value, 'Embedded node exists in page');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
 
+    // Tests that embedded entity is not rendered if not accessible.
+    $this->node->setPublished(FALSE)->save();
+    $settings = [];
+    $settings['type'] = 'page';
+    $settings['title'] = 'Test un-accessible entity embed with entity-id and view-mode';
+    $settings['body'] = [['value' => $content, 'format' => 'custom_format']];
+    $node = $this->drupalCreateNode($settings);
+    $this->drupalGet('node/' . $node->id());
+    $this->assertNoRaw('<drupal-entity data-entity-type="node" data-entity');
+    $this->assertNoText($this->node->body->value, 'Embedded node does not exist in the page.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
+    $this->node->setPublished(TRUE)->save();
+
     // Tests entity embed using entity UUID and view mode.
     $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-view-mode="teaser">This placeholder should not be rendered.</drupal-entity>';
     $settings = array();

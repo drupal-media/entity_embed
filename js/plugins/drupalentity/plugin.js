@@ -135,6 +135,7 @@
           editor.ui.addButton(button.id, {
             label: button.label,
             data: button,
+            allowedContent: 'drupal-entity[!data-entity-type,!data-entity-id,!data-entity-uuid,!data-entity-embed-display,!data-entity-embed-settings,!data-align,!data-caption,!data-embed-button]',
             click: function(editor) {
               editor.execCommand('editdrupalentity', this.data);
             },

@@ -33,7 +33,7 @@ class EntityEmbedEntityBrowserTest extends EntityEmbedDialogTest {
     $this->assertResponse(200, 'Embed dialog is accessible with custom filter format and default embed button.');
 
     // Verify that an autocomplete field is available by default.
-    $this->assertFieldByName('attributes[data-entity-id]', '', 'Entity ID/UUID field is present.');
+    $this->assertFieldByName('entity_id', '', 'Entity ID/UUID field is present.');
     $this->assertNoText('Select entities to embed', 'Entity browser button is not present.');
 
     // Set up entity browser.
@@ -64,7 +64,7 @@ class EntityEmbedEntityBrowserTest extends EntityEmbedDialogTest {
 
     // Verify that the autocomplete field is replaced by an entity browser
     // button.
-    $this->assertNoFieldByName('attributes[data-entity-id]', '', 'Entity ID/UUID field is present.');
+    $this->assertNoFieldByName('entity_id', '', 'Entity ID/UUID field is present.');
     $this->assertText('Select entities to embed', 'Entity browser button is present.');
   }
 

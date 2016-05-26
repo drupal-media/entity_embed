@@ -26,7 +26,7 @@ use Drupal\embed\DomHelperTrait;
  * @Filter(
  *   id = "entity_embed",
  *   title = @Translation("Display embedded entities"),
- *   description = @Translation("Embeds entities using data attributes: data-entity-type, data-entity-uuid or data-entity-id, and data-view-mode."),
+ *   description = @Translation("Embeds entities using data attributes: data-entity-type, data-entity-uuid, and data-view-mode."),
  *   type = Drupal\filter\Plugin\FilterInterface::TYPE_TRANSFORM_REVERSIBLE
  * )
  */
@@ -135,11 +135,8 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   public function tips($long = FALSE) {
     if ($long) {
       return $this->t('
-        <p>You can embed entities. Additional properties can be added to the embed tag like data-caption and data-align if supported. Examples:</p>
-        <ul>
-          <li>Embed by ID: <code>&lt;drupal-entity data-entity-type="node" data-entity-id="1" data-view-mode="teaser" /&gt;</code></li>
-          <li>Embed by UUID: <code>&lt;drupal-entity data-entity-type="node" data-entity-uuid="07bf3a2e-1941-4a44-9b02-2d1d7a41ec0e" data-view-mode="teaser" /&gt;</code></li>
-        </ul>');
+        <p>You can embed entities. Additional properties can be added to the embed tag like data-caption and data-align if supported. Example:</p>
+        <code>&lt;drupal-entity data-entity-type="node" data-entity-uuid="07bf3a2e-1941-4a44-9b02-2d1d7a41ec0e" data-view-mode="teaser" /&gt;</code>');
     }
     else {
       return $this->t('You can embed entities.');

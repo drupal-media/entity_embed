@@ -52,7 +52,7 @@ class EntityEmbedDialogTest extends EntityEmbedTestBase {
     $this->assertResponse(200, 'Embed dialog is accessible with correct filter format and embed button.');
 
     // Ensure form structure of the 'select' step and submit form.
-    $this->assertFieldByName('attributes[data-entity-id]', '', 'Entity ID/UUID field is present.');
+    $this->assertFieldByName('entity_id', '', 'Entity ID/UUID field is present.');
 
     // $edit = ['attributes[data-entity-id]' => $this->node->id()];
     // $this->drupalPostAjaxForm(NULL, $edit, 'op');
@@ -85,13 +85,13 @@ class EntityEmbedDialogTest extends EntityEmbedTestBase {
     $this->assertResponse(200, 'Embed dialog is accessible with correct filter format and embed button.');
 
     // Ensure form structure of the 'select' step and submit form.
-    $this->assertFieldByName('attributes[data-entity-id]', '', 'Entity ID/UUID field is present.');
+    $this->assertFieldByName('entity_id', '', 'Entity ID/UUID field is present.');
 
     // Check that 'Next' is a primary button.
     $this->assertFieldByXPath('//input[contains(@class, "button--primary")]', 'Next', 'Next is a primary button');
 
     $title =  $this->node->getTitle() . ' (' . $this->node->id() . ')';
-    $edit = ['attributes[data-entity-id]' => $title];
+    $edit = ['entity_id' => $title];
     $this->drupalPostAjaxForm(NULL, $edit, 'op');
     /*$this->drupalPostForm(NULL, $edit, 'Next');
     // Ensure form structure of the 'embed' step and submit form.

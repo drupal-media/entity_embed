@@ -232,6 +232,10 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
         if (!$this->entityTypeManager->getDefinition($entity_type_id)->hasViewBuilderClass()) {
           unset($options[$group][$entity_type_id]);
         }
+        // Filter out entity types that do not support UUIDs.
+        if (!$this->entityTypeManager->getDefinition($entity_type_id)->hasKey('uuid')) {
+          unset($options[$group][$entity_type_id]);
+        }
         // Filter out entity types that will not have any Entity Embed Display
         // plugins.
         if (!$this->displayPluginManager->getDefinitionOptionsForEntityType($entity_type_id)) {

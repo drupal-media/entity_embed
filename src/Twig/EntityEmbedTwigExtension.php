@@ -70,7 +70,7 @@ class EntityEmbedTwigExtension extends \Twig_Extension {
     $entity = $this->loadEntity($entity_type, $entity_id);
     $context = array(
       'data-entity-type' => $entity_type,
-      'data-entity-id' => $entity_id,
+      'data-entity-uuid' => $entity->uuid(),
       'data-entity-embed-display' => $display_plugin,
       'data-entity-embed-settings' => $display_settings,
     );

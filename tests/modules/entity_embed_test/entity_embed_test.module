@@ -70,6 +70,5 @@ function entity_embed_test_entity_embed_alter(array &$build, EntityInterface $en
   }
 
   // Set title of the 'node' entity.
-  $node = $build['#node'];
-  $node->setTitle("Title set by hook_entity_embed_alter");
+  $entity->setTitle("Title set by hook_entity_embed_alter");
 }

@@ -34,6 +34,14 @@ Entity Embed can be installed via the
     *Warning: If you were using the module in very early pre-alpha
     stages you might need to add `data-entity-id` to the list of allowed
     attributes.*
+  * If you're using both the 'Align images' and 'Caption images' filters make
+    sure the 'Align images' filter is run before the 'Caption images' filter in
+    the **Filter processing order** section. (Explanation: Due to the
+    implementation details of the two filters it is important to execute them in
+    the right sequence in order to obtain a sensible final markup. In practice
+    this means that the alignment filter has to be run before the caption
+    filter, otherwise the alignment class will appear inside the <figure> tag
+    (instead of appearing on it) the caption filter produces.)
 
 ## Usage
 

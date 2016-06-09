@@ -193,7 +193,13 @@ trait EntityHelperTrait {
 
     // Build and render the Entity Embed Display plugin, allowing modules to
     // alter the result before rendering.
-    $build = $this->renderEntityEmbedDisplayPlugin(
+    $build = array(
+      '#theme_wrappers' => ['entity_embed_container'],
+      '#attributes' => ['class' => ['embedded-entity']],
+      '#entity' => $entity,
+      '#context' => $context,
+    );
+    $build['entity'] = $this->renderEntityEmbedDisplayPlugin(
       $entity,
       $context['data-entity-embed-display'],
       $context['data-entity-embed-settings'],
@@ -211,11 +217,6 @@ trait EntityHelperTrait {
     // Maintain data-caption if it is there.
     if (isset($context['data-caption'])) {
       $build['#attributes']['data-caption'] = $context['data-caption'];
-    }
-
-    // If this is an image, the image_formatter template expects #item_attributes.
-    if (!empty($build['#theme']) && !empty($build['#attributes']) && $build['#theme'] == 'image_formatter') {
-      $build['#item_attributes'] =  $build['#attributes'];
     }
 
     // @todo Should this hook get invoked if $build is an empty array?

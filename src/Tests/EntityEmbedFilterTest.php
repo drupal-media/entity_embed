@@ -15,6 +15,20 @@ namespace Drupal\entity_embed\Tests;
 class EntityEmbedFilterTest extends EntityEmbedTestBase {
 
   /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = [
+    'file',
+    'image',
+    'entity_embed',
+    'entity_embed_test',
+    'node',
+    'ckeditor',
+  ];
+
+  /**
    * Tests the entity_embed filter.
    *
    * Ensures that entities are getting rendered when correct data attributes
@@ -32,6 +46,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertNoRaw('<drupal-entity data-entity-type="node" data-entity');
     $this->assertText($this->node->body->value, 'Embedded node exists in page');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
+    $this->assertRaw('<article class="embedded-entity">', 'Embed container found.');
 
     // Tests entity embed using entity UUID and view mode.
     $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-view-mode="teaser">This placeholder should not be rendered.</drupal-entity>';
@@ -44,6 +59,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertNoRaw('<drupal-entity data-entity-type="node" data-entity');
     $this->assertText($this->node->body->value, 'Embedded node exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
+    $this->assertRaw('<article class="embedded-entity">', 'Embed container found.');
 
     // Ensure that placeholder is not replaced when embed is unsuccessful.
     $content = '<drupal-entity data-entity-type="node" data-entity-id="InvalidID" data-view-mode="teaser">This placeholder should be rendered since specified entity does not exists.</drupal-entity>';
@@ -69,6 +85,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertText($this->node->body->value, 'Entity specifed with UUID exists in the page.');
     $this->assertNoText($sample_node->body->value, 'Entity specifed with ID does not exists in the page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
+    $this->assertRaw('<article class="embedded-entity"', 'Embed container found.');
 
     // Test deprecated 'default' Entity Embed Display plugin.
     $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</drupal-entity>';
@@ -80,10 +97,11 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Embedded node exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
+    $this->assertRaw('<article class="embedded-entity"', 'Embed container found.');
 
     // Ensure that Entity Embed Display plugin is preferred over view mode when
     // both attributes are present.
-    $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\' data-view-mode="some-invalid-view-mode">This placeholder should not be rendered.</drupal-entity>';
+    $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"full"}\' data-view-mode="some-invalid-view-mode" data-align="left" data-caption="test caption">This placeholder should not be rendered.</drupal-entity>';
     $settings = array();
     $settings['type'] = 'page';
     $settings['title'] = 'Test entity embed with entity-embed-display and data-entity-embed-settings';
@@ -92,6 +110,12 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->drupalGet('node/' . $node->id());
     $this->assertText($this->node->body->value, 'Embedded node exists in page with the view mode specified by entity-embed-settings.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
+    $this->assertRaw('<article class="embedded-entity"', 'Embed container found.');
+
+    // Ensure the embedded node doesn't contain data tags on the full page.
+    $this->drupalGet('node/' . $this->node->id());
+    $this->assertNoRaw('data-align="left"', 'Align data attribute not found.');
+    $this->assertNoRaw('data-caption="test caption"', 'Caption data attribute not found.');
 
     // Test that tag of container element is not replaced when it's not
     // <drupal-entity>.
@@ -113,6 +137,25 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->drupalget('node/' . $node->id());
     $this->assertNoText($this->node->body->value, 'embedded node exists in page');
     $this->assertRaw('<div data-entity-type="node" data-entity-id');
+
+    // Test that attributes are correctly added when image formatter is used.
+    /** @var \Drupal\file\FileInterface $image */
+    $image = $this->getTestFile('image');
+    $image->setPermanent();
+    $image->save();
+    $content = '<drupal-entity data-entity-type="file" data-entity-uuid="' . $image->uuid() . '" data-entity-embed-display="image:image" data-entity-embed-settings=\'{"image_style":"","image_link":""}\' data-align="left" data-caption="test caption" alt="This is alt text" title="This is title text">This placeholder should not be rendered.</drupal-entity>';
+    $settings = [];
+    $settings['type'] = 'page';
+    $settings['title'] = 'test entity image formatter';
+    $settings['body'] = [['value' => $content, 'format' => 'custom_format']];
+    $node = $this->drupalCreateNode($settings);
+    $this->drupalget('node/' . $node->id());
+    $this->assertRaw('<img src', 'IMG tag found.');
+    $this->assertRaw('data-caption="test caption"', 'Caption found.');
+    $this->assertRaw('data-align="left"', 'Alignment information found.');
+    $this->assertTrue((bool) $this->xpath("//img[@alt='This is alt text']"), 'Alt text found');
+    $this->assertTrue((bool) $this->xpath("//img[@title='This is title text']"), 'Title text found');
+    $this->assertRaw('<article class="embedded-entity"', 'Embed container found.');
   }
 
 }

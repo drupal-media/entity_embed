@@ -7,6 +7,33 @@
  */
 
 /**
+ * Implements hook_theme().
+ */
+function entity_embed_theme() {
+  return [
+    'entity_embed_container' => [
+      'render element' => 'element',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for entity embed container templates.
+ *
+ * Default template: entity-embed-container.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - element: An associative array containing the properties of the element.
+ *     Properties used: #attributes, #children.
+ */
+function template_preprocess_entity_embed_container(&$variables) {
+  $variables['element'] += ['#attributes' => []];
+  $variables['attributes'] = $variables['element']['#attributes'];
+  $variables['children'] = $variables['element']['#children'];
+}
+
+/**
  * Implements hook_entity_embed_display_plugins_alter() on behalf of file.module.
  */
 function file_entity_embed_display_plugins_alter(array &$plugins) {

@@ -73,7 +73,9 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
         foreach ($contexts as $name => $value) {
           $display->setContextValue($name, $value);
         }
-        return $display->access();
+        // We lose cacheability metadata at this point. We should refactor to
+        // avoid this. @see https://www.drupal.org/node/2593379#comment-11368447
+        return $display->access()->isAllowed();
       }
       catch (PluginException $e) {
         return FALSE;

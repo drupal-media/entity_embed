@@ -5,7 +5,9 @@
  * Helper module for the Entity Embed tests.
  */
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Implements hook_theme().
@@ -71,4 +73,13 @@ function entity_embed_test_entity_embed_alter(array &$build, EntityInterface $en
 
   // Set title of the 'node' entity.
   $entity->setTitle("Title set by hook_entity_embed_alter");
+}
+
+/**
+ * Implements hook_entity_access().
+ */
+function entity_embed_test_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  if ($entity->label() == 'Embed Test Node') {
+    return AccessResult::neutral()->addCacheTags(['foo:' . $entity->id()]);
+  }
 }

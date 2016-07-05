@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains Drupal\entity_embed\EntityHelperTrait.
- */
-
 namespace Drupal\entity_embed;
 
 use Drupal\Component\Utility\Html;
@@ -12,7 +7,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Render\RendererInterface;
 use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
 
 /**
@@ -22,6 +16,11 @@ use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
  * classes that would implement ContainerInjectionInterface. Services registered
  * in the Container should not use this trait but inject the appropriate service
  * directly for easier testing.
+ *
+ * @todo this duplicates/wraps much of the Entity API. Is this really worth
+ * keeping? The downside is painfully illustrated: the documentation must be
+ * kept up to date with the actual API documentation… and that's not happening.
+ * This causes subtle bugs and makes maintenance harder.
  */
 trait EntityHelperTrait {
 
@@ -45,13 +44,6 @@ trait EntityHelperTrait {
    * @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager.
    */
   protected $displayPluginManager;
-
-  /**
-   * The renderer.
-   *
-   * @var \Drupal\Core\Render\RendererInterface.
-   */
-  protected $renderer;
 
   /**
    * Loads an entity from the database.
@@ -132,7 +124,7 @@ trait EntityHelperTrait {
   }
 
   /**
-   * Returns the render array for an entity.
+   * Builds the render array for the provided entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to be rendered.
@@ -144,14 +136,19 @@ trait EntityHelperTrait {
    *
    * @return array
    *   A render array for the entity.
+   *
+   * @see \Drupal\Core\Entity\EntityViewBuilderInterface::view()
+   *
+   * @todo Note that the signature here does NOT match that of \Drupal\Core\Entity\EntityViewBuilderInterface::view(), which can lead to subtle bugs.
    */
-  protected function renderEntity(EntityInterface $entity, $view_mode, $langcode = NULL) {
-    $render_controller = $this->entityManager()->getViewBuilder($entity->getEntityTypeId());
-    return $render_controller->view($entity, $view_mode, $langcode);
+  protected function buildEntity(EntityInterface $entity, $view_mode, $langcode = NULL) {
+    return $this->entityManager()
+      ->getViewBuilder($entity->getEntityTypeId())
+      ->view($entity, $view_mode, $langcode);
   }
 
   /**
-   * Renders an embedded entity.
+   * Builds the render array for an embedded entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to be rendered.
@@ -159,10 +156,12 @@ trait EntityHelperTrait {
    *   (optional) Array of context values, corresponding to the attributes on
    *   the embed HTML tag.
    *
-   * @return string
-   *   The HTML of the entity rendered with the Entity Embed Display plugin.
+   * @return array
+   *   A render array.
+   *
+   * @todo improve documentation
    */
-  protected function renderEntityEmbed(EntityInterface $entity, array $context = array()) {
+  protected function buildEntityEmbed(EntityInterface $entity, array $context = array()) {
     // Support the deprecated view-mode data attribute.
     if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-settings'])) {
       $context['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
@@ -199,7 +198,7 @@ trait EntityHelperTrait {
       '#entity' => $entity,
       '#context' => $context,
     );
-    $build['entity'] = $this->renderEntityEmbedDisplayPlugin(
+    $build['entity'] = $this->buildEntityEmbedDisplayPlugin(
       $entity,
       $context['data-entity-embed-display'],
       $context['data-entity-embed-settings'],
@@ -219,15 +218,16 @@ trait EntityHelperTrait {
       $build['#attributes']['data-caption'] = $context['data-caption'];
     }
 
+    // Make sure that access to the entity is respected.
+    $build['#access'] = $entity->access('view', NULL, TRUE);
+
     // @todo Should this hook get invoked if $build is an empty array?
     $this->moduleHandler()->alter(array("{$context['data-entity-type']}_embed", 'entity_embed'), $build, $entity, $context);
-    $entity_output = $this->renderer()->render($build);
-
-    return $entity_output;
+    return $build;
   }
 
   /**
-   * Renders an entity using an Entity Embed Display plugin.
+   * Builds the render array for an entity using an Entity Embed Display plugin.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to be rendered.
@@ -242,7 +242,7 @@ trait EntityHelperTrait {
    * @return array
    *   A render array for the Entity Embed Display plugin.
    */
-  protected function renderEntityEmbedDisplayPlugin(EntityInterface $entity, $plugin_id, array $plugin_configuration = array(), array $context = array()) {
+  protected function buildEntityEmbedDisplayPlugin(EntityInterface $entity, $plugin_id, array $plugin_configuration = array(), array $context = array()) {
     // Build the Entity Embed Display plugin.
     /** @var \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayBase $display */
     $display = $this->displayPluginManager()->createInstance($plugin_id, $plugin_configuration);
@@ -336,29 +336,4 @@ trait EntityHelperTrait {
     return $this;
   }
 
-  /**
-   * Returns the renderer.
-   *
-   * @return \Drupal\Core\Render\RendererInterface
-   *   The renderer.
-   */
-  protected function renderer() {
-    if (!isset($this->renderer)) {
-      $this->renderer = \Drupal::service('renderer');
-    }
-    return $this->renderer;
-  }
-
-  /**
-   * Sets the renderer.
-   *
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer.
-   *
-   * @return self
-   */
-  public function setRenderer(RendererInterface $renderer) {
-    $this->renderer = $renderer;
-    return $this;
-  }
 }

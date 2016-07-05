@@ -11,7 +11,9 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Render\RenderContext;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\entity_embed\EntityHelperTrait;
 use Drupal\entity_embed\Exception\EntityNotFoundException;
 use Drupal\entity_embed\Exception\RecursiveRenderingException;
@@ -35,6 +37,13 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   use DomHelperTrait;
 
   /**
+   * The renderer service.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
    * Constructs a EntityEmbedFilter object.
    *
    * @param array $configuration
@@ -48,10 +57,11 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The Module Handler.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler, RendererInterface $renderer) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->setEntityManager($entity_manager);
     $this->setModuleHandler($module_handler);
+    $this->renderer = $renderer;
   }
 
   /**
@@ -63,7 +73,8 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       $plugin_id,
       $plugin_definition,
       $container->get('entity.manager'),
-      $container->get('module_handler')
+      $container->get('module_handler'),
+      $container->get('renderer')
     );
   }
 
@@ -101,14 +112,22 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
               $node->setAttribute('data-entity-uuid', $uuid);
             }
 
-            $access = $entity->access('view', NULL, TRUE);
-            $access_metadata = CacheableMetadata::createFromObject($access);
-            $entity_metadata = CacheableMetadata::createFromObject($entity);
-            $result = $result->merge($entity_metadata)->merge($access_metadata);
-
             $context = $this->getNodeAttributesAsArray($node);
             $context += array('data-langcode' => $langcode);
-            $entity_output = $this->renderEntityEmbed($entity, $context);
+            $build = $this->buildEntityEmbed($entity, $context);
+            // We need to render the embedded entity:
+            // - without replacing placeholders, so that the placeholders are
+            //   only replaced at the last possible moment. Hence we cannot use
+            //   either renderPlain() or renderRoot(), so we must use render().
+            // - without bubbling beyond this filter, because filters must
+            //   ensure that the bubbleable metadata for the changes they make
+            //   when filtering text makes it onto the FilterProcessResult
+            //   object that they return ($result). To prevent that bubbling, we
+            //   must wrap the call to render() in a render context.
+            $entity_output = $this->renderer->executeInRenderContext(new RenderContext(), function () use (&$build) {
+              return $this->renderer->render($build);
+            });
+            $result = $result->merge(BubbleableMetadata::createFromRenderArray($build));
 
             $depth--;
           }

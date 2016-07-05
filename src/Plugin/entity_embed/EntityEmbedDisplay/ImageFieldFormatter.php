@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Field\FormatterPluginManager;
 use Drupal\Core\Form\FormStateInterface;
@@ -85,15 +86,35 @@ class ImageFieldFormatter extends FileFieldFormatter {
    * {@inheritdoc}
    */
   public function access(AccountInterface $account = NULL) {
-    if (!parent::access($account)) {
-      return FALSE;
-    }
+    return parent::access($account)->andIf($this->isValidImage());
+  }
 
+  /**
+   * Checks if the image is valid.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   Returns the access result.
+   */
+  protected function isValidImage() {
+    // If entity type is not file we have to return early to prevent fatal in
+    // the condition above. Access should already be forbidden at this point,
+    // which means this won't have any effect.
+    // @see EntityEmbedDisplayBase::access()
+    if ($this->getEntityTypeFromContext() != 'file') {
+      return AccessResult::forbidden();
+    }
+    $access = AccessResult::allowed();
+
+    // @todo needs cacheability metadata for getEntityFromContext.
+    // @see \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayBase::getEntityFromContext()
+    /** @var \Drupal\file\FileInterface $entity */
     if ($entity = $this->getEntityFromContext()) {
-      return $this->imageFactory->get($entity->getFileUri())->isValid();
+      $access = AccessResult::allowedIf($this->imageFactory->get($entity->getFileUri())->isValid())
+        // See the above @todo, this is the best we can do for now.
+        ->addCacheableDependency($entity);
     }
 
-    return TRUE;
+    return $access;
   }
 
   /**

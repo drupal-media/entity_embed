@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\Tests\EntityEmbedFilterTest.
- */
-
 namespace Drupal\entity_embed\Tests;
 
 /**
@@ -48,6 +43,31 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
     $this->assertRaw('<article class="embedded-entity">', 'Embed container found.');
 
+    // Tests that embedded entity is not rendered if not accessible.
+    $this->node->setPublished(FALSE)->save();
+    $settings = [];
+    $settings['type'] = 'page';
+    $settings['title'] = 'Test un-accessible entity embed with entity-id and view-mode';
+    $settings['body'] = [['value' => $content, 'format' => 'custom_format']];
+    $node = $this->drupalCreateNode($settings);
+    $this->drupalGet('node/' . $node->id());
+    $this->assertNoRaw('<drupal-entity data-entity-type="node" data-entity');
+    $this->assertNoText($this->node->body->value, 'Embedded node does not exist in the page.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
+    // Tests that embedded entity is displayed to the user who has the view
+    // unpublished content permission.
+    $this->createRole(['view own unpublished content'], 'access_unpublished');
+    $this->webUser->addRole('access_unpublished');
+    $this->webUser->save();
+    $this->drupalGet('node/' . $node->id());
+    $this->assertNoRaw('<drupal-entity data-entity-type="node" data-entity');
+    $this->assertText($this->node->body->value, 'Embedded node exists in the page.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
+    $this->assertRaw('<article class="embedded-entity">', 'Embed container found.');
+    $this->webUser->removeRole('access_unpublished');
+    $this->webUser->save();
+    $this->node->setPublished(TRUE)->save();
+
     // Tests entity embed using entity UUID and view mode.
     $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-view-mode="teaser">This placeholder should not be rendered.</drupal-entity>';
     $settings = array();
@@ -60,6 +80,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertText($this->node->body->value, 'Embedded node exists in page.');
     $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
     $this->assertRaw('<article class="embedded-entity">', 'Embed container found.');
+    $this->assertCacheTag('foo:' . $this->node->id());
 
     // Ensure that placeholder is not replaced when embed is unsuccessful.
     $content = '<drupal-entity data-entity-type="node" data-entity-id="InvalidID" data-view-mode="teaser">This placeholder should be rendered since specified entity does not exists.</drupal-entity>';

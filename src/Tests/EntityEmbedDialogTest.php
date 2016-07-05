@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\Tests\EntityEmbedDialogTest.
- */
-
 namespace Drupal\entity_embed\Tests;
 
 use Drupal\editor\Entity\Editor;
@@ -15,6 +10,13 @@ use Drupal\editor\Entity\Editor;
  * @group entity_embed
  */
 class EntityEmbedDialogTest extends EntityEmbedTestBase {
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = ['image'];
 
   /**
    * Tests the entity embed dialog.
@@ -99,6 +101,20 @@ class EntityEmbedDialogTest extends EntityEmbedTestBase {
 
     // Check that 'Embed' is a primary button.
     $this->assertFieldByXPath('//input[contains(@class, "button--primary")]', 'Embed', 'Embed is a primary button');*/
+  }
+
+  /**
+   * Tests entity embed functionality.
+   */
+  public function testEntityEmbedFunctionality() {
+    $edit = [
+      'entity_id' => $this->node->getTitle() . ' (' . $this->node->id() . ')',
+    ];
+    $this->getEmbedDialog('custom_format', 'node');
+    $this->drupalPostForm(NULL, $edit, t('Next'));
+    // Tests that the embed dialog doesn't trow a fatal in
+    // ImageFieldFormatter::isValidImage()
+    $this->assertResponse(200);
   }
 
   /**

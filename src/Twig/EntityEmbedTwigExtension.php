@@ -74,7 +74,7 @@ class EntityEmbedTwigExtension extends \Twig_Extension {
       'data-entity-embed-display' => $display_plugin,
       'data-entity-embed-settings' => $display_settings,
     );
-    return $this->renderEntityEmbed($entity, $context);
+    return $this->buildEntityEmbed($entity, $context);
   }
 
 }

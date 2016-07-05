@@ -1,13 +1,9 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayBase.
- */
-
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
@@ -73,19 +69,11 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
    */
   public function access(AccountInterface $account = NULL) {
     // @todo Add a hook_entity_embed_display_access()?
-
     // Check that the plugin's registered entity types matches the current
     // entity type.
-    if (!$this->isValidEntityType()) {
-      return FALSE;
-    }
-
-    // Check that the entity itself can be viewed by the user.
-    if ($entity = $this->getEntityFromContext()) {
-      return $entity->access('view', $account);
-    }
-
-    return TRUE;
+    return AccessResult::allowedIf($this->isValidEntityType())
+      // @see \Drupal\Core\Entity\EntityTypeManager
+      ->addCacheTags(['entity_types']);
   }
 
   /**
@@ -260,6 +248,13 @@ abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFac
 
   /**
    * Gets the entity from the current context.
+   *
+   * @todo Where doe sthis come from? The value must come from somewhere, yet
+   * this does not implement any context-related interfaces. This is an *input*,
+   * so we need cache contexts and possibly cache tags to reflect where this
+   * came from. We need that for *everything* that this class does that relies
+   * on this, plus any of its subclasses. Right now, this is effectively a
+   * global that breaks cacheability metadata.
    *
    * @return \Drupal\Core\Entity\EntityInterface
    */

@@ -7,6 +7,7 @@
 
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FormatterPluginManager;
@@ -112,12 +113,18 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    * {@inheritdoc}
    */
   public function access(AccountInterface $account = NULL) {
-    if (!parent::access($account)) {
-      return FALSE;
-    }
+    return parent::access($account)->andIf($this->isApplicableFieldFormatter());
+  }
 
+  /**
+   * Checks if the field formatter is applicable.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   Returns the access result.
+   */
+  protected function isApplicableFieldFormatter() {
     $definition = $this->formatterPluginManager->getDefinition($this->getDerivativeId());
-    return $definition['class']::isApplicable($this->getFieldDefinition());
+    return AccessResult::allowedIf($definition['class']::isApplicable($this->getFieldDefinition()));
   }
 
   /**

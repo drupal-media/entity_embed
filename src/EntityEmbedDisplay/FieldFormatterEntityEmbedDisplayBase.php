@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\EntityEmbedDisplay\FieldFormatterEntityEmbedDisplayBase.
- */
-
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Access\AccessResult;
@@ -123,8 +118,18 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    *   Returns the access result.
    */
   protected function isApplicableFieldFormatter() {
-    $definition = $this->formatterPluginManager->getDefinition($this->getDerivativeId());
+    $definition = $this->formatterPluginManager->getDefinition($this->getFieldFormatterId());
     return AccessResult::allowedIf($definition['class']::isApplicable($this->getFieldDefinition()));
+  }
+
+  /**
+   * Returns the field formatter id.
+   *
+   * @return string|null
+   *   Returns field formatter id or null.
+   */
+  public function getFieldFormatterId() {
+    return $this->getDerivativeId();
   }
 
   /**
@@ -163,7 +168,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return $this->formatterPluginManager->getDefaultSettings($this->getDerivativeId());
+    return $this->formatterPluginManager->getDefaultSettings($this->getFieldFormatterId());
   }
 
   /**
@@ -182,7 +187,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   public function getFieldFormatter() {
     if (!isset($this->fieldFormatter)) {
       $display = array(
-        'type' => $this->getDerivativeId(),
+        'type' => $this->getFieldFormatterId(),
         'settings' => $this->getConfiguration(),
         'label' => 'hidden',
       );
@@ -223,7 +228,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   public function calculateDependencies() {
     $this->addDependencies(parent::calculateDependencies());
 
-    $definition = $this->formatterPluginManager->getDefinition($this->getDerivativeId());
+    $definition = $this->formatterPluginManager->getDefinition($this->getFieldFormatterId());
     $this->addDependency('module', $definition['provider']);
     // @todo Investigate why this does not work currently.
     //$this->calculatePluginDependencies($this->getFieldFormatter());

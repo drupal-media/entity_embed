@@ -49,18 +49,19 @@ Entity Embed can be installed via the
 * Click on the 'E' button in the text editor.
 * Enter part of the title of the entity you're looking for and select
   one of the search results.
-* For **Display as**, choose one of the following options:
-  * Rendered Entity
+* If the entity you select is a node entity, for **Display as** you can choose
+  one of the following options:
   * Entity ID
   * Label
-* If chosen **Rendered Entity**, choose one of the following options for
-  **View mode**:
-  * Default
   * Full content
   * RSS
   * Search index
   * Search result highlighting input
+  * Teaser
+* The last five options depend on the view modes you have on the entity.
 * Optionally, choose to align left, center or right.
+**Rendered Entity** was available before but now the view modes are
+ available as entity embed display plugins.
 
 ## Embedding entities without WYSIWYG
 

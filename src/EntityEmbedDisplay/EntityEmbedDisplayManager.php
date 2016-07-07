@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager.
- */
-
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Cache\CacheBackendInterface;
@@ -87,7 +82,10 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
   }
 
   /**
-   * Provides a list of plugins that can be used for a certain entity.
+   * Gets definition options for entity.
+   *
+   * Provides a list of plugins that can be used for a certain entity and
+   * filters out plugins that should be hidden in the UI.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   An entity object.
@@ -97,13 +95,32 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
    */
   public function getDefinitionOptionsForEntity(EntityInterface $entity) {
     $definitions = $this->getDefinitionsForContexts(array('entity' => $entity, 'entity_type' => $entity->getEntityTypeId()));
+    $definitions = $this->filterExposedDefinitions($definitions);
     return array_map(function ($definition) {
       return (string) $definition['label'];
     }, $definitions);
   }
 
   /**
-   * Provides a list of plugins that can be used for a certain entity type.
+   * Filters out plugins from definitions that should be hidden in the UI.
+   *
+   * @param array $definitions
+   *   The array of plugin definitions.
+   *
+   * @return array
+   *   Returns plugin definitions that should be displayed in the UI.
+   */
+  protected function filterExposedDefinitions(array $definitions) {
+    return array_filter($definitions, function($definition) {
+      return empty($definition['no_ui']);
+    });
+  }
+
+  /**
+   * Gets definition options for entity type.
+   *
+   * Provides a list of plugins that can be used for a certain entity type and
+   * filters out plugins that should be hidden in the UI.
    *
    * @param string $entity_type
    *   The entity type id.
@@ -113,6 +130,7 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
    */
   public function getDefinitionOptionsForEntityType($entity_type) {
     $definitions = $this->getDefinitionsForContexts(array('entity_type' => $entity_type));
+    $definitions = $this->filterExposedDefinitions($definitions);
     return array_map(function ($definition) {
       return (string) $definition['label'];
     }, $definitions);

@@ -92,9 +92,39 @@ class EntityEmbedDialogTest extends EntityEmbedTestBase {
     // Check that 'Next' is a primary button.
     $this->assertFieldByXPath('//input[contains(@class, "button--primary")]', 'Next', 'Next is a primary button');
 
-    $title =  $this->node->getTitle() . ' (' . $this->node->id() . ')';
+    $title = $this->node->getTitle() . ' (' . $this->node->id() . ')';
     $edit = ['entity_id' => $title];
-    $this->drupalPostAjaxForm(NULL, $edit, 'op');
+    $response = $this->drupalPostAjaxForm(NULL, $edit, 'op');
+    $plugins = [
+      'entity_reference:entity_reference_label',
+      'entity_reference:entity_reference_entity_id',
+      'view_mode:node.full',
+      'view_mode:node.rss',
+      'view_mode:node.search_index',
+      'view_mode:node.search_result',
+      'view_mode:node.teaser',
+    ];
+    foreach ($plugins as $plugin) {
+      $this->assertTrue(strpos($response[2]['data'], $plugin), 'Plugin ' . $plugin . ' is available in selection.');
+    }
+
+    $this->container->get('config.factory')->getEditable('entity_embed.settings')
+      ->set('rendered_entity_mode', TRUE)->save();
+    $this->displayPluginManager()->clearCachedDefinitions();
+
+    $this->getEmbedDialog('custom_format', 'node');
+    $title = $this->node->getTitle() . ' (' . $this->node->id() . ')';
+    $edit = ['entity_id' => $title];
+    $response = $this->drupalPostAjaxForm(NULL, $edit, 'op');
+
+    $plugins = [
+      'entity_reference:entity_reference_label',
+      'entity_reference:entity_reference_entity_id',
+      'entity_reference:entity_reference_entity_view',
+    ];
+    foreach ($plugins as $plugin) {
+      $this->assertTrue(strpos($response[2]['data'], $plugin), 'Plugin ' . $plugin . ' is available in selection.');
+    }
     /*$this->drupalPostForm(NULL, $edit, 'Next');
     // Ensure form structure of the 'embed' step and submit form.
     $this->assertFieldByName('attributes[data-entity-embed-display]', 'Entity Embed Display plugin field is present.');

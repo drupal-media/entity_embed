@@ -43,3 +43,13 @@ function entity_embed_update_8001() {
     $old_embed_button->delete();
   }
 }
+
+/**
+ * Updates the default mode settings.
+ */
+function entity_embed_update_8002() {
+  \Drupal::configFactory()
+    ->getEditable('entity_embed.settings')
+    ->set('rendered_entity_mode', TRUE)
+    ->save();
+}

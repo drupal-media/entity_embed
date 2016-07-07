@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\Tests\EntityReferenceFieldFormatterTest.
- */
-
 namespace Drupal\entity_embed\Tests;
 
 use Drupal\Core\Form\FormState;
@@ -40,6 +35,20 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
    */
   public function testEntityReferenceFieldFormatter() {
     // Ensure that entity reference field formatters are available as plugins.
+    $this->assertAvailableDisplayPlugins($this->node, [
+      'entity_reference:entity_reference_label',
+      'entity_reference:entity_reference_entity_id',
+      'view_mode:node.full',
+      'view_mode:node.rss',
+      'view_mode:node.search_index',
+      'view_mode:node.search_result',
+      'view_mode:node.teaser',
+    ]);
+
+    $this->container->get('config.factory')->getEditable('entity_embed.settings')
+      ->set('rendered_entity_mode', TRUE)->save();
+    $this->displayPluginManager()->clearCachedDefinitions();
+
     $this->assertAvailableDisplayPlugins($this->node, [
       'entity_reference:entity_reference_label',
       'entity_reference:entity_reference_entity_id',

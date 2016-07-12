@@ -3,10 +3,11 @@
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FormatterPluginManager;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\PluginDependencyTrait;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\TypedDataManager;
@@ -47,19 +48,20 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
   /**
    * Constructs a FieldFormatterEntityEmbedDisplayBase object.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager service.
    * @param \Drupal\Core\Field\FormatterPluginManager $formatter_plugin_manager
    *   The field formatter plugin manager.
    * @param \Drupal\Core\TypedData\TypedDataManager $typed_data_manager
    *   The typed data manager.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   The language manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, FormatterPluginManager $formatter_plugin_manager, TypedDataManager $typed_data_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, FormatterPluginManager $formatter_plugin_manager, TypedDataManager $typed_data_manager, LanguageManagerInterface $language_manager) {
     $this->formatterPluginManager = $formatter_plugin_manager;
     $this->setConfiguration($configuration);
-    $this->setEntityManager($entity_manager);
     $this->typedDataManager = $typed_data_manager;
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_manager);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager, $language_manager);
   }
 
   /**
@@ -70,9 +72,10 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity.manager'),
+      $container->get('entity_type.manager'),
       $container->get('plugin.manager.field.formatter'),
-      $container->get('typed_data_manager')
+      $container->get('typed_data_manager'),
+      $container->get('language_manager')
     );
   }
 

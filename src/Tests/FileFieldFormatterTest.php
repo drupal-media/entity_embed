@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\Tests\FileFieldFormatterTest.
- */
-
 namespace Drupal\entity_embed\Tests;
 
 use Drupal\Component\Serialization\Json;
@@ -60,7 +55,8 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
     );
     // Ensure that description field is available for all the 'file' plugins.
     foreach ($plugins as $plugin) {
-      $display = $this->displayPluginManager()->createInstance($plugin, array());
+      $display = $this->container->get('plugin.manager.entity_embed.display')
+        ->createInstance($plugin, []);
       $display->setContextValue('entity', $this->file);
       $conf_form = $display->buildConfigurationForm($form, $form_state);
       $this->assertIdentical(array_keys($conf_form), array('description'));

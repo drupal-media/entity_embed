@@ -47,7 +47,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
 
     $this->container->get('config.factory')->getEditable('entity_embed.settings')
       ->set('rendered_entity_mode', TRUE)->save();
-    $this->displayPluginManager()->clearCachedDefinitions();
+    $this->container->get('plugin.manager.entity_embed.display')->clearCachedDefinitions();
 
     $this->assertAvailableDisplayPlugins($this->node, [
       'entity_reference:entity_reference_label',
@@ -59,7 +59,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     // 'entity_reference:entity_reference_entity_id' plugin.
     $form = array();
     $form_state = new FormState();
-    $display = $this->displayPluginManager()->createInstance('entity_reference:entity_reference_entity_id', array());
+    $display = $this->container->get('plugin.manager.entity_embed.display')->createInstance('entity_reference:entity_reference_entity_id', array());
     $display->setContextValue('entity', $this->node);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
     $this->assertIdentical(array_keys($conf_form), array());
@@ -68,7 +68,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     // 'entity_reference:entity_reference_entity_view' plugin.
     $form = array();
     $form_state = new FormState();
-    $display = $this->displayPluginManager()->createInstance('entity_reference:entity_reference_entity_view', array());
+    $display = $this->container->get('plugin.manager.entity_embed.display')->createInstance('entity_reference:entity_reference_entity_view', array());
     $display->setContextValue('entity', $this->node);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
     $this->assertIdentical($conf_form['view_mode']['#type'], 'select');
@@ -78,7 +78,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
     // 'entity_reference:entity_reference_label' plugin.
     $form = array();
     $form_state = new FormState();
-    $display = $this->displayPluginManager()->createInstance('entity_reference:entity_reference_label', array());
+    $display = $this->container->get('plugin.manager.entity_embed.display')->createInstance('entity_reference:entity_reference_label', array());
     $display->setContextValue('entity', $this->node);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
     $this->assertIdentical(array_keys($conf_form), array('link'));
@@ -87,7 +87,7 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
 
     // Ensure that 'Rendered Entity' plugin is not available for an entity not
     // having a view controller.
-    $plugin_options = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->menu);
+    $plugin_options = $this->container->get('plugin.manager.entity_embed.display')->getDefinitionOptionsForEntity($this->menu);
     $this->assertFalse(array_key_exists('entity_reference:entity_reference_entity_view', $plugin_options), "The 'Rendered entity' plugin is not available.");
   }
 

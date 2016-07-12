@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\Tests\EntityEmbedHooksTest.
- */
-
 namespace Drupal\entity_embed\Tests;
 
 /**
@@ -34,7 +29,8 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
     // hook_entity_embed_display_plugins_alter() implementation and ensure it is
     // working as designed.
     $this->state->set('entity_embed_test_entity_embed_display_plugins_alter', TRUE);
-    $plugins = $this->displayPluginManager()->getDefinitionOptionsForEntity($this->node);
+    $plugins = $this->container->get('plugin.manager.entity_embed.display')
+      ->getDefinitionOptionsForEntity($this->node);
     // Ensure that name of each plugin is prefixed with 'testing_hook:'.
     foreach ($plugins as $plugin => $plugin_info) {
       $this->assertTrue(strpos($plugin, 'testing_hook:') === 0, 'Name of the plugin is prefixed by hook_entity_embed_display_plugins_alter()');

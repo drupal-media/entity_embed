@@ -110,7 +110,7 @@ class EntityEmbedDialogTest extends EntityEmbedTestBase {
 
     $this->container->get('config.factory')->getEditable('entity_embed.settings')
       ->set('rendered_entity_mode', TRUE)->save();
-    $this->displayPluginManager()->clearCachedDefinitions();
+    $this->container->get('plugin.manager.entity_embed.display')->clearCachedDefinitions();
 
     $this->getEmbedDialog('custom_format', 'node');
     $title = $this->node->getTitle() . ' (' . $this->node->id() . ')';

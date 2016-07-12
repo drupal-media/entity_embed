@@ -1,20 +1,14 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\Plugin\Filter\EntityEmbedFilter.
- */
-
 namespace Drupal\entity_embed\Plugin\Filter;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\entity_embed\EntityHelperTrait;
+use Drupal\entity_embed\EntityEmbedBuilderInterface;
 use Drupal\entity_embed\Exception\EntityNotFoundException;
 use Drupal\entity_embed\Exception\RecursiveRenderingException;
 use Drupal\filter\FilterProcessResult;
@@ -33,7 +27,7 @@ use Drupal\embed\DomHelperTrait;
  * )
  */
 class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInterface {
-  use EntityHelperTrait;
+
   use DomHelperTrait;
 
   /**
@@ -44,6 +38,20 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
   protected $renderer;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The entity embed builder service.
+   *
+   * @var \Drupal\entity_embed\EntityEmbedBuilderInterface
+   */
+  protected $builder;
+
+  /**
    * Constructs a EntityEmbedFilter object.
    *
    * @param array $configuration
@@ -52,16 +60,18 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
    *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager service.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The Module Handler.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer.
+   * @param \Drupal\entity_embed\EntityEmbedBuilderInterface $builder
+   *   The entity embed builder service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler, RendererInterface $renderer) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, RendererInterface $renderer, EntityEmbedBuilderInterface $builder) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->setEntityManager($entity_manager);
-    $this->setModuleHandler($module_handler);
+    $this->entityTypeManager = $entity_type_manager;
     $this->renderer = $renderer;
+    $this->builder = $builder;
   }
 
   /**
@@ -72,9 +82,9 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity.manager'),
-      $container->get('module_handler'),
-      $container->get('renderer')
+      $container->get('entity_type.manager'),
+      $container->get('renderer'),
+      $container->get('entity_embed.builder')
     );
   }
 
@@ -96,8 +106,17 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
         try {
           // Load the entity either by UUID (preferred) or ID.
-          $id = $node->getAttribute('data-entity-uuid') ?: $node->getAttribute('data-entity-id');
-          $entity = $this->loadEntity($entity_type, $id);
+          $id = NULL;
+          $entity = NULL;
+          if ($id = $node->getAttribute('data-entity-uuid')) {
+            $entity = $this->entityTypeManager->getStorage($entity_type)
+              ->loadByProperties(['uuid' => $id]);
+            $entity = current($entity);
+          }
+          else {
+            $id = $node->getAttribute('data-entity-id');
+            $entity = $this->entityTypeManager->getStorage($entity_type)->load($id);
+          }
 
           if ($entity) {
             // Protect ourselves from recursive rendering.
@@ -114,7 +133,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
 
             $context = $this->getNodeAttributesAsArray($node);
             $context += array('data-langcode' => $langcode);
-            $build = $this->buildEntityEmbed($entity, $context);
+            $build = $this->builder->buildEntityEmbed($entity, $context);
             // We need to render the embedded entity:
             // - without replacing placeholders, so that the placeholders are
             //   only replaced at the last possible moment. Hence we cannot use

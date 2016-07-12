@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\Tests\ImageFieldFormatterTest.
- */
-
 namespace Drupal\entity_embed\Tests;
 
 use Drupal\Component\Serialization\Json;
@@ -62,7 +57,8 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
     // Ensure that correct form attributes are returned for the image plugin.
     $form = array();
     $form_state = new FormState();
-    $display = $this->displayPluginManager()->createInstance('image:image', array());
+    $display = $this->container->get('plugin.manager.entity_embed.display')
+      ->createInstance('image:image', []);
     $display->setContextValue('entity', $this->image);
     $conf_form = $display->buildConfigurationForm($form, $form_state);
     $this->assertIdentical(array_keys($conf_form), array(

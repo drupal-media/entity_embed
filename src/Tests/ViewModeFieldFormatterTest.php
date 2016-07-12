@@ -27,7 +27,8 @@ class ViewModeFieldFormatterTest extends EntityEmbedTestBase {
     foreach ($this->plugins as $plugin) {
       $form = [];
       $form_state = new FormState();
-      $display = $this->displayPluginManager()->createInstance($plugin, []);
+      $display = $this->container->get('plugin.manager.entity_embed.display')
+        ->createInstance($plugin, []);
       $display->setContextValue('entity', $this->node);
       $conf_form = $display->buildConfigurationForm($form, $form_state);
       $this->assertIdentical(array_keys($conf_form), []);

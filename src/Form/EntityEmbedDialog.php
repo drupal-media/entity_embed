@@ -235,19 +235,13 @@ class EntityEmbedDialog extends FormBase {
 
     if ($this->entityBrowser) {
       $this->eventDispatcher->addListener(Events::REGISTER_JS_CALLBACKS, [$this, 'registerJSCallback']);
-
-      $form['entity_browser']['#theme_wrappers'] = ['container'];
-      $form['entity_browser']['browser'] = $this->entityBrowser->getDisplay()->displayEntityBrowser($form_state);
-      $form['entity_browser']['entity_id'] = [
-        '#type' => 'hidden',
-        '#default_value' => $entity ? $entity->id() : '',
-        '#attributes' => ['class' => ['eb-target']]
-      ];
-      $form['#attached']['library'][] = 'entity_browser/common';
-      $form['#attached']['drupalSettings']['entity_browser'] = [
-        $this->entityBrowser->getDisplay()->getUuid() => [
-          'cardinality' => 1
-        ]
+      $form['entity_browser'] = [
+        '#type' => 'entity_browser',
+        '#entity_browser' => $this->entityBrowser->id(),
+        '#cardinality' => 1,
+        '#entity_browser_validators' => [
+          'entity_type' => ['type' => $entity_element['data-entity-type']]
+        ],
       ];
     }
     else {
@@ -526,9 +520,9 @@ class EntityEmbedDialog extends FormBase {
    *   The current state of the form.
    */
   public function validateSelectStep(array $form, FormStateInterface $form_state) {
-    if ($form_state->hasValue(['entity_browser', 'entity_id'])) {
-      $id = trim($form_state->getValue(['entity_browser', 'entity_id']));
-      $element = $form['entity_browser']['entity_id'];
+    if ($form_state->hasValue(['entity_browser', 'entities'])) {
+      $id = $form_state->getValue(['entity_browser', 'entities', 0])->id();
+      $element = $form['entity_browser'];
     }
     else {
       $id = trim($form_state->getValue(['entity_id']));

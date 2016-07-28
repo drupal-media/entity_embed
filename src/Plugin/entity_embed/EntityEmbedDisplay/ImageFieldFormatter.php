@@ -108,7 +108,10 @@ class ImageFieldFormatter extends FileFieldFormatter {
     // @see \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayBase::getEntityFromContext()
     /** @var \Drupal\file\FileInterface $entity */
     if ($entity = $this->getEntityFromContext()) {
-      $access = AccessResult::allowedIf($this->imageFactory->get($entity->getFileUri())->isValid())
+      // Loading large files is slow, make sure it is an image mime type before
+      // doing that.
+      list($type, ) = explode('/', $entity->getMimeType(), 2);
+      $access = AccessResult::allowedIf($type == 'image' && $this->imageFactory->get($entity->getFileUri())->isValid())
         // See the above @todo, this is the best we can do for now.
         ->addCacheableDependency($entity);
     }

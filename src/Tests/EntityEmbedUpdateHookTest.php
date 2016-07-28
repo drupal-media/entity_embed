@@ -24,6 +24,20 @@ class EntityEmbedUpdateHookTest extends UpdatePathTestBase {
   /**
    * {@inheritdoc}
    */
+  protected function setUp() {
+    parent::setUp();
+    $button = $this->container
+      ->get('entity_type.manager')
+      ->getDefinition('embed_button');
+
+    $this->container
+      ->get('entity.last_installed_schema.repository')
+      ->setLastInstalledDefinition($button);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function doSelectionTest() {
     parent::doSelectionTest();
     $this->assertRaw('8002 -   Updates the default mode settings.');

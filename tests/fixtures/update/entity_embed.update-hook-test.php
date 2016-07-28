@@ -24,6 +24,7 @@ $extensions = $connection->select('config')
   ->fetchField();
 $extensions = unserialize($extensions);
 $extensions['module']['entity_embed'] = 8001;
+$extensions['module']['embed'] = 8000;
 $connection->update('config')
   ->fields([
     'data' => serialize($extensions),

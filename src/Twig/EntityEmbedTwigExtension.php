@@ -84,7 +84,7 @@ class EntityEmbedTwigExtension extends \Twig_Extension {
       'data-entity-type' => $entity_type,
       'data-entity-uuid' => $entity->uuid(),
       'data-entity-embed-display' => $display_plugin,
-      'data-entity-embed-settings' => $display_settings,
+      'data-entity-embed-display-settings' => $display_settings,
     ];
     return $this->builder->buildEntityEmbed($entity, $context);
   }

@@ -154,12 +154,12 @@ class EntityEmbedDialog extends FormBase {
       $form_state->set('entity_element', isset($input['editor_object']) ? $input['editor_object'] : array());
     }
     $entity_element += $form_state->get('entity_element');
-    $entity_element += array(
+    $entity_element += [
       'data-entity-type' => $embed_button->getTypeSetting('entity_type'),
       'data-entity-uuid' => '',
       'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
-      'data-entity-embed-settings' => array(),
-    );
+      'data-entity-embed-display-settings' => isset($form_state->get('entity_element')['data-entity-embed-settings']) ? $form_state->get('entity_element')['data-entity-embed-settings'] : [],
+    ];
     $form_state->set('entity_element', $entity_element);
     $entity = $this->entityTypeManager->getStorage($entity_element['data-entity-type'])
       ->loadByProperties(['uuid' => $entity_element['data-entity-uuid']]);
@@ -414,15 +414,15 @@ class EntityEmbedDialog extends FormBase {
       '#required' => TRUE,
       '#ajax' => array(
         'callback' => '::updatePluginConfigurationForm',
-        'wrapper' => 'data-entity-embed-settings-wrapper',
+        'wrapper' => 'data-entity-embed-display-settings-wrapper',
         'effect' => 'fade',
       ),
       // Hide the selection if only one option is available.
       '#access' => count($display_plugin_options) > 1,
     );
-    $form['attributes']['data-entity-embed-settings'] = array(
+    $form['attributes']['data-entity-embed-display-settings'] = array(
       '#type' => 'container',
-      '#prefix' => '<div id="data-entity-embed-settings-wrapper">',
+      '#prefix' => '<div id="data-entity-embed-display-settings-wrapper">',
       '#suffix' => '</div>',
     );
     $form['attributes']['data-embed-button'] = array(
@@ -431,13 +431,13 @@ class EntityEmbedDialog extends FormBase {
     );
     $plugin_id = !empty($values['attributes']['data-entity-embed-display']) ? $values['attributes']['data-entity-embed-display'] : $entity_element['data-entity-embed-display'];
     if (!empty($plugin_id)) {
-      if (is_string($entity_element['data-entity-embed-settings'])) {
-        $entity_element['data-entity-embed-settings'] = Json::decode($entity_element['data-entity-embed-settings']);
+      if (is_string($entity_element['data-entity-embed-display-settings'])) {
+        $entity_element['data-entity-embed-display-settings'] = Json::decode($entity_element['data-entity-embed-display-settings']);
       }
-      $display = $this->entityEmbedDisplayManager->createInstance($plugin_id, $entity_element['data-entity-embed-settings']);
+      $display = $this->entityEmbedDisplayManager->createInstance($plugin_id, $entity_element['data-entity-embed-display-settings']);
       $display->setContextValue('entity', $entity);
       $display->setAttributes($entity_element);
-      $form['attributes']['data-entity-embed-settings'] += $display->buildConfigurationForm($form, $form_state);
+      $form['attributes']['data-entity-embed-display-settings'] += $display->buildConfigurationForm($form, $form_state);
     }
 
     // When Drupal core's filter_align is being used, the text editor may
@@ -575,7 +575,7 @@ class EntityEmbedDialog extends FormBase {
       ->loadByProperties(['uuid' => $entity_element['data-entity-uuid']]);
     $entity = current($entity) ?: NULL;
     $plugin_id = $entity_element['data-entity-embed-display'];
-    $plugin_settings = $entity_element['data-entity-embed-settings'] ?: array();
+    $plugin_settings = $entity_element['data-entity-embed-display-settings'] ?: array();
     $display = $this->entityEmbedDisplayManager->createInstance($plugin_id, $plugin_settings);
     $display->setContextValue('entity', $entity);
     $display->setAttributes($entity_element);
@@ -596,7 +596,7 @@ class EntityEmbedDialog extends FormBase {
    *   The form state.
    */
   public function updatePluginConfigurationForm(array &$form, FormStateInterface $form_state) {
-    return $form['attributes']['data-entity-embed-settings'];
+    return $form['attributes']['data-entity-embed-display-settings'];
   }
 
   /**
@@ -732,7 +732,7 @@ class EntityEmbedDialog extends FormBase {
       ->loadByProperties(['uuid' => $entity_element['data-entity-uuid']]);
     $entity = current($entity);
     $plugin_id = $entity_element['data-entity-embed-display'];
-    $plugin_settings = $entity_element['data-entity-embed-settings'] ?: array();
+    $plugin_settings = $entity_element['data-entity-embed-display-settings'] ?: array();
     $display = $this->entityEmbedDisplayManager->createInstance($plugin_id, $plugin_settings);
     $display->setContextValue('entity', $entity);
     $display->setAttributes($entity_element);
@@ -750,8 +750,8 @@ class EntityEmbedDialog extends FormBase {
     }
     else {
       // Serialize entity embed settings to JSON string.
-      if (!empty($values['attributes']['data-entity-embed-settings'])) {
-        $values['attributes']['data-entity-embed-settings'] = Json::encode($values['attributes']['data-entity-embed-settings']);
+      if (!empty($values['attributes']['data-entity-embed-display-settings'])) {
+        $values['attributes']['data-entity-embed-display-settings'] = Json::encode($values['attributes']['data-entity-embed-display-settings']);
       }
 
       // Filter out empty attributes.

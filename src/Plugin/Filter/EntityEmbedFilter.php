@@ -13,6 +13,8 @@ use Drupal\entity_embed\Exception\EntityNotFoundException;
 use Drupal\entity_embed\Exception\RecursiveRenderingException;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
+use RecursiveArrayIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\embed\DomHelperTrait;
 
@@ -103,6 +105,13 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
         $entity_type = $node->getAttribute('data-entity-type');
         $entity = NULL;
         $entity_output = '';
+
+        // data-entity-embed-settings is deprecated, make sure we convert it to
+        // data-entity-embed-display-settings.
+        if (($settings = $node->getAttribute('data-entity-embed-settings')) && !$node->hasAttribute('data-entity-embed-display-settings')) {
+          $node->setAttribute('data-entity-embed-display-settings', $settings);
+          $node->removeAttribute('data-entity-embed-settings');
+        }
 
         try {
           // Load the entity either by UUID (preferred) or ID.

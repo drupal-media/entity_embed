@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\Core\Database\Database;
+use Drupal\Component\Serialization\Yaml;
 
 $connection = Database::getConnection();
 
@@ -15,6 +16,20 @@ $connection->merge('key_value')
   ])
   ->execute();
 
+$config = Yaml::decode(file_get_contents(__DIR__ . '/../../../config/optional/embed.button.node.yml'));
+$connection->insert('config')
+  ->fields([
+    'collection',
+    'name',
+    'data',
+  ])
+  ->values([
+    'collection' => '',
+    'name' => 'embed.button.node',
+    'data' => serialize($config),
+  ])
+  ->execute();
+
 // Update core.extension.
 $extensions = $connection->select('config')
   ->fields('config', ['data'])
@@ -23,6 +38,7 @@ $extensions = $connection->select('config')
   ->execute()
   ->fetchField();
 $extensions = unserialize($extensions);
+$extensions['module']['embed'] = 8000;
 $extensions['module']['entity_embed'] = 8001;
 $extensions['module']['embed'] = 8000;
 $connection->update('config')

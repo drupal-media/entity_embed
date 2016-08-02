@@ -109,10 +109,10 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertRaw('<article class="embedded-entity"', 'Embed container found.');
 
     // Test deprecated 'default' Entity Embed Display plugin.
-    $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</drupal-entity>';
+    $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-display-settings=\'{"view_mode":"teaser"}\'>This placeholder should not be rendered.</drupal-entity>';
     $settings = array();
     $settings['type'] = 'page';
-    $settings['title'] = 'Test entity embed with entity-embed-display and data-entity-embed-settings';
+    $settings['title'] = 'Test entity embed with entity-embed-display and data-entity-embed-display-settings';
     $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
@@ -122,10 +122,10 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
 
     // Ensure that Entity Embed Display plugin is preferred over view mode when
     // both attributes are present.
-    $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-settings=\'{"view_mode":"full"}\' data-view-mode="some-invalid-view-mode" data-align="left" data-caption="test caption">This placeholder should not be rendered.</drupal-entity>';
+    $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="default" data-entity-embed-display-settings=\'{"view_mode":"full"}\' data-view-mode="some-invalid-view-mode" data-align="left" data-caption="test caption">This placeholder should not be rendered.</drupal-entity>';
     $settings = array();
     $settings['type'] = 'page';
-    $settings['title'] = 'Test entity embed with entity-embed-display and data-entity-embed-settings';
+    $settings['title'] = 'Test entity embed with entity-embed-display and data-entity-embed-display-settings';
     $settings['body'] = array(array('value' => $content, 'format' => 'custom_format'));
     $node = $this->drupalCreateNode($settings);
     $this->drupalGet('node/' . $node->id());
@@ -164,7 +164,7 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $image = $this->getTestFile('image');
     $image->setPermanent();
     $image->save();
-    $content = '<drupal-entity data-entity-type="file" data-entity-uuid="' . $image->uuid() . '" data-entity-embed-display="image:image" data-entity-embed-settings=\'{"image_style":"","image_link":""}\' data-align="left" data-caption="test caption" alt="This is alt text" title="This is title text">This placeholder should not be rendered.</drupal-entity>';
+    $content = '<drupal-entity data-entity-type="file" data-entity-uuid="' . $image->uuid() . '" data-entity-embed-display="image:image" data-entity-embed-display-settings=\'{"image_style":"","image_link":""}\' data-align="left" data-caption="test caption" alt="This is alt text" title="This is title text">This placeholder should not be rendered.</drupal-entity>';
     $settings = [];
     $settings['type'] = 'page';
     $settings['title'] = 'test entity image formatter';
@@ -176,6 +176,22 @@ class EntityEmbedFilterTest extends EntityEmbedTestBase {
     $this->assertRaw('data-align="left"', 'Alignment information found.');
     $this->assertTrue((bool) $this->xpath("//img[@alt='This is alt text']"), 'Alt text found');
     $this->assertTrue((bool) $this->xpath("//img[@title='This is title text']"), 'Title text found');
+    $this->assertRaw('<article class="embedded-entity"', 'Embed container found.');
+
+    // data-entity-embed-settings is replaced with
+    // data-entity-embed-display-settings. Check to see if
+    // data-entity-embed-settings is still working.
+    $content = '<drupal-entity data-entity-type="node" data-entity-uuid="' . $this->node->uuid() . '" data-entity-embed-display="entity_reference:entity_reference_label" data-entity-embed-settings=\'{"link":"0"}\' data-align="left" data-caption="test caption">This placeholder should not be rendered.</drupal-entity>';
+    $settings = [];
+    $settings['type'] = 'page';
+    $settings['title'] = 'Test entity embed with data-entity-embed-settings';
+    $settings['body'] = [['value' => $content, 'format' => 'custom_format']];
+    $node = $this->drupalCreateNode($settings);
+    $this->drupalGet('node/' . $node->id());
+    $this->assertText($this->node->getTitle(), 'Embeded node title is displayed.');
+    $this->assertNoLink($this->node->getTitle(), 'Embed settings are respected.');
+    $this->assertNoText($this->node->body->value, 'Embedded node exists in page.');
+    $this->assertNoText(strip_tags($content), 'Placeholder does not appear in the output when embed is successful.');
     $this->assertRaw('<article class="embedded-entity"', 'Embed container found.');
   }
 

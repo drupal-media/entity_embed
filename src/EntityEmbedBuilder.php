@@ -45,9 +45,9 @@ class EntityEmbedBuilder implements EntityEmbedBuilderInterface  {
    */
   public function buildEntityEmbed(EntityInterface $entity, array $context = []) {
     // Support the deprecated view-mode data attribute.
-    if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-settings'])) {
+    if (isset($context['data-view-mode']) && !isset($context['data-entity-embed-display']) && !isset($context['data-entity-embed-display-settings'])) {
       $context['data-entity-embed-display'] = 'entity_reference:entity_reference_entity_view';
-      $context['data-entity-embed-settings'] = ['view_mode' => &$context['data-view-mode']];
+      $context['data-entity-embed-display-settings'] = ['view_mode' => &$context['data-view-mode']];
     }
 
     // Merge in default attributes.
@@ -55,7 +55,7 @@ class EntityEmbedBuilder implements EntityEmbedBuilderInterface  {
       'data-entity-type' => $entity->getEntityTypeId(),
       'data-entity-uuid' => $entity->uuid(),
       'data-entity-embed-display' => 'entity_reference:entity_reference_entity_view',
-      'data-entity-embed-settings' => [],
+      'data-entity-embed-display-settings' => [],
     ];
 
     // The default Entity Embed Display plugin has been deprecated by the
@@ -83,7 +83,7 @@ class EntityEmbedBuilder implements EntityEmbedBuilderInterface  {
     $build['entity'] = $this->buildEntityEmbedDisplayPlugin(
       $entity,
       $context['data-entity-embed-display'],
-      $context['data-entity-embed-settings'],
+      $context['data-entity-embed-display-settings'],
       $context
     );
 

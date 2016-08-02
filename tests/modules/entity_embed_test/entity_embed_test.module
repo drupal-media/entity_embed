@@ -56,7 +56,7 @@ function entity_embed_test_entity_embed_context_alter(array &$context, EntityInt
 
   // Force to use 'Label' plugin.
   $context['data-entity-embed-display'] = 'entity_reference:entity_reference_label';
-  $context['data-entity-embed-settings'] = array('link' => 1);
+  $context['data-entity-embed-display-settings'] = array('link' => 1);
 
   // Set title of the entity.
   $entity->setTitle("Title set by hook_entity_embed_context_alter");

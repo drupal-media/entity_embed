@@ -24,16 +24,18 @@ Entity Embed can be installed via the
 * Go to the 'Text formats and editors' configuration page: `/admin/config/content/formats`,
   and for each text format/editor combo where you want to embed entities,
   do the following:
-  * Enable the 'Display embedded entities' filter.
+  * Enable the "Display embedded entities" filter for the desired text formats
+    on the Text Formats configuration page.
   * Drag and drop the 'E' button into the Active toolbar.
   * If the text format uses the 'Limit allowed HTML tags and correct
     faulty HTML' filter, ensure the necessary tags and attributes were
     automatically whitelisted:
     ```<drupal-entity data-entity-type data-entity-uuid data-view-mode data-entity-embed-display data-entity-embed-display-settings data-align data-caption data-embed-button>```
-    appears in the 'Allowed HTML tags' setting.  
+    appears in the 'Allowed HTML tags' setting.
     *Warning: If you were using the module in very early pre-alpha
     stages you might need to add `data-entity-id` to the list of allowed
-    attributes.*
+    attributes. Similarly, if you have been using the module in pre-beta stages,
+    you need to white-list the `data-entity-embed-settings` attribute.*
   * If you're using both the 'Align images' and 'Caption images' filters make
     sure the 'Align images' filter is run before the 'Caption images' filter in
     the **Filter processing order** section. (Explanation: Due to the

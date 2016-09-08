@@ -11,7 +11,6 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\entity_embed\EntityEmbedHelperTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -22,7 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @see \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager
  * @see plugin_api
  *
-  * @ingroup entity_embed_api
+ * @ingroup entity_embed_api
  */
 abstract class EntityEmbedDisplayBase extends PluginBase implements ContainerFactoryPluginInterface, EntityEmbedDisplayInterface {
 

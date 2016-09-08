@@ -34,6 +34,9 @@ abstract class EntityEmbedTestBase extends WebTestBase {
    */
   protected $node;
 
+  /**
+   *
+   */
   protected function setUp() {
     parent::setUp();
 
@@ -103,6 +106,9 @@ abstract class EntityEmbedTestBase extends WebTestBase {
     return $file;
   }
 
+  /**
+   *
+   */
   public function assertAvailableDisplayPlugins(EntityInterface $entity, array $expected_plugins, $message = '') {
     $plugin_options = $this->container->get('plugin.manager.entity_embed.display')
       ->getDefinitionOptionsForEntity($entity);

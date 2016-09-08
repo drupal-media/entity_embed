@@ -240,7 +240,7 @@ class EntityEmbedDialog extends FormBase {
         '#entity_browser' => $this->entityBrowser->id(),
         '#cardinality' => 1,
         '#entity_browser_validators' => [
-          'entity_type' => ['type' => $entity_element['data-entity-type']]
+          'entity_type' => ['type' => $entity_element['data-entity-type']],
         ],
       ];
     }
@@ -304,7 +304,7 @@ class EntityEmbedDialog extends FormBase {
     $form['#title'] = $this->t('Review selected @type', array('@type' => $entity->getEntityType()->getLowercaseLabel()));
 
     $form['selection'] = [
-      '#markup' => $entity->label()
+      '#markup' => $entity->label(),
     ];
 
     $form['actions'] = array(

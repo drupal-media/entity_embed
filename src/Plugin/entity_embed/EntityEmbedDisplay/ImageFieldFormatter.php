@@ -110,7 +110,7 @@ class ImageFieldFormatter extends FileFieldFormatter {
     if ($entity = $this->getEntityFromContext()) {
       // Loading large files is slow, make sure it is an image mime type before
       // doing that.
-      list($type, ) = explode('/', $entity->getMimeType(), 2);
+      list($type,) = explode('/', $entity->getMimeType(), 2);
       $access = AccessResult::allowedIf($type == 'image' && $this->imageFactory->get($entity->getFileUri())->isValid())
         // See the above @todo, this is the best we can do for now.
         ->addCacheableDependency($entity);

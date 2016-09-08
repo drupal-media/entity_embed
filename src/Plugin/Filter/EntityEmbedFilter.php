@@ -13,8 +13,6 @@ use Drupal\entity_embed\Exception\EntityNotFoundException;
 use Drupal\entity_embed\Exception\RecursiveRenderingException;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
-use RecursiveArrayIterator;
-use RecursiveIteratorIterator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\embed\DomHelperTrait;
 
@@ -163,7 +161,7 @@ class EntityEmbedFilter extends FilterBase implements ContainerFactoryPluginInte
             throw new EntityNotFoundException(sprintf('Unable to load embedded %s entity %s.', $entity_type, $id));
           }
         }
-        catch(\Exception $e) {
+        catch (\Exception $e) {
           watchdog_exception('entity_embed', $e);
         }
 

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\Plugin\EmbedType\Entity.
- */
-
 namespace Drupal\entity_embed\Plugin\EmbedType;
 
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
@@ -179,7 +174,7 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
             'invisible' => [
               ':input[name="type_settings[entity_browser]"]' => ['value' => '_none'],
             ],
-          ]
+          ],
         ];
         $form['entity_browser_settings']['display_review'] = [
           '#type' => 'checkbox',

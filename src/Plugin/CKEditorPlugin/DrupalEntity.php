@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\Plugin\CKEditorPlugin\DrupalEntity.
- */
-
 namespace Drupal\entity_embed\Plugin\CKEditorPlugin;
 
 use Drupal\editor\Entity\Editor;

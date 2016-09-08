@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\Tests\EntityEmbedEntityBrowserTest.
- */
-
 namespace Drupal\entity_embed\Tests;
 
 use Drupal\entity_browser\Entity\EntityBrowser;
@@ -14,6 +9,7 @@ use Drupal\embed\Entity\EmbedButton;
  * Tests the entity_embed entity_browser integration.
  *
  * @group entity_embed
+ *
  * @dependencies entity_browser
  */
 class EntityEmbedEntityBrowserTest extends EntityEmbedDialogTest {

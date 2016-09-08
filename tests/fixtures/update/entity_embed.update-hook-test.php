@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 use Drupal\Core\Database\Database;
 use Drupal\Component\Serialization\Yaml;
 

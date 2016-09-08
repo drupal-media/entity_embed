@@ -12,7 +12,7 @@ use Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayManager;
  *
  * @internal
  */
-class EntityEmbedBuilder implements EntityEmbedBuilderInterface  {
+class EntityEmbedBuilder implements EntityEmbedBuilderInterface {
 
   /**
    * The module handler service.

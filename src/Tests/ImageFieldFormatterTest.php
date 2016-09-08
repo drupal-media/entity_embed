@@ -33,6 +33,9 @@ class ImageFieldFormatterTest extends EntityEmbedTestBase {
    */
   protected $file;
 
+  /**
+   *
+   */
   protected function setUp() {
     parent::setUp();
     $this->image = $this->getTestFile('image');

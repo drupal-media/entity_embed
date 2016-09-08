@@ -14,6 +14,9 @@ use Drupal\Core\TypedData\TypedDataManager;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ *
+ */
 abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBase {
   use PluginDependencyTrait;
 
@@ -234,8 +237,7 @@ abstract class FieldFormatterEntityEmbedDisplayBase extends EntityEmbedDisplayBa
     $definition = $this->formatterPluginManager->getDefinition($this->getFieldFormatterId());
     $this->addDependency('module', $definition['provider']);
     // @todo Investigate why this does not work currently.
-    //$this->calculatePluginDependencies($this->getFieldFormatter());
-
+    // $this->calculatePluginDependencies($this->getFieldFormatter());
     return $this->dependencies;
   }
 

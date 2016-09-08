@@ -58,6 +58,7 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
    *   An array of plugin definitions.
    *
    * @todo At some point convert this to use ContextAwarePluginManagerTrait
+   *
    * @see https://drupal.org/node/2277981
    */
   public function getDefinitionsForContexts(array $contexts = array()) {

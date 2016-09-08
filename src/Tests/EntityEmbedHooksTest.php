@@ -16,6 +16,9 @@ class EntityEmbedHooksTest extends EntityEmbedTestBase {
    */
   protected $state;
 
+  /**
+   *
+   */
   protected function setUp() {
     parent::setUp();
     $this->state = $this->container->get('state');

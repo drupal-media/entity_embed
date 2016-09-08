@@ -54,7 +54,9 @@ function taxonomy_entity_embed_display_plugins_alter(array &$plugins) {
  *
  * The 'Rendered entity' formatter can not be used for files unless the
  * file_entity module is available.
+ *
  * @see https://www.drupal.org/node/2468387
+ *
  * @todo Remove when https://www.drupal.org/node/2567919 is fixed in core.
  */
 function entity_embed_entity_embed_display_plugins_for_context_alter(array &$definitions, array $context) {

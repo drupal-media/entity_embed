@@ -26,6 +26,9 @@ class FileFieldFormatterTest extends EntityEmbedTestBase {
    */
   protected $file;
 
+  /**
+   *
+   */
   protected function setUp() {
     parent::setUp();
     $this->file = $this->getTestFile('text');

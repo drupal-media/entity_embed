@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayInterface.
- */
-
 namespace Drupal\entity_embed\EntityEmbedDisplay;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;

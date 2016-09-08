@@ -18,6 +18,9 @@ class EntityReferenceFieldFormatterTest extends EntityEmbedTestBase {
    */
   protected $menu;
 
+  /**
+   *
+   */
   protected function setUp() {
     parent::setUp();
 

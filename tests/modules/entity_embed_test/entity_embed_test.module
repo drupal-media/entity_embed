@@ -25,7 +25,6 @@ function entity_embed_test_theme($existing, $type, $theme, $path) {
   return $items;
 }
 
-
 /**
  * Implements hook_entity_embed_display_plugins_alter().
  */

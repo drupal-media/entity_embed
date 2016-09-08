@@ -9,7 +9,7 @@ use Drupal\Core\Entity\EntityInterface;
  *
  * @internal
  */
-interface EntityEmbedBuilderInterface  {
+interface EntityEmbedBuilderInterface {
 
   /**
    * Builds the render array for an embedded entity.

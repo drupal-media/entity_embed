@@ -4,8 +4,8 @@ description: 'Allows entities to be embedded using a text editor.'
 core: 8.x
 package: Filters
 dependencies:
-  - editor
-  - embed
-  - filter
+  - drupal:editor
+  - embed:embed
+  - drupal:filter
 test_dependencies:
-  - entity_browser
+  - entity_browser:entity_browser

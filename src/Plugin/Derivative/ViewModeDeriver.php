@@ -6,7 +6,6 @@ use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -61,7 +60,7 @@ class ViewModeDeriver extends DeriverBase implements ContainerDeriverInterface {
     foreach ($this->entityDisplayRepository->getAllViewModes() as $view_modes) {
       foreach ($view_modes as $view_mode => $definition) {
         $this->derivatives[$definition['id']] = $base_plugin_definition;
-        $this->derivatives[$definition['id']]['label'] = new TranslatableMarkup($definition['label']);
+        $this->derivatives[$definition['id']]['label'] = $definition['label'];
         $this->derivatives[$definition['id']]['view_mode'] = $view_mode;
         $this->derivatives[$definition['id']]['entity_types'] = $definition['targetEntityType'];
         $this->derivatives[$definition['id']]['no_ui'] = $mode;

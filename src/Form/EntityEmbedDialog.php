@@ -732,7 +732,7 @@ class EntityEmbedDialog extends FormBase {
       ->loadByProperties(['uuid' => $entity_element['data-entity-uuid']]);
     $entity = current($entity);
     $plugin_id = $entity_element['data-entity-embed-display'];
-    $plugin_settings = $entity_element['data-entity-embed-display-settings'] ?: array();
+    $plugin_settings = !empty($entity_element['data-entity-embed-display-settings']) ? $entity_element['data-entity-embed-display-settings'] : array();
     $display = $this->entityEmbedDisplayManager->createInstance($plugin_id, $plugin_settings);
     $display->setContextValue('entity', $entity);
     $display->setAttributes($entity_element);

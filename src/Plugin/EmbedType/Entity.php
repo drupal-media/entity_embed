@@ -162,7 +162,7 @@ class Entity extends EmbedTypeBase implements ContainerFactoryPluginInterface {
         $form['entity_browser'] = [
           '#type' => 'select',
           '#title' => $this->t('Entity browser'),
-          '#description' => $this->t('Entity browser to be used to select entities to be embedded.'),
+          '#description' => $this->t('Entity browser to be used to select entities to be embedded. Note that not all display plugins from Entity Browser are compatible with Entity Embed. For example, the "iFrame" display is compatible, while the "Modal" display is not.'),
           '#options' => $options,
           '#default_value' => $this->getConfigurationValue('entity_browser'),
         ];
